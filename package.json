@@ -1,0 +1,26 @@
+{
+  "name": "garagesalebiz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:rls": "node test/rls-posture.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonVega1974/GarageSaleBiz.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JasonVega1974/GarageSaleBiz/issues"
+  },
+  "homepage": "https://github.com/JasonVega1974/GarageSaleBiz#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

@@ -483,7 +483,23 @@ footer{border-top:2px solid var(--ink-soft);padding:34px 0 46px}
   </div>
 </footer>
 
+<script src="waitlist.js"></script>
 <script>
+/* ============================================================
+   WAITLIST TARGET
+   The anon key is publishable by design — it is safe in a static
+   page because own_waitlist grants anon INSERT only and has no
+   select policy, so this key cannot read the list back. The RLS
+   policy is the gate, not the secrecy of this string.
+   ============================================================ */
+var WAITLIST_CONFIG = {
+  supabaseUrl: 'https://cdckozujhrffobragmtm.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkY2tvenVqaHJmZm9icmFnbXRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNzUzMjgsImV4cCI6MjA5MTc1MTMyOH0.2LWNOCcncwlxYw3EyRajnGGW8YM3108Oa-8ydOdnwJ0',
+  table: 'own_waitlist',
+  web3formsKey: '69390bf5-f526-4a27-9c8e-d81f3e187a10',
+  fromName: 'Own Your Town Waitlist'
+};
+
 /* ============================================================
    SINGLE SOURCE OF TRUTH — add a 7th trade here, done.
    ============================================================ */
@@ -644,6 +660,10 @@ function renderDeed(n){
           '<label for="wl-email">Your email</label>' +
           '<input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>' +
         '</div>' +
+        '<div class="field">' +
+          '<label for="wl-city">Town you want</label>' +
+          '<input id="wl-city" name="city" type="text" autocomplete="address-level2" placeholder="Boulder, CO">' +
+        '</div>' +
         '<button class="cta" type="submit">Join the waitlist '+ARROW_SVG+'</button>' +
         '<span class="field-err" id="wl-err" role="alert">Enter a valid email address.</span>' +
       '</form>';
@@ -661,21 +681,31 @@ function renderDeed(n){
   if (n.status !== 'live') wireWaitlist(n);
 }
 
+/* Was a mailto: redirect, which only produced a signup if the visitor had a
+   mail client configured AND pressed send in it. Everyone else — most people
+   on a phone — silently vanished, and nothing was recorded either way. Now the
+   entry is written before the confirmation is shown. */
 function wireWaitlist(n){
   var form = document.getElementById('wl-form');
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var input = document.getElementById('wl-email');
+    var cityInput = document.getElementById('wl-city');
     var err = document.getElementById('wl-err');
     var v = (input.value || '').trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.classList.add('on'); input.focus(); return; }
+    if (!Waitlist.isValidEmail(v)) { err.classList.add('on'); input.focus(); return; }
     err.classList.remove('on');
-    var subject = 'Waitlist: ' + n.label;
-    var body = 'Email: ' + v + '\nTrade: ' + n.label + ' (' + n.domain + ')\nTerritory / cities I want: ';
-    window.location.href = 'mailto:info@kingdom-creatives.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+
+    // Fire and forget: both writes are best-effort inside submit(), so the
+    // confirmation below is not waiting on either network call.
+    Waitlist.submit(
+      { email: v, tradeSlug: n.slug, tradeLabel: n.label, city: cityInput ? cityInput.value : '' },
+      WAITLIST_CONFIG
+    );
+
     form.outerHTML =
-      '<div class="confirm" role="status"><b>Your email app is opening</b> with the claim request — hit send and you\'re on the list. ' +
-      'If nothing opened, email <b>info@kingdom-creatives.com</b> with the subject &ldquo;'+esc(subject)+'&rdquo;.</div>';
+      '<div class="confirm" role="status"><b>You\'re on the list for '+esc(n.label)+'.</b> ' +
+      'We\'ll email you the moment '+esc(n.domain)+' opens — territory holders hear first.</div>';
   });
 }
 
