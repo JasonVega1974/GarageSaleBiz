@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Own Your Town — Territory-Exclusive Business Platforms</title>
+<meta name="description" content="Turn-key software platforms for local operators. Pick your trade, claim your territory, launch this week. One operator per market.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Own Your Town. Run the Business.">
+<meta property="og:description" content="Turn-key software platforms for local operators. Pick your trade, claim your territory, launch this week.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23FFCE3B'/%3E%3Cpath d='M12 26h26v-8l16 14-16 14v-8H12z' fill='%2316130E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — roadside vernacular
+   ============================================================ */
+:root{
+  --ink:#16130E;          /* asphalt-warm near-black */
+  --ink-soft:#211D15;
+  --sign:#FFCE3B;         /* yard-sign yellow */
+  --sign-deep:#F5BE1E;
+  --paper:#F6F0E1;        /* deed paper */
+  --paper-line:#D8CEB4;
+  --flame:#E8471F;        /* safety orange-red: arrows, stickers */
+  --stamp:#C0311F;        /* rubber stamp red */
+  --open:#1E8A4C;         /* OPEN NOW green */
+  --metal:#A8ADB5;        /* staples */
+  --text-on-ink:#F2EDDE;
+  --muted-on-ink:#9C947F;
+
+  --display:'Anton',Impact,system-ui,sans-serif;
+  --body:'Libre Franklin',system-ui,sans-serif;
+  --mono:'Space Mono',ui-monospace,monospace;
+
+  --gutter:20px;
+  --max:1060px;
+
+  --shadow-hard:6px 6px 0 rgba(0,0,0,.5);
+  --shadow-hover:10px 12px 0 rgba(0,0,0,.55);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+html:focus-within{scroll-behavior:smooth}
+
+body{
+  background:var(--ink);
+  color:var(--text-on-ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Dusk glow over asphalt — the only ambient light */
+body::before{
+  content:'';position:fixed;left:50%;top:-420px;
+  width:min(1200px,160vw);height:820px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,rgba(255,206,59,.10),rgba(255,206,59,0) 66%);
+  pointer-events:none;z-index:0;
+}
+
+.shell{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sign);outline-offset:3px;border-radius:2px}
+.section{padding-top:64px;padding-bottom:64px}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============================================================
+   CORRUGATED SIGN SURFACE  (shared by hero sign + cards)
+   ============================================================ */
+.sign-surface{
+  background:
+    repeating-linear-gradient(180deg, rgba(0,0,0,.05) 0 2px, rgba(255,255,255,.05) 2px 4px, transparent 4px 9px),
+    linear-gradient(180deg,var(--sign),var(--sign-deep));
+  color:var(--ink);
+  border:3px solid var(--ink);
+  border-radius:6px;
+  box-shadow:var(--shadow-hard);
+  position:relative;
+}
+/* Staples — two galvanized rectangles punched through the top edge */
+.staple{
+  position:absolute;top:-5px;width:22px;height:8px;border-radius:2px;
+  background:linear-gradient(180deg,#C9CED6,var(--metal) 55%,#7E848E);
+  border:1px solid #5C616A;
+  box-shadow:0 1px 0 rgba(0,0,0,.4);
+}
+.staple.l{left:14%;transform:rotate(-2deg)}
+.staple.r{right:14%;transform:rotate(2deg)}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.bar{position:sticky;top:0;z-index:60;background:rgba(22,19,14,.92);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink-soft)}
+.bar-in{max-width:var(--max);margin:0 auto;padding:12px var(--gutter);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:16px;letter-spacing:.04em;text-decoration:none;text-transform:uppercase}
+.brand-mark{width:26px;height:26px;border-radius:5px;flex:none;background:var(--sign);border:2px solid var(--ink);display:grid;place-items:center}
+.brand-mark svg{width:14px;height:14px;display:block}
+.bar-note{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-on-ink)}
+
+/* ============================================================
+   HERO — the big sign
+   ============================================================ */
+.hero{padding-top:56px;padding-bottom:34px;text-align:center}
+.hero-sign{
+  display:inline-block;
+  padding:clamp(26px,5vw,44px) clamp(22px,5vw,56px) clamp(24px,4.4vw,40px);
+  transform:rotate(-1.2deg);
+  max-width:100%;
+}
+.hero-sign h1{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(54px,12.5vw,116px);
+  line-height:.92;
+  letter-spacing:.005em;
+  text-transform:uppercase;
+}
+.hero-sign h1 .row{display:flex;align-items:center;justify-content:center;gap:clamp(10px,2.6vw,22px);flex-wrap:wrap}
+.hero-arrow{width:clamp(64px,14vw,150px);height:auto;flex:none;transform:translateY(4%)}
+.hero-arrow path{fill:var(--flame);stroke:var(--ink);stroke-width:6}
+.hero-tag{
+  margin-top:10px;
+  font-family:var(--mono);font-size:clamp(10px,2.4vw,12px);font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;
+  border-top:2px dashed rgba(22,19,14,.45);
+  padding-top:10px;
+}
+.hero-sub{
+  margin:26px auto 0;max-width:560px;
+  font-size:clamp(16px,2.6vw,19px);line-height:1.55;color:var(--text-on-ink);
+}
+.hero-sub b{color:var(--sign);font-weight:700}
+
+/* trade picker — chunky roadside select */
+.picker{margin:26px auto 0;display:flex;justify-content:center}
+.picker-wrap{position:relative;display:inline-block}
+.picker select{
+  appearance:none;-webkit-appearance:none;
+  font-family:var(--body);font-weight:800;font-size:16px;letter-spacing:.02em;
+  color:var(--ink);
+  background:var(--sign);
+  border:3px solid var(--ink);border-radius:6px;
+  box-shadow:var(--shadow-hard);
+  padding:15px 52px 15px 20px;
+  min-height:52px;min-width:min(320px,84vw);
+  cursor:pointer;
+  transition:transform .14s ease, box-shadow .14s ease;
+}
+.picker select:hover{transform:translate(-1px,-2px);box-shadow:8px 9px 0 rgba(0,0,0,.5)}
+.picker-wrap::after{
+  content:'';position:absolute;right:20px;top:50%;transform:translateY(-35%);
+  border-left:8px solid transparent;border-right:8px solid transparent;border-top:11px solid var(--ink);
+  pointer-events:none;
+}
+
+/* ============================================================
+   MARQUEE — sign-shop strip
+   ============================================================ */
+.marquee{
+  border-top:3px solid var(--sign);border-bottom:3px solid var(--sign);
+  background:var(--ink-soft);
+  overflow:hidden;white-space:nowrap;
+  padding:10px 0;
+}
+.marquee-track{display:inline-flex;gap:0;animation:roll 26s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{
+  font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sign);padding:0 18px;
+}
+.marquee em{font-style:normal;color:var(--flame)}
+@keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============================================================
+   SECTION HEADS
+   ============================================================ */
+.sec-head{display:flex;align-items:center;gap:16px;margin-bottom:30px}
+.sec-head::before{content:'';width:34px;height:3px;background:var(--flame)}
+.sec-head::after{content:'';flex:1;height:2px;background:var(--ink-soft)}
+.sec-title{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-on-ink)}
+
+/* ============================================================
+   SIGN GRID — six trades stapled to the page
+   ============================================================ */
+.grid{display:grid;grid-template-columns:1fr;gap:30px 26px}
+.sign-card{
+  font:inherit;text-align:left;cursor:pointer;width:100%;
+  padding:26px 22px 20px;
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.grid > .sign-card:nth-child(odd){transform:rotate(-1deg)}
+.grid > .sign-card:nth-child(even){transform:rotate(1deg)}
+.sign-card:hover{transform:rotate(0) translateY(-5px);box-shadow:var(--shadow-hover);z-index:2}
+.sign-card:active{transform:rotate(0) translateY(-1px);box-shadow:4px 4px 0 rgba(0,0,0,.5)}
+
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.code{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.18em}
+.tok{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;border:2px solid var(--ink);
+}
+.tok.open{background:var(--open);color:#fff;border-color:var(--ink)}
+.tok.wait{background:transparent;color:var(--ink)}
+.sign-card h3{
+  font-family:var(--display);font-weight:400;font-size:clamp(26px,5.6vw,32px);
+  line-height:1;letter-spacing:.01em;text-transform:uppercase;
+}
+.sign-card p{margin-top:9px;font-size:14px;line-height:1.5;font-weight:600;color:rgba(22,19,14,.82)}
+.card-go{
+  margin-top:14px;padding-top:12px;border-top:2px dashed rgba(22,19,14,.4);
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+}
+.card-go svg{width:26px;height:14px}
+.card-go svg path{fill:var(--flame);stroke:var(--ink);stroke-width:4}
+
+/* price sticker — the fluorescent dot */
+.sticker{
+  position:absolute;top:-16px;right:-12px;
+  width:74px;height:74px;border-radius:50%;
+  display:grid;place-items:center;text-align:center;
+  transform:rotate(9deg);
+  border:3px solid var(--ink);
+  box-shadow:3px 3px 0 rgba(0,0,0,.45);
+  font-family:var(--mono);font-weight:700;line-height:1.05;
+  z-index:3;
+}
+.sticker.hot{background:var(--flame);color:#fff}
+.sticker.soon{background:var(--paper);color:var(--ink)}
+.sticker .big{font-size:17px;display:block}
+.sticker .small{font-size:8px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-top:2px}
+
+/* selected sign inverts — it's been claimed */
+.sign-card.selected{
+  background:var(--ink);color:var(--sign);
+  border-color:var(--sign);
+}
+.sign-card.selected h3{color:var(--sign)}
+.sign-card.selected p{color:rgba(255,206,59,.8)}
+.sign-card.selected .card-go{border-top-color:rgba(255,206,59,.4);color:var(--sign)}
+.sign-card.selected .tok.wait{color:var(--sign);border-color:var(--sign)}
+.sign-card.selected .code{color:var(--sign)}
+
+/* ============================================================
+   DEED — the territory claim
+   ============================================================ */
+#deed{display:none}
+#deed.on{display:block}
+.deed{
+  background:
+    repeating-linear-gradient(0deg, transparent 0 30px, rgba(120,104,64,.07) 30px 31px),
+    var(--paper);
+  color:var(--ink);
+  border:3px solid var(--ink);border-radius:6px;
+  box-shadow:var(--shadow-hard);
+  padding:30px 24px 28px;
+  position:relative;overflow:hidden;
+}
+.deed-head{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;
+  font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(22,19,14,.65);
+  border-bottom:2px solid var(--ink);padding-bottom:12px;
+}
+.deed h2{
+  margin-top:16px;
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(34px,7.4vw,52px);line-height:.98;letter-spacing:.005em;text-transform:uppercase;
+}
+.deed-domain{margin-top:6px;font-family:var(--mono);font-weight:700;font-size:13px;color:var(--flame)}
+.deed-headline{margin-top:14px;font-size:17px;font-weight:700;max-width:52ch}
+.deed ul{margin-top:16px;list-style:none;display:grid;gap:10px;max-width:56ch}
+.deed li{display:flex;gap:11px;font-size:15px;font-weight:600;line-height:1.45}
+.deed li::before{
+  content:'✓';flex:none;width:22px;height:22px;border-radius:4px;margin-top:1px;
+  background:var(--ink);color:var(--sign);
+  font-weight:700;font-size:13px;display:grid;place-items:center;
+}
+.deed-price{
+  margin-top:20px;padding-top:18px;border-top:2px dashed var(--paper-line);
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.price-big{font-family:var(--display);font-size:40px;line-height:1;letter-spacing:.01em}
+.price-note{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(22,19,14,.66);max-width:30ch;line-height:1.5}
+.deed-cta{margin-top:20px}
+.cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--body);font-weight:800;font-size:16px;letter-spacing:.02em;
+  background:var(--ink);color:var(--sign);
+  border:3px solid var(--ink);border-radius:6px;
+  box-shadow:4px 4px 0 rgba(0,0,0,.35);
+  padding:15px 26px;min-height:52px;
+  text-decoration:none;cursor:pointer;
+  transition:transform .14s ease, box-shadow .14s ease;
+}
+.cta:hover{transform:translate(-1px,-2px);box-shadow:6px 7px 0 rgba(0,0,0,.4)}
+.cta svg{width:24px;height:13px}
+.cta svg path{fill:var(--sign)}
+.cta-sub{margin-top:10px;font-size:12px;font-weight:600;color:rgba(22,19,14,.62)}
+
+/* rubber stamp */
+.stamp{
+  position:absolute;right:16px;top:18px;
+  transform:rotate(-9deg);
+  font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--stamp);
+  border:3px double var(--stamp);border-radius:6px;
+  padding:8px 14px;
+  opacity:.85;
+  pointer-events:none;
+  mix-blend-mode:multiply;
+}
+.stamp.animate{animation:slam .34s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes slam{
+  from{transform:rotate(-16deg) scale(1.7);opacity:0}
+  70%{transform:rotate(-8deg) scale(.96);opacity:.9}
+  to{transform:rotate(-9deg) scale(1);opacity:.85}
+}
+
+/* waitlist */
+.waitlist{margin-top:20px;display:flex;flex-direction:column;gap:12px;max-width:460px}
+.waitlist label{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(22,19,14,.66)}
+.waitlist input{
+  font:inherit;font-weight:600;font-size:16px;color:var(--ink);
+  background:#fff;border:3px solid var(--ink);border-radius:6px;
+  padding:14px 16px;min-height:52px;width:100%;
+}
+.waitlist input::placeholder{color:rgba(22,19,14,.4)}
+.field-err{display:none;font-size:13px;font-weight:700;color:var(--stamp)}
+.field-err.on{display:block}
+.confirm{
+  margin-top:18px;padding:16px 18px;
+  background:rgba(30,138,76,.12);border:2px dashed var(--open);border-radius:6px;
+  font-size:14px;font-weight:600;color:var(--ink);
+}
+.confirm b{color:var(--open)}
+
+/* ============================================================
+   HOW IT WORKS — three stakes on a dashed road
+   ============================================================ */
+.steps{display:grid;grid-template-columns:1fr;gap:26px;position:relative}
+.step{position:relative;padding-left:70px;min-height:56px}
+.step-num{
+  position:absolute;left:0;top:0;
+  width:52px;height:52px;border-radius:6px;
+  background:var(--sign);color:var(--ink);
+  border:3px solid var(--ink);box-shadow:3px 3px 0 rgba(0,0,0,.5);
+  display:grid;place-items:center;
+  font-family:var(--display);font-size:24px;
+  transform:rotate(-2deg);
+}
+.step:nth-child(2) .step-num{transform:rotate(2deg)}
+.step h3{font-family:var(--display);font-weight:400;font-size:21px;letter-spacing:.01em;text-transform:uppercase;color:var(--text-on-ink)}
+.step p{margin-top:6px;font-size:15px;color:var(--muted-on-ink);line-height:1.6;max-width:46ch}
+.step p b{color:var(--sign);font-weight:700}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{border-top:2px solid var(--ink-soft);padding:34px 0 46px}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+.foot-main{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-on-ink)}
+.foot a{text-decoration:none;color:var(--sign)}
+.foot a:hover{text-decoration:underline}
+
+/* ============================================================
+   BREAKPOINTS
+   ============================================================ */
+@media (min-width:640px){
+  .grid{grid-template-columns:1fr 1fr}
+  .waitlist{flex-direction:row;flex-wrap:wrap;align-items:flex-end}
+  .waitlist .field{flex:1;min-width:220px;display:flex;flex-direction:column;gap:8px}
+  .deed{padding:36px 34px 32px}
+}
+@media (min-width:900px){
+  .grid{grid-template-columns:1fr 1fr 1fr;gap:34px 28px}
+  .section{padding-top:80px;padding-bottom:80px}
+  .steps{grid-template-columns:1fr 1fr 1fr;gap:34px}
+  .step{padding-left:0;padding-top:70px}
+  .step-num{top:0;left:0}
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto}
+  .marquee-track{animation:none}
+  .stamp.animate{animation:none}
+  .sign-card,.picker select,.cta{transition:none}
+  .sign-card:hover{transform:rotate(0)}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= BAR ======================= -->
+<div class="bar">
+  <div class="bar-in">
+    <a class="brand" href="https://systemsbyvega.com">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M8 26h30v-10l18 16-18 16v-10H8z" fill="#16130E"/></svg>
+      </span>
+      Systems by Vega
+    </a>
+    <span class="bar-note">One operator per territory</span>
+  </div>
+</div>
+
+<!-- ======================= HERO ======================= -->
+<header class="hero shell">
+  <div class="hero-sign sign-surface">
+    <span class="staple l" aria-hidden="true"></span>
+    <span class="staple r" aria-hidden="true"></span>
+    <h1>
+      <span class="row">Own</span>
+      <span class="row">Your Town
+        <svg class="hero-arrow" viewBox="0 0 150 60" aria-hidden="true"><path d="M4 20h92V4l50 26-50 26V40H4z"/></svg>
+      </span>
+    </h1>
+    <div class="hero-tag">Territory-exclusive business platforms</div>
+  </div>
+  <p class="hero-sub">Turn-key software for local operators — the site, the tools, the training, the whole kit. <b>Pick your trade, claim your cities, launch this week.</b> When a territory's taken, it's taken.</p>
+
+  <div class="picker">
+    <div class="picker-wrap">
+      <label class="visually-hidden" for="trade">Pick your trade</label>
+      <select id="trade">
+        <option value="">— Pick your trade —</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<!-- ======================= MARQUEE ======================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<!-- ======================= DEED ======================= -->
+<section id="deed" class="section shell" aria-live="polite">
+  <div class="deed" id="deed-card"></div>
+</section>
+
+<!-- ======================= SIGN GRID ======================= -->
+<section class="section shell" id="trades">
+  <div class="sec-head"><span class="sec-title">Six trades · one operator each</span></div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- ======================= HOW IT WORKS ======================= -->
+<section class="section shell">
+  <div class="sec-head"><span class="sec-title">How it works</span></div>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num" aria-hidden="true">1</span>
+      <h3>Claim your trade &amp; territory</h3>
+      <p>Pick a niche and name your cities. <b>One operator per market</b> — first to claim it keeps it.</p>
+    </div>
+    <div class="step">
+      <span class="step-num" aria-hidden="true">2</span>
+      <h3>We hand you the keys in 24 hours</h3>
+      <p>Branded website, booking and subscriber alerts, inventory and sale-day software, the full training center, and a print-ready marketing kit.</p>
+    </div>
+    <div class="step">
+      <span class="step-num" aria-hidden="true">3</span>
+      <h3>Run it like you own it</h3>
+      <p>Because you do. Book clients, run sales, grow your list — <b>your territory stays locked to you.</b></p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FOOTER ======================= -->
+<footer>
+  <div class="shell foot">
+    <span class="foot-main">Powered by Kingdom Creatives LLC</span>
+    <span class="foot-main"><a href="https://systemsbyvega.com">systemsbyvega.com</a></span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   SINGLE SOURCE OF TRUTH — add a 7th trade here, done.
+   ============================================================ */
+var NICHES = [
+  {
+    slug:'estate-sales', code:'EST · Nº 001', label:'Estate Sales',
+    domain:'estatesalebiz.com', status:'live',
+    headline:'Run estate sales like a licensed operation — because it is one.',
+    blurb:'Site, software, and the full playbook. Your cities, locked to you.',
+    bullets:[
+      'Branded storefront with buyer alerts, wired to your locked cities',
+      'Inventory, photos, tagging, and sale-day tools that run from your phone',
+      'Complete training center, contracts, and print-ready marketing kit'
+    ],
+    price:'$997', priceNote:'Founding rate — $1,497 after the first 25 territories. 30-day guarantee.',
+    stamp:'Open now', sticker:{cls:'hot', big:'$997', small:'Founding'}
+  },
+  {
+    slug:'garage-moving', code:'GAR · Nº 002', label:'Garage & Moving Sales',
+    domain:'garagesalebiz.com', status:'wait',
+    headline:'Every move in town should book through you.',
+    blurb:'Turn relocations into booked weekends. Neighborhood exclusivity.',
+    bullets:[
+      'Booking site that turns moving families into scheduled sales',
+      'Listing pages with photo grids and neighborhood buyer alerts',
+      'Pricing guides and the weekend-sale playbook, done for you'
+    ],
+    price:null, priceNote:'Founding pricing announced at launch.',
+    stamp:'Opening soon', sticker:{cls:'soon', big:'SOON', small:'Waitlist'}
+  },
+  {
+    slug:'junk-removal', code:'JNK · Nº 003', label:'Junk Removal',
+    domain:'junkremovalbiz.com', status:'wait',
+    headline:'Own the cleanout calls in your zip codes.',
+    blurb:'Lead-gen machine for haulers. Quote forms, job board, route pricing.',
+    bullets:[
+      'Lead-capture site with an instant quote form that fills your calendar',
+      'Job board with before/after galleries that sell the next job',
+      'Route pricing guide plus a door-hanger and yard-sign kit'
+    ],
+    price:null, priceNote:'Founding pricing announced at launch.',
+    stamp:'Opening soon', sticker:{cls:'soon', big:'SOON', small:'Waitlist'}
+  },
+  {
+    slug:'auctions', code:'AUC · Nº 004', label:'Auctions',
+    domain:'auctionbizsystem.com', status:'wait',
+    headline:'A bid platform without the auction-house overhead.',
+    blurb:'Catalogs, consignors, auction-day tools. Small-town auctioneers, modernized.',
+    bullets:[
+      'Lot catalog with photos, estimates, and bidder registration',
+      'Consignor intake that keeps sellers and paperwork straight',
+      'Auction-day tools for clerking, invoicing, and settlement'
+    ],
+    price:null, priceNote:'Founding pricing announced at launch.',
+    stamp:'Opening soon', sticker:{cls:'soon', big:'SOON', small:'Waitlist'}
+  },
+  {
+    slug:'consignment', code:'CSN · Nº 005', label:'Consignment & Vintage',
+    domain:'consignmentbiz.com', status:'wait',
+    headline:'Your pop-up, findable seven days a week.',
+    blurb:'Drop schedules, item catalogs, and a collector list that shows up.',
+    bullets:[
+      'Drop calendar and item catalog your collectors actually check',
+      'Seller intake with split tracking that keeps consignors happy',
+      'Alert list that fills the room before the doors open'
+    ],
+    price:null, priceNote:'Founding pricing announced at launch.',
+    stamp:'Opening soon', sticker:{cls:'soon', big:'SOON', small:'Waitlist'}
+  },
+  {
+    slug:'market-vendors', code:'VND · Nº 006', label:'Market Vendors',
+    domain:'vendorbizsystem.com', status:'wait',
+    headline:'Tell the whole town where your stand is.',
+    blurb:'Schedules, preorders, rain-or-shine alerts. Never a slow Saturday.',
+    bullets:[
+      'Market schedule page your customers check before they drive',
+      'Product photos and preorders that sell out before setup',
+      'Rain-or-shine alerts that move the crowd when you move'
+    ],
+    price:null, priceNote:'Founding pricing announced at launch.',
+    stamp:'Opening soon', sticker:{cls:'soon', big:'SOON', small:'Waitlist'}
+  }
+];
+
+var current = null;
+var grid = document.getElementById('grid');
+var select = document.getElementById('trade');
+var deedSection = document.getElementById('deed');
+var deedCard = document.getElementById('deed-card');
+var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var ARROW_SVG = '<svg viewBox="0 0 60 30" aria-hidden="true"><path d="M2 10h34V2l22 13-22 13v-8H2z"/></svg>';
+
+/* ---------- marquee ---------- */
+(function buildMarquee(){
+  var track = document.getElementById('marquee-track');
+  var items = NICHES.map(function(n){ return '<span>'+n.label+' <em>&#10022;</em></span>'; }).join('');
+  track.innerHTML = items + items; /* duplicated for the loop */
+})();
+
+/* ---------- dropdown ---------- */
+(function buildSelect(){
+  NICHES.forEach(function(n){
+    var o = document.createElement('option');
+    o.value = n.slug;
+    o.textContent = n.label + (n.status === 'live' ? ' — open now' : ' — waitlist');
+    select.appendChild(o);
+  });
+  select.addEventListener('change', function(){
+    if (!select.value) { clearSelection(); return; }
+    selectNiche(select.value, {scroll:true});
+  });
+})();
+
+/* ---------- cards ---------- */
+function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function buildCards(){
+  grid.innerHTML = '';
+  NICHES.forEach(function(n){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sign-card sign-surface';
+    b.dataset.slug = n.slug;
+    b.setAttribute('aria-pressed','false');
+    b.innerHTML =
+      '<span class="staple l" aria-hidden="true"></span>' +
+      '<span class="staple r" aria-hidden="true"></span>' +
+      '<span class="sticker '+n.sticker.cls+'" aria-hidden="true"><span class="big">'+esc(n.sticker.big)+'</span><span class="small">'+esc(n.sticker.small)+'</span></span>' +
+      '<span class="card-meta"><span class="code">'+esc(n.code)+'</span>' +
+        '<span class="tok '+(n.status==='live'?'open':'wait')+'">'+(n.status==='live'?'Open now':'Waitlist')+'</span></span>' +
+      '<h3>'+esc(n.label)+'</h3>' +
+      '<p>'+esc(n.blurb)+'</p>' +
+      '<span class="card-go"><span>'+(n.status==='live'?'See the deal':'Claim a spot')+'</span>'+ARROW_SVG+'</span>';
+    b.addEventListener('click', function(){ selectNiche(n.slug, {scroll:true}); });
+    grid.appendChild(b);
+  });
+}
+
+/* ---------- deed ---------- */
+function renderDeed(n){
+  var priceBlock;
+  if (n.status === 'live') {
+    priceBlock =
+      '<div class="deed-price">' +
+        '<span class="price-big">'+esc(n.price)+'</span>' +
+        '<span class="price-note">'+esc(n.priceNote)+'</span>' +
+      '</div>' +
+      '<div class="deed-cta">' +
+        '<a class="cta" href="https://'+esc(n.domain)+'" target="_blank" rel="noopener">Claim your territory '+ARROW_SVG+'</a>' +
+        '<p class="cta-sub">Opens '+esc(n.domain)+' — check your cities before someone else does.</p>' +
+      '</div>';
+  } else {
+    priceBlock =
+      '<div class="deed-price"><span class="price-note">'+esc(n.priceNote)+'</span></div>' +
+      '<form class="waitlist" id="wl-form" novalidate>' +
+        '<div class="field">' +
+          '<label for="wl-email">Your email</label>' +
+          '<input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>' +
+        '</div>' +
+        '<button class="cta" type="submit">Join the waitlist '+ARROW_SVG+'</button>' +
+        '<span class="field-err" id="wl-err" role="alert">Enter a valid email address.</span>' +
+      '</form>';
+  }
+
+  deedCard.innerHTML =
+    '<span class="stamp'+(reducedMotion?'':' animate')+'">'+esc(n.stamp)+'</span>' +
+    '<div class="deed-head"><span>Territory claim</span><span>'+esc(n.code)+'</span><span>'+esc(n.domain)+'</span></div>' +
+    '<h2 id="deed-title" tabindex="-1">'+esc(n.label)+'</h2>' +
+    '<div class="deed-domain">'+esc(n.domain)+'</div>' +
+    '<p class="deed-headline">'+esc(n.headline)+'</p>' +
+    '<ul>'+ n.bullets.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('') +'</ul>' +
+    priceBlock;
+
+  if (n.status !== 'live') wireWaitlist(n);
+}
+
+function wireWaitlist(n){
+  var form = document.getElementById('wl-form');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var input = document.getElementById('wl-email');
+    var err = document.getElementById('wl-err');
+    var v = (input.value || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.classList.add('on'); input.focus(); return; }
+    err.classList.remove('on');
+    var subject = 'Waitlist: ' + n.label;
+    var body = 'Email: ' + v + '\nTrade: ' + n.label + ' (' + n.domain + ')\nTerritory / cities I want: ';
+    window.location.href = 'mailto:info@kingdom-creatives.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    form.outerHTML =
+      '<div class="confirm" role="status"><b>Your email app is opening</b> with the claim request — hit send and you\'re on the list. ' +
+      'If nothing opened, email <b>info@kingdom-creatives.com</b> with the subject &ldquo;'+esc(subject)+'&rdquo;.</div>';
+  });
+}
+
+/* ---------- selection ---------- */
+function selectNiche(slug, opts){
+  var n = null;
+  for (var i=0;i<NICHES.length;i++){ if (NICHES[i].slug === slug) { n = NICHES[i]; break; } }
+  if (!n) return;
+  current = slug;
+  select.value = slug;
+
+  var cards = grid.querySelectorAll('.sign-card');
+  cards.forEach(function(c){
+    var on = c.dataset.slug === slug;
+    c.classList.toggle('selected', on);
+    c.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  renderDeed(n);
+  deedSection.classList.add('on');
+
+  if (opts && opts.scroll) {
+    deedSection.scrollIntoView({behavior: reducedMotion ? 'auto' : 'smooth', block:'start'});
+  }
+  var title = document.getElementById('deed-title');
+  if (title) title.focus({preventScroll:true});
+}
+
+function clearSelection(){
+  current = null;
+  deedSection.classList.remove('on');
+  grid.querySelectorAll('.sign-card').forEach(function(c){
+    c.classList.remove('selected');
+    c.setAttribute('aria-pressed','false');
+  });
+}
+
+/* ---------- boot ---------- */
+buildCards();
+(function deepLink(){
+  var slug = new URLSearchParams(location.search).get('niche');
+  if (!slug) return;
+  var known = NICHES.some(function(n){ return n.slug === slug; });
+  if (known) selectNiche(slug, {scroll:false}); /* pre-select without yanking the page */
+})();
+</script>
+</body>
+</html>
