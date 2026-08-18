@@ -1897,13 +1897,41 @@ select 'view write-surface' as check,
 --                                correct policy appears to do nothing.
 --
 --      Expect ZERO rows. Anything returned is a real bug: read the verdict
---      column, then fix PART 4 or PART 5 so the two agree.
-with granted as (
-  select table_name, privilege_type as verb
-    from information_schema.role_table_grants
-   where grantee = 'authenticated' and table_schema = 'public'
-     and table_name like 'gsb\_%'
-     and privilege_type in ('SELECT','INSERT','UPDATE','DELETE')
+--      column, then fix PART 4 (policies) or PART 6B (grants) so the two agree.
+--      ⚠️ VIEWS ARE EXCLUDED, AND THIS IS THE WHOLE POINT OF THE base_tables CTE.
+--
+--      A first run of this check returned four rows — SELECT on each public view,
+--      reported as "grant without policy". That was a FALSE POSITIVE, and one
+--      that could never clear itself: PostgreSQL's CREATE POLICY accepts only
+--      tables, so a view can never appear in pg_policies. Every view carrying any
+--      grant would be flagged, on every run, forever.
+--
+--      The premise does not apply rather than these four being exceptions, which
+--      is why they are excluded BY CLASS and not by name. An allowlist of four
+--      view names would need editing every time a view is added, and would
+--      silently miss the fifth.
+--
+--      This matters more than a tidy result. A check that always shows rows you
+--      have been told to ignore is a check nobody reads, and the day it shows a
+--      real row it will be ignored too.
+--
+--      What replaces it for views is 10c-view below. Access to a definer view is
+--      gated by the view's own definition and by who may SELECT it — not by
+--      policies — so those are the two things worth asserting instead.
+with base_tables as (
+  select c.relname
+    from pg_class c
+    join pg_namespace n on n.oid = c.relnamespace
+   where n.nspname = 'public'
+     and c.relname like 'gsb\_%'
+     and c.relkind in ('r','p')          -- ordinary + partitioned TABLES only
+),
+granted as (
+  select g.table_name, g.privilege_type as verb
+    from information_schema.role_table_grants g
+    join base_tables b on b.relname = g.table_name
+   where g.grantee = 'authenticated' and g.table_schema = 'public'
+     and g.privilege_type in ('SELECT','INSERT','UPDATE','DELETE')
 ),
 policied as (
   select tablename as table_name, cmd
@@ -1925,6 +1953,49 @@ select 'policy without grant', p.table_name, p.cmd
       where g.table_name = p.table_name and g.verb = p.cmd
    )
  order by 1, 2, 3;
+
+-- 10c-view. WHAT ACTUALLY GUARDS A VIEW, since 10c-bis correctly ignores them.
+--
+--      A view has no policies. For these four, access control is exactly two
+--      things, and both are asserted here or nearby:
+--
+--        1. WHO MAY SELECT IT   — checked by 10c (anon must hold SELECT and
+--                                 nothing else; the views are auto-updatable, so
+--                                 a stray write grant is a live write path).
+--        2. THE VIEW DEFINITION — the WHERE clauses are the security boundary.
+--                                 10h asserts each still joins gsb_tenants,
+--                                 10i that no private column leaked, 10j/10k
+--                                 that the address guard works.
+--
+--      This check covers the third thing, which nothing else does:
+--      security_invoker MUST remain false.
+--
+--      ⚠️ IF IT WERE EVER FLIPPED TO TRUE, the view would execute with the
+--      CALLER's rights. anon holds no grant and no policy on the base tables, so
+--      every view would return ZERO ROWS — with no error, to anyone. Storefronts
+--      would go silently blank, and any availability read would report an empty
+--      registry, which reads as "every city is free". That is the false-green
+--      failure this whole file is built to avoid, and it would arrive looking
+--      like a quiet afternoon rather than an outage.
+--
+--      EXPECT: four rows, every verdict 'ok'.
+select
+  case coalesce((
+         select o.option_value
+           from pg_options_to_table(c.reloptions) o
+          where o.option_name = 'security_invoker'
+       ), 'false')
+    when 'false' then 'ok — definer view; its definition is the boundary'
+    else '*** security_invoker is ON — anon gets ZERO rows, silently ***'
+  end as verdict,
+  c.relname as view_name,
+  coalesce(array_to_string(c.reloptions, ', '), '(defaults)') as options
+  from pg_class c
+  join pg_namespace n on n.oid = c.relnamespace
+ where n.nspname = 'public'
+   and c.relkind = 'v'
+   and c.relname like 'gsb\_public\_%'
+ order by verdict desc, c.relname;
 
 -- 10c-fn. The same default-privilege mechanism that granted anon ALL on the
 --      views also makes every function executable by anon unless revoked.

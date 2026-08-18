@@ -41,11 +41,20 @@ matter:
 - ▢ **10c-ter** — informational. `is_updatable = YES` on the views is expected and is not a
   problem in itself; it is why 10c has to be clean. These views are writable *in principle*,
   so the only thing closing that path is the absence of an anon write grant.
+- ▢ **10c-view** — **four rows, every verdict `ok`.** Asserts `security_invoker` is still
+  `false` on all four public views. If one were ever flipped to `true` the view would run with
+  the *caller's* rights, and since anon holds no grant on the base tables every view would
+  return **zero rows to everyone, with no error** — storefronts silently blank, and any
+  availability read reporting an empty registry, which reads as "every city is free".
 - ▢ **10c-fn** — **exactly one row**, `gsb_check_cities`. Anything else is a function reachable
   from a browser that should not be.
 - ▢ **10c-bis** — **zero rows.** Any row is a grant/policy mismatch: a grant with no policy
   returns empty results that look like "no data", and a policy with no grant returns
   "permission denied" for a policy that is actually correct.
+  **Views are excluded by class**, and deliberately not by an allowlist: `CREATE POLICY` only
+  accepts tables, so a view can never appear in `pg_policies` and would be flagged on every run
+  forever. An earlier version did exactly that and returned four permanent false positives.
+  Coverage for views moved to **10c-view** rather than being dropped.
 - ▢ **10d** — **zero rows.** No storage *write* gated on a bucket name alone. This is the check
   whose absence let a cross-tenant photo-delete hole survive a "verified" migration on ESB for
   two days.
