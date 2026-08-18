@@ -1,8 +1,22 @@
 node_modules/
 .env
 .env.local
+.env*.local
 .DS_Store
 Thumbs.db
 *.log
 .vercel
 .playwright-mcp/
+
+# Backup, merge-leftover, and editor scratch copies. A .bak of a page is a second
+# verbatim copy of it — and because this project is served as static files from the
+# repo root, a committed backup is a live URL. Paired with the same patterns in
+# .vercelignore: this rule stops the commit, that one stops the deploy.
+*.bak
+*.orig
+*.rej
+*~
+*.swp
+
+# Local Supabase CLI state, if the CLI is ever linked to this project.
+supabase/.temp/

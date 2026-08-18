@@ -1,0 +1,321 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   GARAGESALEBIZ — SHARED DESIGN SYSTEM
+   "Roadside vernacular": corrugated yard signs stapled to a telephone pole,
+   marker-drawn arrows, deed paper, rubber-stamp red.
+
+   A SIBLING OF ESTATESALEBIZ, NOT A CLONE. Estate sales are a solemn business
+   and ESB dresses accordingly: dark navy, thin blue gradients, Sora. Garage
+   sales are a Saturday morning in a driveway. This system is loud, physical,
+   handmade — heavy hard shadows instead of soft glows, Impact-class display type
+   instead of a geometric sans, black keylines instead of 7%-white borders. The
+   shared inheritance is structural (token discipline, the same card/panel/table
+   rhythm), not chromatic.
+
+   ONE STYLESHEET FOR EVERY PAGE. EstateSaleBiz inlined its tokens into each
+   file, which is why its brand-colour fix had to be applied in several places
+   and why one page kept a hardcoded phone number nobody remembered. Shared here
+   so a change lands everywhere at once.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── TOKENS ───────────────────────────────────────────────────────────────── */
+:root {
+  --ink:        #16130E;   /* asphalt-warm near-black */
+  --ink-soft:   #211D15;
+  --ink-line:   #322B20;
+  --sign:       #FFCE3B;   /* yard-sign yellow */
+  --sign-deep:  #F5BE1E;
+  --paper:      #F6F0E1;   /* deed paper */
+  --paper-2:    #EDE5D0;
+  --paper-line: #D8CEB4;
+  --flame:      #E8471F;   /* safety orange-red: arrows, stickers */
+  --stamp:      #C0311F;   /* rubber-stamp red */
+  --open:       #1E8A4C;   /* OPEN NOW green */
+  --metal:      #A8ADB5;   /* staples */
+
+  --on-ink:     #F2EDDE;
+  --on-ink-dim: #9C947F;
+  --on-paper:   #211D15;
+  --on-paper-dim: #6B6355;
+
+  /* --brand is overwritten at runtime from gsb_tenants.primary_color on the
+     storefront and the dashboard. Everywhere else it is the house flame. The
+     value is validated to a 6-digit hex by gsb_set_primary_color before it can
+     ever reach this property, so interpolating it is safe. */
+  --brand:      #E8471F;
+
+  --display: 'Anton', Impact, 'Arial Black', system-ui, sans-serif;
+  --body:    'Libre Franklin', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:    'Space Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --gutter: 20px;
+  --max:    1100px;
+  --max-narrow: 760px;
+
+  --hard:   5px 5px 0 rgba(0,0,0,.55);
+  --hard-lg: 8px 9px 0 rgba(0,0,0,.55);
+  --hard-sm: 3px 3px 0 rgba(0,0,0,.5);
+  --hard-ink: 4px 4px 0 var(--ink);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+html:focus-within { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--on-ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Dusk glow over asphalt — the only ambient light in the system. */
+body.gsb-glow::before {
+  content: '';
+  position: fixed; left: 50%; top: -420px;
+  width: min(1200px, 160vw); height: 820px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(255,206,59,.10), rgba(255,206,59,0) 66%);
+  pointer-events: none; z-index: 0;
+}
+
+a { color: inherit; }
+img, svg { max-width: 100%; }
+
+/* Visible, high-contrast focus on both grounds. Never removed: the dashboard is
+   a data-entry tool and gets driven by keyboard. */
+:focus-visible { outline: 3px solid var(--sign); outline-offset: 3px; border-radius: 2px; }
+.on-paper :focus-visible, .paper :focus-visible { outline-color: var(--stamp); }
+
+.shell { position: relative; z-index: 1; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.shell-narrow { max-width: var(--max-narrow); }
+.section { padding: 64px 0; }
+.section-tight { padding: 40px 0; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ── TYPE ─────────────────────────────────────────────────────────────────── */
+.display {
+  font-family: var(--display);
+  text-transform: uppercase;
+  line-height: .95;
+  letter-spacing: .005em;
+  font-weight: 400;   /* Anton has one weight; never synthesise bold */
+}
+h1.display { font-size: clamp(2.5rem, 7.5vw, 5rem); }
+h2.display { font-size: clamp(1.9rem, 4.6vw, 3rem); }
+h3.display { font-size: clamp(1.3rem, 2.6vw, 1.75rem); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--sign);
+}
+.eyebrow-dark { color: var(--stamp); }
+
+.lede { font-size: 1.05rem; color: var(--on-ink-dim); max-width: 62ch; }
+.paper .lede, .on-paper .lede { color: var(--on-paper-dim); }
+.muted { color: var(--on-ink-dim); }
+.paper .muted, .on-paper .muted { color: var(--on-paper-dim); }
+.small { font-size: 14px; }        /* the descriptive-text floor */
+.tiny  { font-size: 13px; }        /* labels and legal microcopy only */
+.mono  { font-family: var(--mono); }
+
+/* ── CORRUGATED SIGN SURFACE — the signature element ──────────────────────── */
+/* Repeating gradient reads as fluting on corrugated plastic. Applied to the
+   hero board and to cards that should feel like something you'd staple up. */
+.sign-surface {
+  background:
+    repeating-linear-gradient(180deg,
+      rgba(0,0,0,.05) 0 2px, rgba(255,255,255,.05) 2px 4px, transparent 4px 9px),
+    linear-gradient(180deg, var(--sign), var(--sign-deep));
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: var(--hard-lg);
+}
+.paper-surface {
+  background: var(--paper);
+  color: var(--on-paper);
+  border: 3px solid var(--ink);
+  box-shadow: var(--hard);
+}
+/* Two staples at the top corners. Decorative, hidden from assistive tech. */
+.stapled { position: relative; }
+.stapled::before, .stapled::after {
+  content: ''; position: absolute; top: -6px; width: 16px; height: 7px;
+  background: var(--metal); border: 2px solid var(--ink); border-radius: 1px;
+}
+.stapled::before { left: 26px; transform: rotate(-7deg); }
+.stapled::after  { right: 26px; transform: rotate(6deg); }
+
+/* ── BUTTONS ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: var(--display); text-transform: uppercase; letter-spacing: .04em;
+  font-size: 1rem; line-height: 1;
+  padding: 16px 26px; min-height: 52px;
+  background: var(--flame); color: #fff;
+  border: 3px solid var(--ink); border-radius: 2px;
+  box-shadow: var(--hard-sm);
+  cursor: pointer; text-decoration: none;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(0,0,0,.5); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,.5); }
+.btn[disabled], .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+.btn-sign  { background: var(--sign); color: var(--ink); }
+.btn-ink   { background: var(--ink); color: var(--on-ink); }
+.btn-ghost { background: transparent; color: var(--on-ink); }
+.paper .btn-ghost, .on-paper .btn-ghost { color: var(--ink); }
+.btn-sm { font-size: .85rem; padding: 10px 16px; min-height: 40px; border-width: 2px; }
+.btn-block { width: 100%; }
+.btn-link {
+  background: none; border: none; box-shadow: none; padding: 0; min-height: 0;
+  font-family: var(--body); text-transform: none; letter-spacing: 0;
+  text-decoration: underline; color: inherit; cursor: pointer; font-size: 14px;
+}
+
+/* ── ARROW — the marker-drawn directional mark ────────────────────────────── */
+.arrow { display: inline-block; width: 1.1em; height: .8em; vertical-align: -.05em; }
+.arrow path { fill: currentColor; }
+
+/* ── FORMS ────────────────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+.field > label, .lbl {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--on-ink-dim);
+}
+.paper .field > label, .on-paper .field > label, .paper .lbl, .on-paper .lbl { color: #7A6F58; }
+
+input[type=text], input[type=email], input[type=tel], input[type=password],
+input[type=date], input[type=time], input[type=number], input[type=search],
+select, textarea {
+  width: 100%;
+  font-family: var(--body);
+  /* 16px minimum: anything smaller makes iOS Safari zoom the viewport on focus,
+     which on a multi-step form reads as the page jumping. */
+  font-size: 16px;
+  padding: 12px 13px; min-height: 48px;
+  background: var(--paper); color: var(--on-paper);
+  border: 2px solid var(--ink); border-radius: 2px;
+}
+textarea { min-height: 110px; resize: vertical; line-height: 1.55; }
+select { cursor: pointer; }
+input::placeholder, textarea::placeholder { color: #9A907A; }
+input.invalid, select.invalid, textarea.invalid { border-color: var(--stamp); background: #FBEBE6; }
+
+.err {
+  display: none; font-size: 14px; color: #FFB4A2; font-weight: 600;
+}
+.paper .err, .on-paper .err { color: var(--stamp); }
+.err.show { display: block; }
+
+.check-row { display: flex; gap: 12px; align-items: flex-start; }
+.check-row input[type=checkbox] {
+  width: 22px; height: 22px; min-height: 0; flex-shrink: 0; margin-top: 2px;
+  accent-color: var(--flame); cursor: pointer;
+}
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.row-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+@media (max-width: 560px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+
+/* ── CARDS, PANELS, TABLES ────────────────────────────────────────────────── */
+.card {
+  background: var(--ink-soft);
+  border: 2px solid var(--ink-line);
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+.card-head {
+  padding: 14px 18px; border-bottom: 2px solid var(--ink-line);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.card-title {
+  font-family: var(--display); text-transform: uppercase; font-size: 1.05rem;
+  letter-spacing: .03em;
+}
+.card-body { padding: 18px; }
+
+.notice {
+  border-left: 5px solid var(--sign);
+  background: rgba(255,206,59,.08);
+  padding: 14px 16px; margin-bottom: 18px; font-size: 15px; line-height: 1.6;
+}
+.notice-bad  { border-left-color: var(--stamp); background: rgba(192,49,31,.10); }
+.notice-good { border-left-color: var(--open);  background: rgba(30,138,76,.10); }
+.paper .notice, .on-paper .notice { background: rgba(255,206,59,.22); }
+.paper .notice-bad, .on-paper .notice-bad { background: rgba(192,49,31,.08); }
+.paper .notice-good, .on-paper .notice-good { background: rgba(30,138,76,.08); }
+
+.tag {
+  display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 9px; border: 2px solid currentColor; border-radius: 2px;
+}
+.tag-open   { color: var(--open); }
+.tag-live   { color: #fff; background: var(--open); border-color: var(--ink); }
+.tag-taken  { color: var(--stamp); }
+.tag-draft  { color: var(--on-ink-dim); }
+.tag-sold   { color: #fff; background: var(--stamp); border-color: var(--ink); }
+
+.tbl-wrap { overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.tbl th {
+  text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--on-ink-dim);
+  padding: 10px 12px; border-bottom: 2px solid var(--ink-line); white-space: nowrap;
+}
+table.tbl td { padding: 12px; border-bottom: 1px solid var(--ink-line); vertical-align: top; }
+table.tbl tr:last-child td { border-bottom: none; }
+.paper table.tbl th { color: #7A6F58; border-bottom-color: var(--paper-line); }
+.paper table.tbl td { border-bottom-color: var(--paper-line); }
+
+/* ── NAV / FOOTER ─────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--ink); border-bottom: 3px solid var(--sign);
+}
+.nav-in {
+  max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter);
+  min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.brand {
+  font-family: var(--display); text-transform: uppercase; font-size: 1.1rem;
+  letter-spacing: .04em; text-decoration: none; color: var(--on-ink);
+  display: inline-flex; align-items: center; gap: 9px;
+}
+.brand-mark {
+  width: 30px; height: 30px; flex-shrink: 0;
+  background: var(--sign); border: 2px solid var(--ink);
+  display: grid; place-items: center; color: var(--ink);
+}
+.nav-links { display: flex; align-items: center; gap: 20px; font-size: 14px; font-weight: 600; }
+.nav-links a { text-decoration: none; }
+.nav-links a:hover { color: var(--sign); }
+@media (max-width: 780px) { .nav-hide-sm { display: none; } }
+
+.foot { border-top: 3px solid var(--ink-line); padding: 30px 0; font-size: 14px; color: var(--on-ink-dim); }
+.foot a { color: var(--on-ink-dim); }
+.foot a:hover { color: var(--sign); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+
+/* ── PRINT — signs and contracts must come out clean ──────────────────────── */
+/* Both the sign maker and the contract generator are print-first tools. Without
+   this, a browser print of either produces a dark page that eats a cartridge and
+   still looks wrong. */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  body.gsb-glow::before { display: none !important; }
+  .nav, .foot, .no-print { display: none !important; }
+  .shell { max-width: none; padding: 0; }
+  .card { border-color: #000; background: #fff; }
+  .print-page { page-break-after: always; box-shadow: none !important; }
+  .print-page:last-child { page-break-after: auto; }
+  a[href]::after { content: ''; }   /* never append URLs into printed contracts */
+}

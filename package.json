@@ -1,26 +1,27 @@
 {
   "name": "garagesalebiz",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "GarageSaleBiz — territory-exclusive platform for garage & moving sale operators",
+  "private": true,
+  "type": "module",
+  "main": "middleware.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node --test \"test/**/*.test.js\"",
-    "test:rls": "node test/rls-posture.js"
+    "check": "node --check middleware.js && node --check api/_shared.js && node --check api/create-checkout.js && node --check api/stripe-webhook.js && node --check api/verify-session.js && node --check course-data.js",
+    "dev": "vercel dev"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JasonVega1974/GarageSaleBiz.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "author": "Kingdom Creatives LLC",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/JasonVega1974/GarageSaleBiz/issues"
   },
   "homepage": "https://github.com/JasonVega1974/GarageSaleBiz#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "@supabase/supabase-js": "^2.45.0",
+    "@vercel/functions": "^3.7.5"
   }
 }

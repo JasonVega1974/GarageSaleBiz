@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claim your territory — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.wrap { max-width: 720px; margin: 0 auto; padding: 30px var(--gutter) 70px; }
+
+/* ── PROGRESS ─────────────────────────────────────────────────────────────── */
+.steps-bar { display: flex; gap: 8px; margin-bottom: 26px; }
+.step-pip { flex: 1; }
+.step-pip-bar { height: 7px; background: var(--ink-line); border: 2px solid var(--ink); }
+.step-pip.done .step-pip-bar, .step-pip.now .step-pip-bar { background: var(--sign); }
+.step-pip-lbl {
+  margin-top: 7px; font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--on-ink-dim);
+}
+.step-pip.now .step-pip-lbl { color: var(--sign); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+.panel-head { margin-bottom: 20px; }
+.panel-head h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); }
+.panel-head p { margin-top: 8px; font-size: 15px; color: var(--on-ink-dim); max-width: 60ch; }
+
+.box { background: var(--ink-soft); border: 2px solid var(--ink-line); padding: 20px; margin-bottom: 18px; }
+.box-title { font-family: var(--display); text-transform: uppercase; font-size: 1rem; letter-spacing: .03em; margin-bottom: 4px; }
+.box-sub { font-size: 14px; color: var(--on-ink-dim); margin-bottom: 16px; }
+
+.nav-btns { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.nav-btns .btn { flex: 1; min-width: 160px; }
+
+/* ── SWATCHES ─────────────────────────────────────────────────────────────── */
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch {
+  width: 52px; height: 52px; border: 3px solid var(--ink); cursor: pointer;
+  position: relative; box-shadow: var(--hard-sm); padding: 0;
+}
+.swatch[aria-pressed="true"]::after {
+  content: '✓'; position: absolute; inset: 0;
+  display: grid; place-items: center;
+  color: #fff; font-size: 1.4rem; font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+}
+
+/* ── LOGO ─────────────────────────────────────────────────────────────────── */
+.logo-drop {
+  border: 3px dashed var(--ink-line); padding: 20px; text-align: center; cursor: pointer;
+  background: rgba(255,255,255,.02);
+}
+.logo-drop:hover { border-color: var(--sign); }
+.logo-prev { max-height: 72px; margin: 0 auto 10px; display: block; border: 2px solid var(--ink); background: var(--paper); padding: 4px; }
+
+/* ── URL PREVIEW ──────────────────────────────────────────────────────────── */
+.url-prev {
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  background: var(--ink); border: 2px solid var(--sign); padding: 11px 13px;
+  color: var(--sign); word-break: break-all; margin-top: 8px;
+}
+
+/* ── CITY ROWS ────────────────────────────────────────────────────────────── */
+.city-row { display: grid; grid-template-columns: 1.7fr 1fr auto; gap: 9px; align-items: end; margin-bottom: 10px; }
+@media (max-width: 560px) { .city-row { grid-template-columns: 1fr 1fr; } .city-row .city-state { grid-column: 2; } }
+.city-status {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; min-width: 74px; text-align: center;
+  padding: 13px 6px; border: 2px solid var(--ink-line); white-space: nowrap;
+}
+.city-status.free  { color: var(--open);  border-color: var(--open); }
+.city-status.taken { color: var(--stamp); border-color: var(--stamp); }
+.city-status.unknown { color: var(--on-ink-dim); }
+
+/* ── ACCEPTANCE ───────────────────────────────────────────────────────────── */
+.accept { border: 3px solid var(--sign); background: rgba(255,206,59,.06); padding: 20px; margin-top: 8px; }
+.accept.invalid { border-color: var(--stamp); background: rgba(192,49,31,.08); }
+.accept-list { list-style: none; margin: 14px 0 0; }
+.accept-list li {
+  display: flex; gap: 10px; padding: 9px 0; font-size: 14px; line-height: 1.6;
+  border-bottom: 1px solid var(--ink-line); color: var(--on-ink);
+}
+.accept-list li:last-child { border-bottom: none; }
+.accept-list .b { color: var(--sign); flex-shrink: 0; font-weight: 800; }
+.accept-final { margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--sign); }
+.accept-final label { font-size: 15px; font-weight: 700; line-height: 1.5; cursor: pointer; }
+.doc-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; font-size: 14px; }
+.doc-links a { color: var(--sign); font-weight: 700; }
+
+/* ── BLOCKED PANEL ────────────────────────────────────────────────────────── */
+#blocked { display: none; margin-bottom: 20px; }
+#blocked.show { display: block; }
+.blocked-in { border: 3px solid var(--stamp); background: rgba(192,49,31,.1); padding: 20px; }
+.blocked-in h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.15rem; color: #FFB4A2; margin-bottom: 8px; }
+
+.price-strip {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: var(--sign); color: var(--ink); border: 3px solid var(--ink);
+  padding: 14px 18px; margin-bottom: 22px; box-shadow: var(--hard-sm);
+}
+.price-strip .amt { font-family: var(--display); text-transform: uppercase; font-size: 1.5rem; }
+.price-strip .note { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+</style>
+</head>
+<body class="gsb-glow">
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+      </span>
+      GarageSaleBiz
+    </a>
+    <span class="mono tiny" id="step-label">Step 1 of 3</span>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="price-strip">
+    <span class="amt">$249 · 3 cities</span>
+    <span class="note">One time · No monthly fee · No card kept</span>
+  </div>
+
+  <div class="steps-bar" id="steps-bar">
+    <div class="step-pip now" id="pip-1"><div class="step-pip-bar"></div><div class="step-pip-lbl">You</div></div>
+    <div class="step-pip" id="pip-2"><div class="step-pip-bar"></div><div class="step-pip-lbl">Your brand</div></div>
+    <div class="step-pip" id="pip-3"><div class="step-pip-bar"></div><div class="step-pip-lbl">Territory</div></div>
+  </div>
+
+  <div id="blocked"><div class="blocked-in">
+    <h3 id="blocked-title"></h3>
+    <p class="small" id="blocked-body" style="line-height:1.7;"></p>
+    <div id="blocked-extra" class="small" style="margin-top:10px;line-height:1.7;"></div>
+  </div></div>
+
+  <!-- ══════════════ STEP 1 — WHO YOU ARE ══════════════ -->
+  <section class="panel active" id="panel-1">
+    <div class="panel-head">
+      <h1 class="display">Let's get you set up.</h1>
+      <p>This becomes your account and the business name on your website. About two minutes,
+        and you pick your cities at the end — before you pay anything.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Your business</div>
+      <div class="box-sub">If you have not settled on a name yet, use your own — you can change the
+        display name later from your dashboard.</div>
+      <div class="field">
+        <label for="f-company">Business name</label>
+        <input type="text" id="f-company" placeholder="Clearwater Sale Co." autocomplete="organization">
+        <p class="err" id="e-company">Enter your business name.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">You</div>
+      <div class="box-sub">We use your email for your login, your receipt, and nothing else.
+        We do not sell it and we do not add you to a marketing list.</div>
+      <div class="row-2">
+        <div class="field">
+          <label for="f-first">First name</label>
+          <input type="text" id="f-first" autocomplete="given-name">
+          <p class="err" id="e-first">Required.</p>
+        </div>
+        <div class="field">
+          <label for="f-last">Last name</label>
+          <input type="text" id="f-last" autocomplete="family-name">
+          <p class="err" id="e-last">Required.</p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-email">Email</label>
+        <input type="email" id="f-email" placeholder="you@email.com" autocomplete="email">
+        <p class="err" id="e-email">Enter a valid email address.</p>
+      </div>
+      <div class="field">
+        <label for="f-phone">Phone <span style="text-transform:none;letter-spacing:0;">(shown on your website so clients can reach you)</span></label>
+        <input type="tel" id="f-phone" placeholder="(208) 555-0148" autocomplete="tel">
+        <p class="err" id="e-phone">Enter a phone number.</p>
+      </div>
+      <div class="field">
+        <label for="f-pw">Choose a password</label>
+        <input type="password" id="f-pw" placeholder="At least 8 characters" autocomplete="new-password">
+        <p class="err" id="e-pw">Use at least 8 characters.</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn" type="button" id="to-2">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ STEP 2 — YOUR BRAND ══════════════ -->
+  <section class="panel" id="panel-2">
+    <div class="panel-head">
+      <h1 class="display">Make it yours.</h1>
+      <p>All of this is changeable later. Nothing here is worth agonising over now.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Web address</div>
+      <div class="box-sub">Your site lives here from the moment you pay. Letters, numbers and hyphens only.</div>
+      <div class="field">
+        <label for="f-sub">Preferred address</label>
+        <input type="text" id="f-sub" placeholder="clearwater">
+      </div>
+      <div class="url-prev" id="url-prev">yourname.garagesalebiz.com</div>
+      <p class="tiny muted" style="margin-top:8px;">Leave it blank and we build one from your business name.
+        If it is already taken we add a number and show you that here before you pay. Your address is
+        finalised when your payment completes — in the rare case someone claims the same one while you
+        are checking out, we add a number, and your welcome email carries the real address.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Colour</div>
+      <div class="box-sub">Used for headings, buttons, and accents on your public site.</div>
+      <div class="swatches" id="swatches" role="group" aria-label="Brand colour"></div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Logo <span class="tiny muted" style="font-family:var(--body);text-transform:none;letter-spacing:0;">— optional</span></div>
+      <div class="box-sub">PNG, JPG or WEBP, under 2 MB. Skip it and your business name is used as the mark.</div>
+      <label class="logo-drop" for="f-logo">
+        <img id="logo-prev" class="logo-prev" alt="" style="display:none;">
+        <div id="logo-txt" class="small">Choose an image</div>
+        <input type="file" id="f-logo" accept="image/png,image/jpeg,image/webp" style="display:none;">
+      </label>
+    </div>
+
+    <div class="box">
+      <div class="box-title">One line about what you do</div>
+      <div class="box-sub">Appears under your business name on your site. Optional.</div>
+      <div class="field">
+        <label for="f-tagline">Tagline</label>
+        <textarea id="f-tagline" maxlength="220" placeholder="We run the whole garage sale for you — pricing, signs, staffing, and cleanup."></textarea>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-ghost" type="button" id="back-1" style="background:var(--ink-soft);">← Back</button>
+      <button class="btn" type="button" id="to-3">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ STEP 3 — TERRITORY + CONSENT ══════════════ -->
+  <section class="panel" id="panel-3">
+    <div class="panel-head">
+      <h1 class="display">Pick your three cities.</h1>
+      <p>These are yours exclusively. We check each one as you type, and we check them
+        again the moment your payment completes — so you find out now, not after paying.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">Your territory</div>
+      <div class="box-sub">One city per row. The first is required; the other two are included at no
+        extra cost, and you can leave them blank and claim them later if you are not sure yet.</div>
+      <div id="city-rows"></div>
+      <p class="err" id="e-cities"></p>
+      <p class="tiny muted" style="margin-top:10px;">
+        A territory is defined by the incorporated city limits of each city you name.
+        Suburbs and unincorporated areas nearby are not automatically included.
+      </p>
+    </div>
+
+    <!-- ══ ACCEPTANCE ══
+         Every line here is recorded verbatim against the purchase, from the
+         server's own canonical copy of this text — never from anything this page
+         sends. The Operator Agreement's preamble recites that the buyer agreed
+         "by ticking the acceptance box", and this is what makes that sentence
+         true of each purchase.
+
+         ⚠️ IF YOU EDIT ANY WORDING BELOW you must bump ACCEPTANCE_VERSION in the
+         script at the bottom of this file AND add the new version alongside the
+         old one in ACCEPTANCE_TEXTS in api/_shared.js. Never replace in place:
+         someone holding a cached copy of this page still sends the old version,
+         and an unrecognised version is rejected. -->
+    <div class="accept" id="accept-box">
+      <div class="box-title" style="color:var(--sign);">Before you pay — please read this</div>
+      <p class="small" style="color:var(--on-ink-dim);margin-top:4px;">
+        Plain English, no small print. This is recorded with your purchase.
+      </p>
+      <ul class="accept-list" id="accept-list">
+        <li><span class="b">1</span><span>You have read the Operator Agreement, Terms of Service, and Privacy Policy, and have had the opportunity to have your own attorney or accountant review them.</span></li>
+        <li><span class="b">2</span><span>No one has guaranteed or projected any income, revenue, profit, or number of clients — in any medium, at any time. You may lose money operating this business.</span></li>
+        <li><span class="b">3</span><span>This is not a franchise and not a business opportunity. You receive no license to our brand, you pay no royalty and no franchise fee, and we exercise no control over how you operate.</span></li>
+        <li><span class="b">4</span><span>We do not provide you with clients, leads, or sale locations.</span></li>
+        <li><span class="b">5</span><span>You are responsible for the legality of every sale you run, including any permit or sign ordinance your city applies to garage and yard sales.</span></li>
+        <li><span class="b">6</span><span>You accept full responsibility for the operation, legality, and results of your business.</span></li>
+        <li><span class="b">7</span><span>Your $249 purchase is ONE TIME. There is no monthly fee, no renewal, and no recurring charge of any kind. We do not keep your card on file, and we will never bill you again for this territory.</span></li>
+        <li><span class="b">8</span><span>Your territory is the three cities you selected. It is exclusive to you for as long as your account remains active, and no other operator can buy those cities.</span></li>
+      </ul>
+
+      <div class="doc-links">
+        <a href="/operator-agreement.html" target="_blank" rel="noopener">Operator Agreement ↗</a>
+        <a href="/terms.html" target="_blank" rel="noopener">Terms of Service ↗</a>
+        <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy ↗</a>
+      </div>
+
+      <div class="accept-final">
+        <div class="check-row">
+          <input type="checkbox" id="f-accept">
+          <label for="f-accept">I have read and agree to the documents above, and I confirm each of these points.</label>
+        </div>
+        <p class="err" id="e-accept">Please tick the box to continue.</p>
+      </div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn btn-ghost" type="button" id="back-2" style="background:var(--ink-soft);">← Back</button>
+      <button class="btn" type="button" id="submit-btn">Continue to payment →</button>
+    </div>
+    <p class="tiny muted" style="margin-top:12px;text-align:center;">
+      Payment is handled by Stripe. We never see or store your card details.
+    </p>
+  </section>
+
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="small">Questions before you buy? <a href="mailto:info@kingdom-creatives.com">info@kingdom-creatives.com</a></div>
+    <div class="foot-links">
+      <a href="/">Home</a>
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/operator-agreement.html">Operator Agreement</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc;
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ⚠️ MUST MATCH A KEY IN ACCEPTANCE_TEXTS IN api/_shared.js EXACTLY.
+     Bump this whenever the wording in #accept-list changes, and ADD the new
+     version to the server's map alongside the old one — never replace. Someone
+     holding a cached copy of this page sends the old version, and the server
+     rejects a version it does not recognise rather than recording the wrong
+     text. Because this validation happens BEFORE checkout, a stale page costs
+     them a reload rather than a support ticket about a payment that provisioned
+     nothing. */
+  var ACCEPTANCE_VERSION = 'v1-2026-08-18';
+
+  var MAX_CITIES = 3;
+  var LOGO_MAX_BYTES = 2 * 1024 * 1024;
+  var LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];  // no SVG: it can carry script
+
+  var step = 1;
+  var logoDataUrl = null;
+  var color = '#E8471F';
+
+  var COLORS = [
+    ['#E8471F', 'Signal orange'], ['#C0311F', 'Stamp red'], ['#F5BE1E', 'Sign yellow'],
+    ['#1E8A4C', 'Open green'], ['#1F6FB2', 'Deep blue'], ['#6C3FA8', 'Purple'],
+    ['#0D7C74', 'Teal'], ['#8A5A22', 'Timber brown'], ['#2B2B2B', 'Near black']
+  ];
+
+  /* ── STEP NAVIGATION ─────────────────────────────────────────────────── */
+  function goStep(n) {
+    step = n;
+    for (var i = 1; i <= 3; i++) {
+      $('panel-' + i).classList.toggle('active', i === n);
+      var pip = $('pip-' + i);
+      pip.classList.toggle('now', i === n);
+      pip.classList.toggle('done', i < n);
+    }
+    $('step-label').textContent = 'Step ' + n + ' of 3';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('to-2').addEventListener('click', function () { if (validate1()) goStep(2); });
+  $('back-1').addEventListener('click', function () { goStep(1); });
+  $('to-3').addEventListener('click', function () { goStep(3); });
+  $('back-2').addEventListener('click', function () { goStep(2); });
+
+  /* ── VALIDATION ──────────────────────────────────────────────────────── */
+  function mark(id, errId, ok) {
+    var el = $(id), err = $(errId);
+    if (el) el.classList.toggle('invalid', !ok);
+    if (err) err.classList.toggle('show', !ok);
+    return ok;
+  }
+
+  function validate1() {
+    var ok = true;
+    ok = mark('f-company', 'e-company', $('f-company').value.trim().length > 1) && ok;
+    ok = mark('f-first', 'e-first', $('f-first').value.trim().length > 0) && ok;
+    ok = mark('f-last', 'e-last', $('f-last').value.trim().length > 0) && ok;
+    ok = mark('f-email', 'e-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('f-email').value.trim())) && ok;
+    ok = mark('f-phone', 'e-phone', $('f-phone').value.trim().length > 6) && ok;
+    ok = mark('f-pw', 'e-pw', $('f-pw').value.length >= 8) && ok;
+    if (!ok) {
+      var first = document.querySelector('#panel-1 .invalid');
+      if (first) first.focus();
+    }
+    return ok;
+  }
+
+  /* ── SWATCHES ────────────────────────────────────────────────────────── */
+  $('swatches').innerHTML = COLORS.map(function (c, i) {
+    return '<button type="button" class="swatch" data-color="' + c[0] + '" title="' + esc(c[1]) + '" ' +
+      'aria-label="' + esc(c[1]) + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '" ' +
+      'style="background:' + c[0] + ';"></button>';
+  }).join('');
+
+  $('swatches').addEventListener('click', function (e) {
+    var b = e.target.closest('.swatch');
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll('.swatch'), function (s) { s.setAttribute('aria-pressed', 'false'); });
+    b.setAttribute('aria-pressed', 'true');
+    color = b.dataset.color;
+  });
+
+  /* ── URL PREVIEW ─────────────────────────────────────────────────────── */
+  function updateUrl() {
+    var slug = GSB.slugify($('f-sub').value) || GSB.slugify($('f-company').value) || 'yourname';
+    $('url-prev').textContent = slug + '.' + GSB.APEX;
+  }
+  $('f-sub').addEventListener('input', updateUrl);
+  $('f-company').addEventListener('input', updateUrl);
+
+  /* ── LOGO ────────────────────────────────────────────────────────────────
+     Both limits are mirrored server-side, where they are the guarantee. These
+     exist so someone gets an instant, specific message instead of silently
+     ending up with no logo on their site. */
+  $('f-logo').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    var txt = $('logo-txt');
+    var prev = $('logo-prev');
+    if (!file) return;
+
+    if (LOGO_TYPES.indexOf(file.type) === -1) {
+      logoDataUrl = null; this.value = '';
+      prev.style.display = 'none';
+      txt.textContent = '✕ PNG, JPG or WEBP only — that file type is not supported.';
+      return;
+    }
+    if (file.size > LOGO_MAX_BYTES) {
+      logoDataUrl = null; this.value = '';
+      prev.style.display = 'none';
+      txt.textContent = '✕ That logo is ' + (file.size / 1048576).toFixed(1) + ' MB — please use one under 2 MB.';
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      logoDataUrl = e.target.result;
+      prev.src = logoDataUrl;
+      prev.style.display = 'block';
+      txt.textContent = '✓ ' + file.name;
+    };
+    reader.onerror = function () {
+      logoDataUrl = null;
+      prev.style.display = 'none';
+      txt.textContent = '✕ Could not read that file — try another image.';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ══════════════════════════════════════════════════════════════════════
+     CITY ROWS + LIVE AVAILABILITY
+
+     Debounced per row. As with the checker on the landing page, an
+     indeterminate result NEVER renders as "free": the status pip stays neutral
+     and the server re-checks at checkout, where refusing is free because
+     nobody has paid yet.
+     ══════════════════════════════════════════════════════════════════════ */
+  var rowsHtml = '';
+  for (var i = 0; i < MAX_CITIES; i++) {
+    rowsHtml +=
+      '<div class="city-row" data-i="' + i + '">' +
+        '<div class="field" style="margin:0;">' +
+          '<label for="city-' + i + '">City ' + (i + 1) + (i === 0 ? '' : ' (optional)') + '</label>' +
+          '<input type="text" id="city-' + i + '" class="city-name" placeholder="' +
+            (i === 0 ? 'Nampa' : '') + '" autocomplete="off">' +
+        '</div>' +
+        '<div class="field city-state" style="margin:0;">' +
+          '<label for="state-' + i + '">State</label>' +
+          '<select id="state-' + i + '" class="city-st">' + GSB.stateOptions('—') + '</select>' +
+        '</div>' +
+        '<div class="city-status unknown" id="status-' + i + '">—</div>' +
+      '</div>';
+  }
+  $('city-rows').innerHTML = rowsHtml;
+
+  var timers = {};
+  $('city-rows').addEventListener('input', function (e) { queueCheck(e.target); });
+  $('city-rows').addEventListener('change', function (e) { queueCheck(e.target); });
+
+  function queueCheck(target) {
+    var row = target.closest('.city-row');
+    if (!row) return;
+    var idx = row.dataset.i;
+    clearTimeout(timers[idx]);
+    timers[idx] = setTimeout(function () { checkRow(idx); }, 450);
+  }
+
+  function rowLabel(idx) {
+    var row = document.querySelector('.city-row[data-i="' + idx + '"]');
+    var city = row.querySelector('.city-name').value.trim();
+    var st = row.querySelector('.city-st').value;
+    return (city && st) ? (city + ', ' + st) : null;
+  }
+
+  async function checkRow(idx) {
+    var pip = $('status-' + idx);
+    var label = rowLabel(idx);
+    if (!label) { pip.className = 'city-status unknown'; pip.textContent = '—'; return; }
+
+    pip.className = 'city-status unknown';
+    pip.textContent = '…';
+
+    var taken = null;
+    try {
+      var r = await GSB.supa.rpc('gsb_check_cities', { p_cities: [label] });
+      if (!r.error && Array.isArray(r.data) && r.data.length) taken = !!r.data[0].is_taken;
+    } catch (e) { /* taken stays null */ }
+
+    if (taken === null) { pip.className = 'city-status unknown'; pip.textContent = '?'; return; }
+    if (taken) { pip.className = 'city-status taken'; pip.textContent = 'Taken'; return; }
+    pip.className = 'city-status free'; pip.textContent = 'Open';
+  }
+
+  function collectCities() {
+    var out = [];
+    for (var i = 0; i < MAX_CITIES; i++) {
+      var label = rowLabel(i);
+      if (label) out.push(label);
+    }
+    return out;
+  }
+
+  /* ── BLOCKED PANEL ───────────────────────────────────────────────────── */
+  function showBlocked(title, body, extraHtml) {
+    $('blocked-title').textContent = title;
+    $('blocked-body').textContent = body;
+    $('blocked-extra').innerHTML = extraHtml || '';
+    $('blocked').classList.add('show');
+    $('blocked').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function hideBlocked() { $('blocked').classList.remove('show'); }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     SUBMIT — sign up, then open checkout
+
+     ORDER MATTERS: the auth account is created BEFORE payment, which means no
+     password is ever stored anywhere and the webhook can provision against an
+     account that already has credentials. It also means someone who abandons
+     checkout leaves an auth user with no territory — harmless, and a retry
+     signs back into it rather than dead-ending on "user already registered".
+     ══════════════════════════════════════════════════════════════════════ */
+  $('submit-btn').addEventListener('click', submit);
+
+  async function submit() {
+    hideBlocked();
+
+    var acceptBox = $('accept-box');
+    var accepted = $('f-accept').checked;
+    acceptBox.classList.toggle('invalid', !accepted);
+    $('e-accept').classList.toggle('show', !accepted);
+    if (!accepted) {
+      acceptBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('f-accept').focus();
+      return;
+    }
+
+    var cities = collectCities();
+    var eCities = $('e-cities');
+    eCities.classList.remove('show');
+    if (!cities.length) {
+      eCities.textContent = 'Enter at least one city, with its state.';
+      eCities.classList.add('show');
+      return;
+    }
+
+    // Step 1 is re-validated here, not just when Continue was pressed: someone
+    // can reach step 3 and then go back and empty a field.
+    if (!validate1()) { goStep(1); return; }
+
+    var btn = $('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Creating your account…';
+
+    var email = $('f-email').value.trim();
+    var password = $('f-pw').value;
+
+    /* ── AUTH ──
+       A repeat submit hits an account that already exists, so
+       user_already_exists is a recoverable state, not an error. Rendering that
+       message verbatim is how EstateSaleBiz told someone following its own
+       retry advice "User already registered" and left them nowhere to go. */
+    var session = null;
+    try {
+      var up = await GSB.supa.auth.signUp({ email: email, password: password });
+      if (up.error) {
+        var code = up.error.code || up.error.error_code || '';
+        var exists = code === 'user_already_exists' || up.error.status === 422 ||
+                     /already\s*registered/i.test(up.error.message || '');
+        if (exists) {
+          var si = await GSB.supa.auth.signInWithPassword({ email: email, password: password });
+          if (si.error || !(si.data && si.data.session)) {
+            btn.disabled = false;
+            btn.textContent = 'Continue to payment →';
+            showBlocked(
+              'You already have an account for ' + email,
+              'That email is registered, but the password entered does not open it. Nothing has been charged.',
+              'Sign in at <a href="/dashboard.html" style="color:var(--sign);font-weight:700;">your dashboard</a> ' +
+              'with the password you used before, or email ' +
+              '<a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);font-weight:700;">info@kingdom-creatives.com</a> ' +
+              'and we will sort it out.'
+            );
+            return;
+          }
+          session = si.data.session;
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Continue to payment →';
+          eCities.textContent = up.error.message || 'Could not create your account. Please try again.';
+          eCities.classList.add('show');
+          return;
+        }
+      } else {
+        session = up.data && up.data.session;
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Continue to payment →';
+      eCities.textContent = 'Could not reach the server. Check your connection and try again.';
+      eCities.classList.add('show');
+      return;
+    }
+
+    // No session means email confirmation is switched on server-side, which this
+    // flow cannot work with — checkout needs an authenticated call. Named
+    // explicitly rather than surfaced as a generic failure, because it is a
+    // project setting and not anything the buyer did.
+    if (!session) {
+      btn.disabled = false;
+      btn.textContent = 'Continue to payment →';
+      showBlocked(
+        'We could not finish signing you in',
+        'Your account was created but no session came back, so we cannot open checkout. Nothing has been charged.',
+        'Email <a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);font-weight:700;">info@kingdom-creatives.com</a> ' +
+        'and we will set your territory up by hand today.'
+      );
+      return;
+    }
+
+    /* ── CHECKOUT ── */
+    btn.textContent = 'Opening checkout…';
+
+    var result;
+    try {
+      var resp = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({
+          company: $('f-company').value.trim(),
+          firstName: $('f-first').value.trim(),
+          lastName: $('f-last').value.trim(),
+          phone: $('f-phone').value.trim(),
+          tagline: $('f-tagline').value.trim(),
+          color: color,
+          subdomainPref: $('f-sub').value.trim(),
+          claimCities: cities,
+          serviceArea: cities,
+          acceptanceVersion: ACCEPTANCE_VERSION,
+          acceptedAt: new Date().toISOString(),
+          logoDataUrl: logoDataUrl
+        })
+      });
+      result = await resp.json();
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Continue to payment →';
+      eCities.textContent = 'Could not reach checkout. Check your connection and try again — nothing has been charged.';
+      eCities.classList.add('show');
+      return;
+    }
+
+    if (result && result.ok && result.url) {
+      btn.textContent = 'Redirecting to Stripe…';
+      location.href = result.url;
+      return;
+    }
+
+    /* ── FAILURES — every one of these happens BEFORE any money moves ──
+       That is the entire point of choosing cities ahead of checkout. Each
+       message says so plainly, because "nothing has been charged" is the first
+       thing anyone wants to know when a purchase flow stops. */
+    btn.disabled = false;
+    btn.textContent = 'Continue to payment →';
+
+    var err = (result && result.error) || 'unknown';
+
+    if (err === 'city_conflict') {
+      var taken = (result.cities || []).join(' and ');
+      showBlocked(
+        (taken || 'That city') + ' was claimed first.',
+        (result.message || 'One operator per city, so we cannot sell it twice.') +
+        ' Nothing has been charged.',
+        'Change it above and continue, or ' +
+        '<a href="/#check" style="color:var(--sign);font-weight:700;">check a neighbouring city</a>. ' +
+        'If you want first refusal on ' + esc(taken || 'it') + ', the checker on the home page will add you to the list.'
+      );
+      (result.cities || []).forEach(function (c) {
+        for (var i = 0; i < MAX_CITIES; i++) {
+          if (rowLabel(i) === c) { $('status-' + i).className = 'city-status taken'; $('status-' + i).textContent = 'Taken'; }
+        }
+      });
+      return;
+    }
+
+    if (err === 'already_provisioned') {
+      showBlocked(
+        'This account already owns a territory.',
+        'You have not been charged again. Sign in to your dashboard to manage the territory you already have.',
+        '<a href="/dashboard.html" class="btn btn-sm" style="margin-top:8px;">Go to my dashboard</a>'
+      );
+      return;
+    }
+
+    if (err === 'acceptance_required') {
+      showBlocked(
+        'This page is out of date.',
+        'Your agreement to the terms did not register because this page has been open for a while. ' +
+        'Nothing has been charged.',
+        'Reload the page and fill it in again — it will take a moment. ' +
+        '<button class="btn-link" type="button" onclick="location.reload()" style="color:var(--sign);">Reload now</button>'
+      );
+      return;
+    }
+
+    if (err === 'duplicate_city' || err === 'too_many_cities' || err === 'reserved_slug' ||
+        err === 'no_cities' || err === 'bad_color' || err === 'logo_too_large' || err === 'missing_fields') {
+      eCities.textContent = result.message || 'Please check the details above.';
+      eCities.classList.add('show');
+      eCities.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    if (err === 'availability_unavailable') {
+      eCities.textContent = result.message ||
+        "We couldn't confirm those cities just now. Try again in a moment — nothing has been charged.";
+      eCities.classList.add('show');
+      return;
+    }
+
+    showBlocked(
+      'Something went wrong opening checkout.',
+      'Nothing has been charged. This is at our end, not yours.',
+      'Try again, or email <a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);font-weight:700;">info@kingdom-creatives.com</a> ' +
+      'and we will set your territory up by hand.'
+    );
+  }
+
+  /* ── DEEP LINK FROM THE LANDING-PAGE CHECKER ─────────────────────────── */
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.get('city')) {
+      $('city-0').value = p.get('city');
+      if (p.get('state')) $('state-0').value = p.get('state');
+      checkRow(0);
+    }
+    if (p.get('cancelled')) {
+      // Returning from an abandoned Stripe checkout. Reassure rather than
+      // ignore: someone who backed out of a payment page wants to know nothing
+      // happened, and wants to land where they left off.
+      showBlocked(
+        'Checkout cancelled — nothing was charged.',
+        'Your details are still here. Pick up where you left off whenever you are ready.',
+        ''
+      );
+      goStep(3);
+    }
+  } catch (e) {}
+
+  updateUrl();
+})();
+</script>
+</body>
+</html>

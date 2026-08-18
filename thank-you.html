@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your territory is yours — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.wrap { max-width: 720px; margin: 0 auto; padding: 44px var(--gutter) 70px; }
+.state { display: none; }
+.state.active { display: block; }
+
+.big-yes { padding: 30px 28px; margin-bottom: 26px; }
+.big-yes .stamp {
+  display: inline-block; background: var(--open); color: #fff; border: 3px solid var(--ink);
+  padding: 7px 15px; transform: rotate(-1.5deg); margin-bottom: 16px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+}
+.cities-board {
+  background: var(--ink); border: 3px solid var(--ink); color: var(--sign);
+  padding: 16px 18px; margin: 20px 0 6px;
+  font-family: var(--display); text-transform: uppercase; font-size: clamp(1.1rem, 3.2vw, 1.6rem);
+  line-height: 1.25; letter-spacing: .03em; word-break: break-word;
+}
+
+.url-board {
+  display: block; background: var(--ink); border: 3px solid var(--sign); color: var(--sign);
+  padding: 15px 17px; margin-top: 8px; text-decoration: none;
+  font-family: var(--mono); font-size: 15px; font-weight: 700; word-break: break-all;
+}
+.url-board:hover { background: #241F16; }
+
+.next { border: 2px solid var(--ink-line); background: var(--ink-soft); margin-bottom: 22px; }
+.next-item { display: flex; gap: 16px; padding: 18px; border-bottom: 2px solid var(--ink-line); }
+.next-item:last-child { border-bottom: none; }
+.next-n { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--sign); flex-shrink: 0; width: 30px; }
+.next-b h3 { font-family: var(--display); text-transform: uppercase; font-size: 1rem; letter-spacing: .03em; margin-bottom: 5px; }
+.next-b p { font-size: 14px; line-height: 1.65; color: var(--on-ink-dim); }
+.next-b a { color: var(--sign); font-weight: 700; }
+
+.spin {
+  width: 34px; height: 34px; border: 4px solid var(--ink-line); border-top-color: var(--sign);
+  border-radius: 50%; animation: sp .8s linear infinite; margin-bottom: 16px;
+}
+@keyframes sp { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } }
+
+.msg-card { padding: 30px 28px; }
+.msg-card h1 { font-size: clamp(1.6rem, 4.5vw, 2.2rem); }
+.msg-card p { margin-top: 12px; font-size: 15px; line-height: 1.7; }
+</style>
+</head>
+<body class="gsb-glow">
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+      </span>
+      GarageSaleBiz
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ══════════════ CHECKING ══════════════ -->
+  <section class="state active" id="s-checking">
+    <div class="paper-surface msg-card">
+      <div class="spin" role="status" aria-label="Confirming your purchase"></div>
+      <h1 class="display">Confirming your purchase…</h1>
+      <p style="color:var(--on-paper-dim);">
+        We are checking with Stripe and locking your cities. This usually takes a few seconds —
+        please do not close this tab.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════ READY ══════════════ -->
+  <section class="state" id="s-ready">
+    <div class="sign-surface stapled big-yes">
+      <div class="stamp">Payment confirmed · Territory locked</div>
+      <h1 class="display" style="color:var(--ink);font-size:clamp(2rem,6vw,3.2rem);">
+        These cities<br>are yours.
+      </h1>
+      <div class="cities-board" id="r-cities"></div>
+      <p class="tiny" style="color:#4A4029;">
+        Recorded against your account. Nobody else can buy them from us.
+      </p>
+
+      <div style="margin-top:24px;">
+        <div class="lbl" style="color:#6B5A33;">Your website — already live</div>
+        <a class="url-board" id="r-url" href="#" target="_blank" rel="noopener"></a>
+      </div>
+
+      <a class="btn btn-block" id="r-dash" href="/dashboard.html" style="margin-top:20px;">
+        Go to my dashboard
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z"/></svg>
+      </a>
+      <p class="tiny" style="text-align:center;margin-top:10px;color:#4A4029;">
+        You are already signed in. Bookmark it.
+      </p>
+    </div>
+
+    <div class="next">
+      <div class="next-item">
+        <div class="next-n">1</div>
+        <div class="next-b">
+          <h3>Read Module 1</h3>
+          <p>Finding your first client — the five places these jobs come from, and what to say.
+            About twenty minutes. <a href="/course.html">Open the course →</a></p>
+        </div>
+      </div>
+      <div class="next-item">
+        <div class="next-n">2</div>
+        <div class="next-b">
+          <h3>Print your signs</h3>
+          <p>Arrow signs do more work than anything else you own. Make a set now so they are
+            sitting in your car before you need them. <a href="/signs.html">Open the sign maker →</a></p>
+        </div>
+      </div>
+      <div class="next-item">
+        <div class="next-n">3</div>
+        <div class="next-b">
+          <h3>Have your agreement ready</h3>
+          <p>Generate it before your first conversation, not during it.
+            <a href="/contracts.html">Open the agreement generator →</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice notice-good">
+      <strong>That $249 was a one-time charge.</strong> No monthly fee, no renewal, and we did not
+      keep your card. Nothing further will ever be billed for this territory.
+    </div>
+
+    <div class="notice">
+      <strong>Check your email.</strong> We have sent your web address, your login, and these three
+      steps to the address you signed up with. If it has not arrived in ten minutes, look in spam —
+      then email <a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);">info@kingdom-creatives.com</a>.
+    </div>
+  </section>
+
+  <!-- ══════════════ BLOCKED — paid, territory unavailable ══════════════ -->
+  <!-- The rare residual race: two operators inside checkout for the same city at
+       the same moment. Someone has paid and cannot have what they paid for, and
+       the only honest thing to do is say so immediately, name the city, and lead
+       with the money being safe. A row already exists in gsb_blocked_purchases
+       and an alert has already been sent, so this is not the only record. -->
+  <section class="state" id="s-blocked">
+    <div class="paper-surface msg-card" style="border-color:var(--stamp);border-width:4px;">
+      <h1 class="display" style="color:var(--stamp);"><span id="b-city">That city</span> was claimed
+        moments before yours.</h1>
+      <p style="color:var(--on-paper-dim);">
+        <b id="b-amount">Your payment</b> went through and <b>it is safe</b>. Someone completed checkout
+        for that city seconds before you did, and we cannot sell the same city twice —
+        that exclusivity is exactly what you were buying.
+      </p>
+      <p style="color:var(--on-paper-dim);">
+        <b>We already know this happened</b> and your details are with us. You do not need to chase us,
+        but here is what you can choose:
+      </p>
+      <ul style="margin:14px 0 0 20px;font-size:15px;line-height:1.8;color:var(--on-paper-dim);">
+        <li><b>Take a different city.</b> Reply to your Stripe receipt with the city you want instead
+          and we will move your territory across. Nothing more to pay.</li>
+        <li><b>Take a full refund.</b> Say the word and the whole amount goes back to your card.
+          No forms, no conditions, no questions.</li>
+        <li><b>Wait for that city.</b> We will refund you in full and give you first refusal if it
+          ever opens up — with nothing tied up in the meantime.</li>
+      </ul>
+      <p style="color:var(--on-paper-dim);margin-top:16px;">
+        Email <a href="mailto:info@kingdom-creatives.com" style="color:var(--stamp);font-weight:700;">info@kingdom-creatives.com</a>,
+        or just reply to your Stripe receipt. If you would rather not decide now, do nothing —
+        we will email you.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════ STALLED ══════════════ -->
+  <section class="state" id="s-stalled">
+    <div class="paper-surface msg-card" style="border-color:var(--stamp);border-width:4px;">
+      <h1 class="display">Your payment went through.</h1>
+      <p style="color:var(--on-paper-dim);" id="stalled-msg"></p>
+      <p style="color:var(--on-paper-dim);">
+        <b>You will not be charged twice</b>, and your place is not lost. Email
+        <a href="mailto:info@kingdom-creatives.com" style="color:var(--stamp);font-weight:700;">info@kingdom-creatives.com</a>
+        and we will finish setting you up by hand.
+      </p>
+      <button class="btn btn-sm" type="button" onclick="location.reload()" style="margin-top:16px;">Check again</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ NOT VERIFIED ══════════════ -->
+  <!-- Reached by an invalid, fabricated, unpaid, or REFUNDED session id. The
+       refunded case is the one worth naming: Stripe leaves payment_status as
+       'paid' after a refund, so a page that trusted the query string would
+       congratulate someone on a purchase that has already been returned, and
+       would keep doing so forever. -->
+  <section class="state" id="s-invalid">
+    <div class="paper-surface msg-card">
+      <h1 class="display">We couldn't confirm a purchase.</h1>
+      <p style="color:var(--on-paper-dim);" id="inv-msg"></p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+        <a class="btn btn-sm" href="/intake.html">Start over</a>
+        <a class="btn btn-sm btn-ghost" href="mailto:info@kingdom-creatives.com"
+           style="background:var(--paper-2);color:var(--ink);">Email us</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="small">Questions? <a href="mailto:info@kingdom-creatives.com">info@kingdom-creatives.com</a> · © 2026 Kingdom Creatives LLC</div>
+    <div class="foot-links">
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/operator-agreement.html">Operator Agreement</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function show(id) {
+    ['s-checking', 's-ready', 's-blocked', 's-stalled', 's-invalid'].forEach(function (s) {
+      $(s).classList.toggle('active', s === id);
+    });
+  }
+
+  var sessionId = '';
+  try { sessionId = (new URLSearchParams(location.search).get('session_id') || '').trim(); } catch (e) {}
+
+  if (!sessionId) {
+    $('inv-msg').innerHTML = 'This page needs the confirmation link from your purchase, and there is no ' +
+      'purchase reference in the address bar. If you have already paid, open this page from your Stripe ' +
+      'receipt, or email us and we will confirm your order by hand.';
+    show('s-invalid');
+    return;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     EVERY DECISION ON THIS PAGE IS MADE BY THE SERVER.
+
+     /api/verify-session retrieves the session from the Stripe API and checks
+     that it is real, one-time, paid, correctly priced, in the right currency,
+     and NOT REFUNDED — then reports whether the webhook has finished
+     provisioning. Nothing here trusts the query string beyond passing it along,
+     because the query string is user input and a success page that believes it
+     will congratulate anybody who types one.
+     ══════════════════════════════════════════════════════════════════════ */
+  var POLL_MS = 2000;
+  var MAX_POLLS = 45;        // ~90 seconds, then the server itself returns 'stalled'
+  var polls = 0;
+
+  async function check() {
+    var r;
+    try {
+      var resp = await fetch('/api/verify-session?session_id=' + encodeURIComponent(sessionId));
+      r = await resp.json();
+    } catch (e) {
+      // A network failure is not a verdict. Keep polling rather than declaring
+      // a purchase invalid because the connection dropped for a second.
+      if (polls++ < MAX_POLLS) { setTimeout(check, POLL_MS); return; }
+      $('inv-msg').innerHTML = 'We could not reach our server to confirm your purchase. <b>If your card was ' +
+        'charged, your payment is safe</b> — check your connection and reload, or email us and we will confirm by hand.';
+      show('s-invalid');
+      return;
+    }
+
+    if (!r || r.ok === false) {
+      // 402 from the payment gate: fabricated, unpaid, expired, wrong currency,
+      // below the floor, or refunded. The server writes the buyer-facing wording
+      // and it already promises no double charge, so it is surfaced verbatim
+      // rather than guessed at here.
+      $('inv-msg').textContent = (r && r.message) ||
+        'We could not verify a completed purchase for this link. If you have already paid, email us and we will finish setting up your account.';
+      show('s-invalid');
+      return;
+    }
+
+    if (r.status === 'ready') {
+      $('r-cities').textContent = (r.cities || []).join('  ·  ') || 'Your territory';
+      var url = r.subdomain || ('https://' + r.slug + '.garagesalebiz.com');
+      var a = $('r-url');
+      a.href = url;
+      a.textContent = url.replace(/^https?:\/\//, '');
+      document.title = 'Your territory is yours — ' + (r.business_name || 'GarageSaleBiz');
+      if (r.primary_color) GSB.applyBrand(r.primary_color);
+      show('s-ready');
+      return;
+    }
+
+    if (r.status === 'blocked') {
+      $('b-city').textContent = r.city || 'That city';
+      $('b-amount').textContent = r.amount_display
+        ? ('Your payment of ' + r.amount_display)
+        : 'Your payment';
+      show('s-blocked');
+      return;
+    }
+
+    if (r.status === 'stalled' || r.status === 'inactive') {
+      $('stalled-msg').textContent = r.message ||
+        'Setting up your account is taking longer than it should.';
+      show('s-stalled');
+      return;
+    }
+
+    // status === 'pending' — the webhook has not landed yet. Normal for a few
+    // seconds. Keep waiting; the server switches to 'stalled' on its own after
+    // two minutes, so this loop cannot spin forever telling someone to wait.
+    if (polls++ < MAX_POLLS) { setTimeout(check, POLL_MS); return; }
+    $('stalled-msg').textContent = 'Setting up your account is taking longer than it should.';
+    show('s-stalled');
+  }
+
+  check();
+})();
+</script>
+</body>
+</html>

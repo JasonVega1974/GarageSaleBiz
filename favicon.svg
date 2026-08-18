@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Yard-sign yellow board with a black directional arrow: the whole product in
+       16 pixels. Matches the roadside identity in assets/gsb.css. -->
+  <rect width="64" height="64" rx="6" fill="#FFCE3B"/>
+  <rect x="3" y="3" width="58" height="58" rx="4" fill="none" stroke="#16130E" stroke-width="4"/>
+  <path d="M12 26h26v-9l16 15-16 15v-9H12z" fill="#16130E"/>
+</svg>

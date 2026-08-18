@@ -1,0 +1,106 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   LEGAL PAGES — shared layout for terms, privacy, and the Operator Agreement.
+
+   Light ground, generous measure, real hierarchy. These are documents people
+   have to be able to read and refer back to, and reading twelve sections of
+   light text on a near-black background is genuinely unpleasant — so the legal
+   set inverts the site's palette rather than inheriting it.
+
+   One stylesheet for all three so a change to §-numbering styling or the
+   effective-date block lands everywhere. EstateSaleBiz kept these as separate
+   markdown sources rendered into separate HTML files, and its Operator Agreement
+   §9 and its markdown source ended up describing two different billing
+   arrangements — one auto-renewing, one operator-initiated. That contradiction
+   sat in the repo for weeks.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.legal {
+  background: var(--paper);
+  color: var(--on-paper);
+}
+body.legal .nav {
+  background: var(--ink);
+  border-bottom: 3px solid var(--sign);
+}
+
+.legal-wrap { max-width: 780px; margin: 0 auto; padding: 34px var(--gutter) 90px; }
+
+.legal-head { border-bottom: 4px solid var(--ink); padding-bottom: 20px; margin-bottom: 26px; }
+.legal-head h1 { font-size: clamp(2rem, 5.5vw, 3rem); color: var(--ink); }
+.legal-dates {
+  display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 14px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: #6B6355;
+}
+.legal-intro { margin-top: 16px; font-size: 16px; line-height: 1.75; color: var(--on-paper); }
+
+/* The plain-English summary that sits above the operative text. Not a
+   substitute for it and says so — but a document nobody reads protects nobody,
+   and the summary is what makes the rest get read. */
+.legal-summary {
+  background: var(--sign); border: 3px solid var(--ink);
+  padding: 20px 22px; margin: 24px 0 30px; box-shadow: var(--hard-sm);
+}
+.legal-summary h2 {
+  font-family: var(--display); text-transform: uppercase; font-size: 1.05rem;
+  letter-spacing: .04em; margin-bottom: 12px; color: var(--ink);
+}
+.legal-summary ul { list-style: none; }
+.legal-summary li {
+  display: flex; gap: 11px; padding: 7px 0; font-size: 15px; line-height: 1.6;
+  border-bottom: 1px solid rgba(22,19,14,.18); color: var(--ink);
+}
+.legal-summary li:last-child { border-bottom: none; }
+.legal-summary .m { flex-shrink: 0; font-weight: 800; }
+.legal-summary .after { font-size: 13px; margin-top: 12px; color: #4A4029; font-style: italic; }
+
+.legal-toc { border: 2px solid var(--paper-line); padding: 18px 20px; margin-bottom: 32px; }
+.legal-toc h2 {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: #6B6355; margin-bottom: 11px;
+}
+.legal-toc ol { columns: 2; column-gap: 30px; margin-left: 18px; }
+@media (max-width: 620px) { .legal-toc ol { columns: 1; } }
+.legal-toc li { font-size: 14px; line-height: 1.75; }
+.legal-toc a { color: var(--stamp); text-decoration: none; }
+.legal-toc a:hover { text-decoration: underline; }
+
+.legal-wrap section { margin-bottom: 30px; scroll-margin-top: 84px; }
+.legal-wrap h2 {
+  font-family: var(--display); text-transform: uppercase;
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem); letter-spacing: .02em;
+  color: var(--ink); padding-bottom: 8px; border-bottom: 2px solid var(--ink);
+  margin-bottom: 14px;
+}
+.legal-wrap h3 {
+  font-size: 15px; font-weight: 800; color: var(--ink); margin: 18px 0 7px;
+}
+.legal-wrap p { font-size: 15px; line-height: 1.78; margin-bottom: 13px; }
+.legal-wrap ul, .legal-wrap ol { margin: 0 0 15px 24px; }
+.legal-wrap li { font-size: 15px; line-height: 1.75; margin-bottom: 8px; }
+.legal-wrap strong { font-weight: 800; }
+.legal-wrap a { color: var(--stamp); }
+
+/* Reserved for text that carries real consequence — disclaimers, liability
+   limits, the no-earnings-claims statement. Used sparingly: a page where
+   everything is emphasised is a page where nothing is. */
+.legal-box {
+  border: 3px solid var(--ink); background: #FFF3CC;
+  padding: 16px 18px; margin: 18px 0; font-size: 15px; line-height: 1.7;
+}
+.legal-box p:last-child { margin-bottom: 0; }
+.legal-box.plain { background: var(--paper-2); border-width: 2px; }
+
+.legal-foot {
+  border-top: 3px solid var(--ink); margin-top: 40px; padding-top: 20px;
+  font-size: 14px; line-height: 1.7; color: var(--on-paper-dim);
+}
+.legal-foot a { color: var(--stamp); }
+.legal-siblings { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; font-weight: 700; }
+
+@media print {
+  body.legal { background: #fff; }
+  .nav, .no-print { display: none !important; }
+  .legal-summary { box-shadow: none; }
+  .legal-wrap { max-width: none; padding: 0; }
+}

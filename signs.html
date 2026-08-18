@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign maker — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.app { display: grid; grid-template-columns: 360px 1fr; min-height: 100vh; }
+@media (max-width: 1000px) { .app { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--ink-soft); border-right: 3px solid var(--sign);
+  padding: 22px 20px 60px; overflow-y: auto;
+}
+@media (min-width: 1001px) { .panel { max-height: 100vh; position: sticky; top: 0; } }
+.panel h1 { font-family: var(--display); text-transform: uppercase; font-size: 1.15rem; letter-spacing: .04em; }
+.panel .sub { font-size: 14px; color: var(--on-ink-dim); margin: 6px 0 20px; line-height: 1.6; }
+fieldset { border: none; margin-bottom: 22px; }
+legend {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--on-ink-dim);
+  border-bottom: 2px solid var(--ink-line); width: 100%; padding-bottom: 6px; margin-bottom: 12px;
+}
+.hint { font-size: 13px; color: var(--on-ink-dim); margin-top: 7px; line-height: 1.55; }
+
+.stage { padding: 26px 20px 70px; background: #0F0D09; overflow-x: auto; }
+.stage-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.kind-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.kind-tab {
+  background: var(--ink-soft); color: var(--on-ink); border: 2px solid var(--ink-line);
+  padding: 9px 15px; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+.kind-tab.on { background: var(--sign); color: var(--ink); border-color: var(--ink); }
+
+.sheet-scale { transform-origin: top left; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE SHEETS — real US Letter at 96dpi: 8.5in × 11in = 816 × 1056 px.
+   Sized in INCHES rather than pixels so the print output is dimensionally
+   correct on any display, at any zoom, in any browser. A px-sized sheet looks
+   right on screen and prints at whatever scale the browser guesses.
+   ══════════════════════════════════════════════════════════════════════════ */
+.sheet {
+  background: #fff; color: #000;
+  width: 8.5in; height: 11in;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,.6);
+  margin-bottom: 26px;
+}
+.sheet-land { width: 11in; height: 8.5in; }
+
+/* ── ARROW SIGN — the one that does the work ─────────────────────────────── */
+.arrow-sheet { display: flex; flex-direction: column; padding: .45in; }
+.arrow-top {
+  text-align: center;
+  font-family: var(--display); text-transform: uppercase;
+  line-height: .92; letter-spacing: .01em;
+}
+.arrow-kind { font-size: 118pt; }
+.arrow-kind.long { font-size: 86pt; }
+.arrow-sale { font-size: 72pt; }
+.arrow-mid { flex: 1; display: grid; place-items: center; padding: .12in 0; }
+.arrow-mid svg { width: 82%; height: auto; }
+.arrow-foot { text-align: center; border-top: .06in solid #000; padding-top: .16in; }
+.arrow-addr { font-family: var(--display); text-transform: uppercase; font-size: 40pt; line-height: 1; }
+.arrow-when { font-size: 20pt; font-weight: 700; margin-top: .08in; }
+.arrow-biz { font-size: 12pt; margin-top: .1in; letter-spacing: .04em; text-transform: uppercase; }
+
+/* ── MAIN SIGN ───────────────────────────────────────────────────────────── */
+.main-sheet { display: flex; flex-direction: column; padding: .5in; }
+.main-rule { border: .07in solid #000; flex: 1; display: flex; flex-direction: column; padding: .34in .3in; }
+.main-kicker {
+  text-align: center; font-family: var(--mono); font-weight: 700;
+  font-size: 12pt; letter-spacing: .3em; text-transform: uppercase;
+}
+.main-kind {
+  text-align: center; font-family: var(--display); text-transform: uppercase;
+  font-size: 82pt; line-height: .9; margin: .1in 0 .06in;
+}
+.main-kind.long { font-size: 58pt; }
+.main-sub { text-align: center; font-size: 15pt; font-style: italic; margin-bottom: .2in; }
+.main-band {
+  border-top: .05in solid #000; border-bottom: .05in solid #000;
+  padding: .18in 0; text-align: center;
+}
+.main-dates { font-family: var(--display); text-transform: uppercase; font-size: 34pt; line-height: 1.05; }
+.main-hours { font-size: 19pt; font-weight: 700; margin-top: .05in; }
+.main-addr-wrap { text-align: center; padding: .22in 0 .1in; }
+.main-addr { font-family: var(--display); text-transform: uppercase; font-size: 38pt; line-height: 1.02; }
+.main-city { font-size: 17pt; margin-top: .05in; }
+.main-items { flex: 1; padding: .1in .1in 0; min-height: 0; }
+.main-items h3 {
+  text-align: center; font-family: var(--mono); font-weight: 700;
+  font-size: 10pt; letter-spacing: .26em; text-transform: uppercase; margin-bottom: .1in;
+}
+.main-items ul { list-style: none; columns: 2; column-gap: .4in; font-size: 14pt; line-height: 1.55; }
+.main-items li::before { content: '— '; font-weight: 700; }
+.main-foot {
+  border-top: .05in solid #000; margin-top: .1in; padding-top: .16in;
+  display: grid; grid-template-columns: 1fr auto; gap: .25in; align-items: center;
+}
+.main-terms { font-size: 12pt; line-height: 1.5; }
+.main-terms b { font-size: 15pt; }
+.qr-box { text-align: center; }
+.qr-box .qr { background: #fff; padding: .06in; border: 1px solid #000; display: inline-block; }
+.qr-box .qr img, .qr-box .qr canvas { display: block; width: .95in !important; height: .95in !important; }
+.qr-cap { font-family: var(--mono); font-size: 7.5pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-top: .05in; }
+.qr-url { font-size: 8.5pt; margin-top: .02in; word-break: break-all; max-width: 1.3in; }
+
+/* ── PRICE CARDS — 4-up on a sheet ───────────────────────────────────────── */
+.cards-sheet { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.pcard-cut { border: 1px dashed #999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: .3in; text-align: center; }
+.pcard-name { font-family: var(--display); text-transform: uppercase; font-size: 26pt; line-height: 1.05; }
+.pcard-price { font-family: var(--display); font-size: 66pt; line-height: 1; margin-top: .12in; }
+.pcard-note { font-size: 12pt; margin-top: .1in; }
+.pcard-biz { font-family: var(--mono); font-size: 8pt; letter-spacing: .14em; text-transform: uppercase; margin-top: .2in; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PRINT — this is the delivery path, not a nicety.
+   Each .sheet becomes exactly one page at its true size. No app chrome, no
+   shadows, no background colour eating a cartridge.
+   ══════════════════════════════════════════════════════════════════════════ */
+@page { margin: 0; }
+@media print {
+  html, body { background: #fff !important; }
+  .app { display: block; }
+  .panel, .stage-head, .no-print, .nav { display: none !important; }
+  .stage { padding: 0; background: #fff; overflow: visible; }
+  .sheet-scale { transform: none !important; }
+  .sheet {
+    box-shadow: none; margin: 0;
+    page-break-after: always; break-after: page;
+  }
+  .sheet:last-of-type { page-break-after: auto; break-after: auto; }
+  .sheet[hidden] { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══════════════ CONTROLS ══════════════ -->
+  <aside class="panel no-print">
+    <h1>Sign maker</h1>
+    <p class="sub">Fill this in and the signs update as you type. Print at home on card, or take the
+      PDF to a copy shop and ask for 11×17 — bigger is always better on a corner.</p>
+
+    <div id="prefill-note"></div>
+
+    <fieldset>
+      <legend>Which sign</legend>
+      <div class="kind-tabs" id="kind-tabs">
+        <button type="button" class="kind-tab on" data-kind="arrow">Arrow signs</button>
+        <button type="button" class="kind-tab" data-kind="main">Main sign</button>
+        <button type="button" class="kind-tab" data-kind="cards">Price cards</button>
+      </div>
+      <p class="hint" id="kind-hint"></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>The sale</legend>
+      <div class="field"><label for="f-kind">Sale type</label>
+        <select id="f-kind">
+          <option value="Garage Sale">Garage Sale</option>
+          <option value="Moving Sale">Moving Sale</option>
+          <option value="Yard Sale">Yard Sale</option>
+          <option value="Multi-Family Sale">Multi-Family Sale</option>
+          <option value="Estate Sale">Estate Sale</option>
+          <option value="Downsizing Sale">Downsizing Sale</option>
+        </select></div>
+      <div class="field"><label for="f-street">Street address</label>
+        <input type="text" id="f-street" placeholder="1427 W Orchard Ave"></div>
+      <div class="field"><label for="f-city">City, state</label>
+        <input type="text" id="f-city" placeholder="Nampa, ID"></div>
+      <div class="field"><label for="f-sub">Subline <span style="text-transform:none;letter-spacing:0;">(main sign only)</span></label>
+        <input type="text" id="f-sub" placeholder="Whole garage, workshop and basement"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>When</legend>
+      <div class="row-2">
+        <div class="field"><label for="f-start">First day</label><input type="date" id="f-start"></div>
+        <div class="field"><label for="f-end">Last day</label><input type="date" id="f-end"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label for="f-open">Opens</label><input type="time" id="f-open" value="08:00"></div>
+        <div class="field"><label for="f-close">Closes</label><input type="time" id="f-close" value="15:00"></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="fs-arrow">
+      <legend>Arrows</legend>
+      <p class="hint" style="margin:0 0 12px;">Tick a direction for each corner you need. One sheet per
+        arrow, so print the whole set at once.</p>
+      <div id="dir-boxes"></div>
+      <div class="field" style="margin-top:12px;"><label for="f-arrow-words">Wording</label>
+        <select id="f-arrow-words">
+          <option value="type">Use the sale type</option>
+          <option value="sale">Just "SALE"</option>
+          <option value="both">Sale type + "SALE"</option>
+        </select></div>
+    </fieldset>
+
+    <fieldset id="fs-main">
+      <legend>Main sign</legend>
+      <div class="field"><label for="f-items">Headline items — one per line, up to 8</label>
+        <textarea id="f-items" placeholder="Power tools&#10;Patio set&#10;Bikes&#10;Camping gear"></textarea></div>
+      <div class="field"><label for="f-terms">Payment &amp; terms line</label>
+        <input type="text" id="f-terms" value="Cash &amp; card · Everything as-is · Bring help for big items"></div>
+      <div class="field"><label for="f-url">Website for the QR code</label>
+        <input type="text" id="f-url" placeholder="yourname.garagesalebiz.com"></div>
+      <p class="hint">Shoppers scan this to see photos and prices before they drive over.
+        Leave it blank to print the sign without a QR code.</p>
+    </fieldset>
+
+    <fieldset id="fs-cards">
+      <legend>Price cards</legend>
+      <p class="hint" style="margin:0 0 12px;">Four to a sheet, with cut lines. One line per card:
+        <span class="mono">item | price | note</span></p>
+      <div class="field"><label for="f-cards">Cards</label>
+        <textarea id="f-cards" rows="6" placeholder="Weber grill | 210 | Cover included&#10;Trek bike | 240 | Just tuned&#10;Patio set | 185 | Cushions included&#10;Drill set | 165 | 2 batteries"></textarea></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your business</legend>
+      <div class="field"><label for="f-biz">Business name</label><input type="text" id="f-biz"></div>
+      <div class="field"><label for="f-phone">Phone</label><input type="tel" id="f-phone"></div>
+      <p class="hint">Printed small at the bottom of each sign. Homeowners on the street who see your
+        name on a sign are the cheapest leads you will ever get.</p>
+    </fieldset>
+
+    <button class="btn btn-block" type="button" id="btn-print">Print / Save as PDF</button>
+    <p class="hint" style="text-align:center;">In the print dialog choose <b>Save as PDF</b>, set
+      margins to <b>None</b>, and switch scaling to <b>100%</b>.</p>
+
+    <p style="margin-top:22px;"><a class="btn-link" href="/dashboard.html">← Back to dashboard</a></p>
+  </aside>
+
+  <!-- ══════════════ PREVIEW ══════════════ -->
+  <div class="stage">
+    <div class="stage-head no-print">
+      <div>
+        <div class="eyebrow">Preview</div>
+        <div class="small muted" id="sheet-count"></div>
+      </div>
+      <div style="display:flex;gap:9px;align-items:center;">
+        <span class="tiny muted">Zoom</span>
+        <input type="range" id="zoom" min="25" max="100" value="45" step="5" style="width:120px;min-height:0;">
+      </div>
+    </div>
+    <div class="sheet-scale" id="scale"><div id="sheets"></div></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc, $ = function (id) { return document.getElementById(id); };
+
+  var DIRS = [
+    ['left',  'Left',        '◀'],
+    ['right', 'Right',       '▶'],
+    ['ahead', 'Straight on', '▲'],
+    ['back',  'Turn around', '▼']
+  ];
+
+  var kind = 'arrow';
+
+  var HINTS = {
+    arrow: 'The most valuable sign you print. Put one at every turn within half a mile — most of your ' +
+           'traffic on the day is people who were driving past and followed an arrow.',
+    main: 'Goes at the end of the driveway. This is the one that carries the dates, the address, and the QR code.',
+    cards: 'Tent cards for the tables. A priced item sells; an unpriced item starts a negotiation you did not choose.'
+  };
+
+  /* ── DIRECTION CHECKBOXES ────────────────────────────────────────────── */
+  $('dir-boxes').innerHTML = DIRS.map(function (d, i) {
+    return '<div class="check-row" style="margin-bottom:9px;">' +
+      '<input type="checkbox" id="dir-' + d[0] + '"' + (i < 2 ? ' checked' : '') + '>' +
+      '<label for="dir-' + d[0] + '" style="font-size:14px;">' + d[2] + ' ' + esc(d[1]) + '</label>' +
+    '</div>';
+  }).join('');
+
+  /* ── ARROW SVG ───────────────────────────────────────────────────────────
+     Drawn rather than typed. A text glyph like ▶ renders at wildly different
+     weights across fonts and platforms and would print thin and grey on a sign
+     that has to be read from a moving car. This is a solid filled path at any
+     size. */
+  function arrowSvg(dir) {
+    var rot = { right: 0, left: 180, ahead: -90, back: 90 }[dir] || 0;
+    return '<svg viewBox="0 0 100 60" role="img" aria-label="Arrow pointing ' + esc(dir) + '">' +
+      '<g transform="rotate(' + rot + ' 50 30)">' +
+        '<path d="M2 20 h58 V2 l38 28 -38 28 V38 H2 Z" fill="#000"/>' +
+      '</g></svg>';
+  }
+
+  /* ── VALUES ──────────────────────────────────────────────────────────── */
+  function v(id) { return ($(id).value || '').trim(); }
+
+  function whenLine() {
+    var s = v('f-start'), e = v('f-end');
+    if (!s) return '';
+    var range = GSB.fmtDateRange(s, e || s);
+    // Weekday-only form on arrow signs: a driver reading a sign at 30mph gets
+    // "SAT & SUN" and nothing else. Dates are for the main sign.
+    return range;
+  }
+
+  function shortWhen() {
+    var s = GSB.parseDate(v('f-start'));
+    var e = GSB.parseDate(v('f-end')) || s;
+    if (!s) return '';
+    var days = [];
+    var cur = new Date(s);
+    while (cur <= e && days.length < 7) {
+      days.push(cur.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase());
+      cur.setDate(cur.getDate() + 1);
+    }
+    return days.join(' · ');
+  }
+
+  function hoursLine() {
+    var o = v('f-open'), c = v('f-close');
+    if (!o && !c) return '';
+    return GSB.fmtTime(o) + (c ? ' – ' + GSB.fmtTime(c) : '');
+  }
+
+  /* ══════════════ RENDER ══════════════ */
+  function render() {
+    var out = '';
+    var count = 0;
+
+    var kindText = v('f-kind') || 'Garage Sale';
+    var biz = v('f-biz');
+    var phone = v('f-phone');
+    var street = v('f-street');
+    var city = v('f-city');
+
+    /* ── ARROWS ── */
+    if (kind === 'arrow') {
+      var mode = $('f-arrow-words').value;
+      DIRS.forEach(function (d) {
+        if (!$('dir-' + d[0]).checked) return;
+        count++;
+
+        var head = '';
+        if (mode === 'sale') {
+          head = '<div class="arrow-sale">Sale</div>';
+        } else if (mode === 'both') {
+          head = '<div class="arrow-kind' + (kindText.length > 12 ? ' long' : '') + '">' + esc(kindText) + '</div>';
+        } else {
+          head = '<div class="arrow-kind' + (kindText.length > 12 ? ' long' : '') + '">' + esc(kindText) + '</div>';
+        }
+
+        out +=
+          '<div class="sheet sheet-land arrow-sheet">' +
+            '<div class="arrow-top">' + head + '</div>' +
+            '<div class="arrow-mid">' + arrowSvg(d[0]) + '</div>' +
+            '<div class="arrow-foot">' +
+              (street ? '<div class="arrow-addr">' + esc(street) + '</div>' : '') +
+              (shortWhen() || hoursLine()
+                ? '<div class="arrow-when">' +
+                    esc([shortWhen(), hoursLine()].filter(Boolean).join('  ·  ')) +
+                  '</div>'
+                : '') +
+              (biz || phone
+                ? '<div class="arrow-biz">' + esc([biz, phone].filter(Boolean).join('  ·  ')) + '</div>'
+                : '') +
+            '</div>' +
+          '</div>';
+      });
+
+      if (!count) {
+        out = '<div class="sheet" style="display:grid;place-items:center;padding:1in;text-align:center;">' +
+          '<div><div style="font-family:var(--display);font-size:28pt;text-transform:uppercase;">' +
+          'Tick at least one direction</div>' +
+          '<p style="font-size:13pt;margin-top:.2in;">Each direction you tick prints as its own sheet.</p>' +
+          '</div></div>';
+      }
+    }
+
+    /* ── MAIN SIGN ── */
+    if (kind === 'main') {
+      count = 1;
+      var itemLines = v('f-items').split('\n').map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 8);
+
+      out +=
+        '<div class="sheet main-sheet"><div class="main-rule">' +
+          '<div class="main-kicker">' + esc(shortWhen() || 'This Weekend') + '</div>' +
+          '<div class="main-kind' + (kindText.length > 14 ? ' long' : '') + '">' + esc(kindText) + '</div>' +
+          (v('f-sub') ? '<div class="main-sub">' + esc(v('f-sub')) + '</div>' : '') +
+
+          '<div class="main-band">' +
+            (whenLine() ? '<div class="main-dates">' + esc(whenLine()) + '</div>' : '') +
+            (hoursLine() ? '<div class="main-hours">' + esc(hoursLine()) + '</div>' : '') +
+          '</div>' +
+
+          '<div class="main-addr-wrap">' +
+            (street ? '<div class="main-addr">' + esc(street) + '</div>' : '') +
+            (city ? '<div class="main-city">' + esc(city) + '</div>' : '') +
+          '</div>' +
+
+          (itemLines.length
+            ? '<div class="main-items"><h3>Featuring</h3><ul>' +
+              itemLines.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') +
+              '</ul></div>'
+            : '<div class="main-items"></div>') +
+
+          '<div class="main-foot">' +
+            '<div class="main-terms">' +
+              (v('f-terms') ? esc(v('f-terms')) : '') +
+              (biz || phone
+                ? '<div style="margin-top:.1in;"><b>' + esc(biz) + '</b>' +
+                  (phone ? ' · ' + esc(phone) : '') + '</div>'
+                : '') +
+            '</div>' +
+            '<div class="qr-box" id="qr-slot"></div>' +
+          '</div>' +
+
+        '</div></div>';
+    }
+
+    /* ── PRICE CARDS ── */
+    if (kind === 'cards') {
+      var rows = v('f-cards').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (!rows.length) {
+        out = '<div class="sheet" style="display:grid;place-items:center;padding:1in;text-align:center;">' +
+          '<div><div style="font-family:var(--display);font-size:26pt;text-transform:uppercase;">' +
+          'Add some cards</div><p style="font-size:13pt;margin-top:.2in;">One per line: ' +
+          '<span style="font-family:monospace;">item | price | note</span></p></div></div>';
+        count = 0;
+      } else {
+        for (var p = 0; p < rows.length; p += 4) {
+          count++;
+          out += '<div class="sheet cards-sheet">';
+          for (var k = 0; k < 4; k++) {
+            var raw = rows[p + k];
+            if (!raw) { out += '<div class="pcard-cut"></div>'; continue; }
+            var parts = raw.split('|').map(function (s) { return s.trim(); });
+            var price = parts[1] || '';
+            var priceText = price
+              ? (/^\$/.test(price) ? price : '$' + price.replace(/[^0-9.]/g, ''))
+              : 'Offer';
+            out += '<div class="pcard-cut">' +
+              '<div class="pcard-name">' + esc(parts[0] || '') + '</div>' +
+              '<div class="pcard-price">' + esc(priceText) + '</div>' +
+              (parts[2] ? '<div class="pcard-note">' + esc(parts[2]) + '</div>' : '') +
+              (biz ? '<div class="pcard-biz">' + esc(biz) + '</div>' : '') +
+            '</div>';
+          }
+          out += '</div>';
+        }
+      }
+    }
+
+    $('sheets').innerHTML = out;
+    $('sheet-count').textContent = count
+      ? count + ' sheet' + (count === 1 ? '' : 's') + ' · US Letter'
+      : '';
+
+    if (kind === 'main') drawQr();
+  }
+
+  /* ── QR ──────────────────────────────────────────────────────────────── */
+  function drawQr() {
+    var slot = $('qr-slot');
+    if (!slot) return;
+    var raw = v('f-url').replace(/^https?:\/\//, '').replace(/\/+$/, '');
+    if (!raw) { slot.innerHTML = ''; return; }
+    if (typeof QRCode === 'undefined') {
+      // The QR library is the one external dependency here. If it fails to load,
+      // say so rather than printing a sign with a mysterious blank square where
+      // shoppers expect something to scan.
+      slot.innerHTML = '<div class="qr-cap" style="max-width:1.3in;">QR code unavailable — reload the page</div>';
+      return;
+    }
+    slot.innerHTML = '<div class="qr" id="qr-target"></div>' +
+      '<div class="qr-cap">Scan for photos &amp; prices</div>' +
+      '<div class="qr-url">' + esc(raw) + '</div>';
+    try {
+      new QRCode(document.getElementById('qr-target'), {
+        text: 'https://' + raw,
+        width: 192, height: 192,
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch (e) {
+      slot.innerHTML = '<div class="qr-cap" style="max-width:1.3in;">QR code could not be generated</div>';
+    }
+  }
+
+  /* ── TABS / ZOOM / PRINT ─────────────────────────────────────────────── */
+  function setKind(k) {
+    kind = k;
+    [].forEach.call(document.querySelectorAll('.kind-tab'), function (b) {
+      b.classList.toggle('on', b.dataset.kind === k);
+    });
+    $('fs-arrow').style.display = k === 'arrow' ? '' : 'none';
+    $('fs-main').style.display  = k === 'main'  ? '' : 'none';
+    $('fs-cards').style.display = k === 'cards' ? '' : 'none';
+    $('kind-hint').textContent = HINTS[k] || '';
+    render();
+  }
+
+  $('kind-tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.kind-tab');
+    if (b) setKind(b.dataset.kind);
+  });
+
+  function applyZoom() {
+    var z = Number($('zoom').value) / 100;
+    $('scale').style.transform = 'scale(' + z + ')';
+    // The scaled element still reserves its unscaled height, leaving a large gap
+    // below the preview. Collapsing the wrapper's height keeps the stage tidy.
+    $('scale').style.height = ($('sheets').scrollHeight * z) + 'px';
+  }
+  $('zoom').addEventListener('input', applyZoom);
+
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  document.querySelector('.panel').addEventListener('input', function () { render(); applyZoom(); });
+  document.querySelector('.panel').addEventListener('change', function () { render(); applyZoom(); });
+
+  /* ══════════════════════════════════════════════════════════════════════
+     PREFILL FROM THE OPERATOR'S OWN DATA
+
+     ⚠️ EVERY ASSIGNMENT BELOW IS UNCONDITIONAL, blanking the field when the
+     operator has no value for it.
+
+     This is the EstateSaleBiz sign-creator bug, and it is worth being explicit
+     about because the wrong version looks more careful. That code read:
+
+         if (tenant.phone) $('phone').value = tenant.phone;
+
+     …which, for an operator with no phone number on file, quietly left the
+     placeholder that shipped in the markup — a real phone number and a real
+     service area belonging to the demo business. Operators printed flyers
+     carrying a stranger's phone number and took them to a copy shop.
+
+     There are therefore NO example values in this page's markup. Every field
+     starts empty, and every one is assigned from data or explicitly blanked.
+     ══════════════════════════════════════════════════════════════════════ */
+  (async function prefill() {
+    var note = $('prefill-note');
+
+    var res = await GSB.checkAuth();
+    if (!res.ok) {
+      note.innerHTML = '<div class="notice" style="margin-bottom:18px;">' +
+        '<p class="small" style="line-height:1.6;"><b>Not signed in.</b> The sign maker works fine like ' +
+        'this — fill everything in by hand. <a href="/dashboard.html" style="color:var(--sign);">Sign in</a> ' +
+        'and it fills itself in from your sale.</p></div>';
+      // Blank, not example data. See the block comment above.
+      $('f-biz').value = '';
+      $('f-phone').value = '';
+      $('f-url').value = '';
+      render();
+      return;
+    }
+
+    var t = res.tenant;
+    $('f-biz').value = t.business_name || '';
+    $('f-phone').value = t.phone || '';
+    $('f-url').value = t.slug ? (t.slug + '.' + GSB.APEX) : '';
+
+    // The most useful sale to prefill is the next upcoming published one. Falls
+    // back to the most recent so the fields are never left mysteriously empty for
+    // an operator who has a sale but has not published it.
+    var r = await GSB.supa.from('gsb_sales')
+      .select('*').eq('client_id', GSB.clientId)
+      .order('start_date', { ascending: false, nullsFirst: false }).limit(20);
+
+    var list = (r.data || []);
+    var today = new Date(); today.setHours(12, 0, 0, 0);
+    var upcoming = list.filter(function (s) {
+      var d = GSB.parseDate(s.start_date);
+      return d && d >= today && s.status !== 'cancelled';
+    }).sort(function (a, b) { return GSB.parseDate(a.start_date) - GSB.parseDate(b.start_date); });
+
+    var s = upcoming[0] || list[0] || null;
+
+    if (s) {
+      var typeMap = { garage: 'Garage Sale', moving: 'Moving Sale', 'multi-family': 'Multi-Family Sale', 'estate-lite': 'Downsizing Sale' };
+      $('f-kind').value  = typeMap[s.sale_type] || 'Garage Sale';
+      $('f-street').value = s.street_address || '';
+      $('f-city').value   = s.city_state_zip || '';
+      $('f-sub').value    = '';
+      $('f-start').value  = s.start_date || '';
+      $('f-end').value    = s.end_date || '';
+      $('f-open').value   = s.open_time || '08:00';
+      $('f-close').value  = s.close_time || '15:00';
+
+      // Headline items come from the featured items on that sale, which is what
+      // an operator would otherwise retype.
+      var it = await GSB.supa.from('gsb_items')
+        .select('name, featured, price, status')
+        .eq('client_id', GSB.clientId).eq('sale_id', s.id)
+        .order('display_order', { ascending: true });
+      var names = (it.data || [])
+        .filter(function (i) { return i.status !== 'sold'; })
+        .sort(function (a, b) { return (b.featured ? 1 : 0) - (a.featured ? 1 : 0); })
+        .slice(0, 8).map(function (i) { return i.name; });
+      $('f-items').value = names.join('\n');
+
+      var cards = (it.data || [])
+        .filter(function (i) { return i.status !== 'sold' && Number(i.price) > 0; })
+        .slice(0, 12)
+        .map(function (i) { return i.name + ' | ' + Math.round(Number(i.price)); });
+      $('f-cards').value = cards.join('\n');
+
+      note.innerHTML = '<div class="notice notice-good" style="margin-bottom:18px;">' +
+        '<p class="small" style="line-height:1.6;">Filled in from <b>' + esc(s.title || 'your sale') +
+        '</b>. Change anything you like — nothing here writes back to your sale.</p></div>';
+    } else {
+      $('f-street').value = '';
+      $('f-city').value = '';
+      $('f-items').value = '';
+      $('f-cards').value = '';
+      note.innerHTML = '<div class="notice" style="margin-bottom:18px;">' +
+        '<p class="small" style="line-height:1.6;">You have no sale set up yet, so only your business ' +
+        'details are filled in. <a href="/dashboard.html" style="color:var(--sign);">Create a sale</a> ' +
+        'and this page fills itself in.</p></div>';
+    }
+
+    render();
+    applyZoom();
+  })();
+
+  setKind('arrow');
+  applyZoom();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# GarageSaleBiz
+#
+# The funnel and every operator storefront SHOULD be indexed — an operator's site
+# being findable is part of what they bought. Only the private surfaces are
+# excluded, and each of those also carries <meta name="robots" content="noindex">
+# in the page itself, because robots.txt is a request and the meta tag is the
+# instruction that actually keeps a page out of results.
+
+User-agent: *
+
+# Buyer flow and operator tools — nothing here is useful in search results, and
+# thank-you.html in particular should never be indexed with a session id attached.
+Disallow: /intake.html
+Disallow: /thank-you.html
+Disallow: /dashboard.html
+Disallow: /admin-owner.html
+Disallow: /course.html
+Disallow: /signs.html
+Disallow: /contracts.html
+
+# Server endpoints.
+Disallow: /api/
+
+# The demo is deliberately excluded. It is a fictional business, and an indexed
+# demo competes with real operators' sites for the same local searches.
+Disallow: /demo.html
+
+Allow: /
+
+Sitemap: https://garagesalebiz.com/sitemap.xml

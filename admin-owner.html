@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner console — GarageSaleBiz</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.wrap { max-width: 1120px; margin: 0 auto; padding: 24px var(--gutter) 80px; }
+
+.gate { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; background: rgba(22,19,14,.97); padding: 22px; }
+.gate.on { display: flex; }
+.gate-card { max-width: 420px; width: 100%; padding: 28px 26px; }
+
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+.tabs button {
+  background: var(--ink-soft); color: var(--on-ink); border: 2px solid var(--ink-line);
+  padding: 10px 15px; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.tabs button.on { background: var(--sign); color: var(--ink); border-color: var(--ink); }
+.tabs button .badge {
+  display: inline-block; margin-left: 6px; background: var(--stamp); color: #fff;
+  border-radius: 100px; padding: 1px 7px; font-size: 10px;
+}
+.pane { display: none; }
+.pane.on { display: block; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 13px; margin-bottom: 22px; }
+.stat { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 15px 16px; }
+.stat-n { font-family: var(--display); font-size: 1.9rem; line-height: 1; color: var(--sign); }
+.stat-l { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--on-ink-dim); margin-top: 6px; }
+
+.op { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 16px 17px; margin-bottom: 12px; }
+.op.off { border-left: 5px solid var(--stamp); opacity: .82; }
+.op.on-live { border-left: 5px solid var(--open); }
+.op-top { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; align-items: flex-start; }
+.op-name { font-family: var(--display); text-transform: uppercase; font-size: 1.1rem; letter-spacing: .02em; }
+.op-meta { font-size: 13px; color: var(--on-ink-dim); line-height: 1.7; margin-top: 5px; }
+.op-meta a { color: var(--sign); }
+.op-cities { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.op-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+
+.warn-strip {
+  border: 3px solid var(--stamp); background: rgba(192,49,31,.12);
+  padding: 16px 18px; margin-bottom: 20px;
+}
+.warn-strip h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.05rem; color: #FFB4A2; margin-bottom: 8px; }
+
+.mono-cell { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+details.acc { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 13px 15px; margin-bottom: 10px; }
+details.acc summary { cursor: pointer; font-weight: 700; font-size: 14px; }
+details.acc pre {
+  white-space: pre-wrap; font-family: var(--mono); font-size: 12px; line-height: 1.6;
+  background: #12100C; border: 1px solid var(--ink-line); padding: 12px; margin-top: 11px; overflow-x: auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ GATE ══════════════
+     The real boundary is gsb_is_admin() in the database: every admin-only table
+     has a policy that calls it, so a signed-in non-admin session reading them
+     gets zero rows regardless of what this page renders. This gate exists so the
+     page shows a sensible state rather than a screen full of empty tables. -->
+<div class="gate on" id="gate">
+  <div class="paper-surface gate-card">
+    <div class="eyebrow eyebrow-dark">Owner console</div>
+    <h2 class="display" style="margin:6px 0 14px;">Sign in.</h2>
+    <div class="field"><label for="g-email">Email</label>
+      <input type="email" id="g-email" autocomplete="username"></div>
+    <div class="field"><label for="g-pw">Password</label>
+      <input type="password" id="g-pw" autocomplete="current-password"></div>
+    <p class="err" id="g-err"></p>
+    <button class="btn btn-block" type="button" id="g-btn">Sign in</button>
+    <p class="tiny" style="margin-top:14px;color:var(--on-paper-dim);text-align:center;">
+      Requires an account with the admin role. Revenue and buyer details are invisible to
+      every other session, enforced by the database rather than by this page.
+    </p>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">⚙</span>
+      Owner console
+    </a>
+    <div class="nav-links">
+      <span class="mono tiny" id="who"></span>
+      <button class="btn-link" type="button" onclick="GSB.signOut()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" id="app" style="display:none;">
+
+  <div id="alerts"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs" id="tabs">
+    <button type="button" data-p="operators" class="on">Operators</button>
+    <button type="button" data-p="territory">Territory map</button>
+    <button type="button" data-p="revenue">Purchases</button>
+    <button type="button" data-p="blocked">Blocked <span class="badge" id="badge-blocked" style="display:none;">0</span></button>
+    <button type="button" data-p="acceptances">Acceptances</button>
+    <button type="button" data-p="pipeline">Pipeline</button>
+    <button type="button" data-p="settings">Settings</button>
+  </div>
+
+  <section class="pane on" id="p-operators">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Operators</h2>
+    <p class="small muted" style="margin-bottom:16px;">Everyone who has bought a territory. Deactivating
+      releases their cities back to the pool and takes their site offline — their data is kept.</p>
+    <div id="ops"></div>
+  </section>
+
+  <section class="pane" id="p-territory">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Territory map</h2>
+    <p class="small muted" style="margin-bottom:16px;">Every claimed city, from the table the atomic
+      insert actually enforces on. If a city is here, nobody else can buy it.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>City</th><th>State</th><th>Operator</th><th>Claimed</th></tr></thead>
+      <tbody id="claims"></tbody>
+    </table></div>
+  </section>
+
+  <section class="pane" id="p-revenue">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Purchases</h2>
+    <p class="small muted" style="margin-bottom:16px;">Straight from the verified Stripe sessions. Every
+      payment that arrived is here, including ones that failed to provision.</p>
+    <div class="stats" id="rev-stats"></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>When</th><th>Operator</th><th>Paid</th><th>Email</th><th>Session</th><th>Refunded</th></tr></thead>
+      <tbody id="billing"></tbody>
+    </table></div>
+  </section>
+
+  <section class="pane" id="p-blocked">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Blocked purchases</h2>
+    <p class="small muted" style="margin-bottom:16px;">Someone paid and could not be given the territory.
+      <strong>Each unresolved row is money owed to a real person.</strong></p>
+    <div id="blocked"></div>
+  </section>
+
+  <section class="pane" id="p-acceptances">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Acceptance records</h2>
+    <p class="small muted" style="margin-bottom:16px;">What each buyer confirmed, verbatim, with the
+      server's timestamp and a fingerprint of the text. Append-only — nobody can edit or delete these,
+      including from here.</p>
+    <div id="acceptances"></div>
+  </section>
+
+  <section class="pane" id="p-pipeline">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Pipeline</h2>
+    <p class="small muted" style="margin-bottom:16px;">Checkouts started, and people waiting on a city.</p>
+    <h3 class="display" style="font-size:1.05rem;margin:18px 0 10px;">Started checkout</h3>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>When</th><th>Business</th><th>Cities</th><th>Status</th><th>Email</th></tr></thead>
+      <tbody id="intakes"></tbody>
+    </table></div>
+    <h3 class="display" style="font-size:1.05rem;margin:26px 0 10px;">Waitlist</h3>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Cities wanted</th><th>Source</th></tr></thead>
+      <tbody id="waitlist"></tbody>
+    </table></div>
+  </section>
+
+  <section class="pane" id="p-settings">
+    <h2 class="display" style="font-size:1.4rem;margin-bottom:6px;">Settings</h2>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Waitlist mode</div></div>
+      <div class="card-body">
+        <p class="small muted" style="margin-bottom:14px;">When on, the landing page hides every buy
+          button and shows the waitlist form instead. Read live from the database, so it takes effect
+          immediately with no deploy.</p>
+        <div class="check-row">
+          <input type="checkbox" id="wl-mode">
+          <label for="wl-mode" style="font-size:15px;font-weight:700;">Stop selling territories — show the waitlist</label>
+        </div>
+        <p class="err" id="wl-err"></p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Public settings</div></div>
+      <div class="card-body">
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Key</th><th>Value</th></tr></thead>
+          <tbody id="settings-rows"></tbody>
+        </table></div>
+        <p class="tiny muted" style="margin-top:12px;">These are world-readable by design — the landing
+          page reads them with the publishable key. Never put anything private here.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc, $ = function (id) { return document.getElementById(id); };
+  var supa = GSB.supa;
+
+  var tenants = [], claims = [], billing = [], blocked = [], acceptances = [], intakes = [], waitlist = [], settings = [];
+
+  function money(cents) {
+    if (typeof cents !== 'number') return '—';
+    return '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function when(ts) {
+    if (!ts) return '—';
+    var d = new Date(ts);
+    return isNaN(d) ? '—' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  /* ══════════════ AUTH ══════════════ */
+  $('g-btn').addEventListener('click', signIn);
+  $('g-pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
+
+  async function signIn() {
+    var err = $('g-err'), btn = $('g-btn');
+    err.classList.remove('show');
+    var email = $('g-email').value.trim(), pw = $('g-pw').value;
+    if (!email || !pw) { err.textContent = 'Email and password required.'; err.classList.add('show'); return; }
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    var r = await supa.auth.signInWithPassword({ email: email, password: pw });
+    btn.disabled = false; btn.textContent = 'Sign in';
+    if (r.error) { err.textContent = r.error.message || 'Could not sign in.'; err.classList.add('show'); return; }
+    location.reload();
+  }
+
+  (async function boot() {
+    var s = await supa.auth.getSession();
+    if (!s.data || !s.data.session) return;   // gate stays up
+
+    // The database decides. gsb_is_admin() is a SECURITY DEFINER function that
+    // reads the caller's own role from their JWT, so this cannot be spoofed by
+    // anything the browser sends.
+    var a = await supa.rpc('gsb_is_admin');
+    if (a.error || a.data !== true) {
+      $('g-err').textContent = 'That account is signed in but is not an admin.';
+      $('g-err').classList.add('show');
+      return;
+    }
+
+    $('gate').classList.remove('on');
+    $('app').style.display = '';
+    $('who').textContent = s.data.session.user.email || '';
+    await loadAll();
+  })();
+
+  /* ══════════════ TABS ══════════════ */
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-p]');
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll('button[data-p]'), function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    ['operators', 'territory', 'revenue', 'blocked', 'acceptances', 'pipeline', 'settings'].forEach(function (p) {
+      $('p-' + p).classList.toggle('on', p === b.dataset.p);
+    });
+  });
+
+  /* ══════════════ LOAD ══════════════ */
+  async function loadAll() {
+    var out = await Promise.all([
+      supa.from('gsb_tenants').select('*').order('created_at', { ascending: false }),
+      supa.from('gsb_city_claims').select('*').order('claimed_at', { ascending: false }),
+      supa.from('gsb_billing').select('*').order('created_at', { ascending: false }),
+      supa.from('gsb_blocked_purchases').select('*').order('created_at', { ascending: false }),
+      supa.from('gsb_acceptances').select('*').order('accepted_at', { ascending: false }),
+      supa.from('gsb_intake').select('*').order('created_at', { ascending: false }).limit(80),
+      supa.from('gsb_waitlist').select('*').order('created_at', { ascending: false }).limit(120),
+      supa.from('gsb_settings').select('*').order('key')
+    ]);
+
+    /* A FAILED READ IS SURFACED, NEVER RENDERED AS A ZERO.
+       EstateSaleBiz's owner dashboard showed $0.00 when its revenue query
+       failed, which is indistinguishable from "no sales" and is the most
+       misleading possible output on a page whose whole job is telling you how
+       much money came in. */
+    var names = ['operators', 'city claims', 'purchases', 'blocked purchases', 'acceptances', 'checkouts', 'waitlist', 'settings'];
+    var failed = [];
+    out.forEach(function (r, i) { if (r.error) { failed.push(names[i] + ' (' + r.error.message + ')'); } });
+    if (failed.length) {
+      $('alerts').innerHTML = '<div class="warn-strip"><h3>⚠️ Some data failed to load</h3>' +
+        '<p class="small">These figures are INCOMPLETE — do not read a zero below as real:</p>' +
+        '<ul class="small" style="margin:8px 0 0 20px;">' +
+        failed.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>';
+    } else {
+      $('alerts').innerHTML = '';
+    }
+
+    tenants = out[0].data || [];
+    claims = out[1].data || [];
+    billing = out[2].data || [];
+    blocked = out[3].data || [];
+    acceptances = out[4].data || [];
+    intakes = out[5].data || [];
+    waitlist = out[6].data || [];
+    settings = out[7].data || [];
+
+    renderStats();
+    renderOps();
+    renderClaims();
+    renderBilling();
+    renderBlocked();
+    renderAcceptances();
+    renderPipeline();
+    renderSettings();
+  }
+
+  /* ══════════════ STATS ══════════════ */
+  function renderStats() {
+    var active = tenants.filter(function (t) { return t.is_active; });
+    var demo = tenants.filter(function (t) { return t.client_id === 'demo'; }).length;
+    var paid = billing.filter(function (b) { return !b.refunded_at; });
+    var gross = paid.reduce(function (a, b) { return a + (b.amount_paid_cents || 0); }, 0);
+    var refunded = billing.filter(function (b) { return b.refunded_at; }).length;
+    var unresolved = blocked.filter(function (b) { return !b.resolved_at; }).length;
+
+    $('stats').innerHTML = [
+      [active.length - demo, 'Active operators'],
+      [claims.length, 'Cities claimed'],
+      [money(gross), 'Net collected'],
+      [refunded, 'Refunded'],
+      [unresolved, 'Owed a refund']
+    ].map(function (s) {
+      return '<div class="stat"><div class="stat-n">' + esc(s[0]) + '</div><div class="stat-l">' + esc(s[1]) + '</div></div>';
+    }).join('');
+
+    var badge = $('badge-blocked');
+    if (unresolved > 0) { badge.textContent = unresolved; badge.style.display = 'inline-block'; }
+    else badge.style.display = 'none';
+  }
+
+  /* ══════════════ OPERATORS ══════════════ */
+  function renderOps() {
+    if (!tenants.length) {
+      $('ops').innerHTML = '<div class="empty"><h3>No operators yet</h3></div>';
+      return;
+    }
+    $('ops').innerHTML = tenants.map(function (t) {
+      var bill = billing.find(function (b) { return b.slug === t.slug; });
+      var isDemo = t.client_id === 'demo';
+      var held = claims.filter(function (c) { return c.slug === t.slug; }).map(function (c) { return c.city_label; });
+
+      return '<div class="op ' + (t.is_active ? 'on-live' : 'off') + '">' +
+        '<div class="op-top">' +
+          '<div style="flex:1;min-width:240px;">' +
+            '<div class="op-name">' + esc(t.business_name) +
+              (isDemo ? ' <span class="tag tag-draft">demo</span>' : '') +
+              (t.is_active ? '' : ' <span class="tag tag-sold">inactive</span>') +
+            '</div>' +
+            '<div class="op-meta">' +
+              '<a href="https://' + esc(t.slug) + '.' + GSB.APEX + '" target="_blank" rel="noopener">' +
+                esc(t.slug) + '.' + GSB.APEX + ' ↗</a><br>' +
+              esc([t.email, t.phone].filter(Boolean).join(' · ') || 'no contact details') + '<br>' +
+              'Joined ' + esc(when(t.created_at)) +
+              (bill ? ' · paid ' + esc(money(bill.amount_paid_cents)) : (isDemo ? '' : ' · <b style="color:#FFB4A2;">no payment record</b>')) +
+              (bill && bill.refunded_at ? ' · <b style="color:#FFB4A2;">refunded ' + esc(when(bill.refunded_at)) + '</b>' : '') +
+            '</div>' +
+            '<div class="op-cities">' +
+              (held.length
+                ? held.map(function (c) { return '<span class="tag tag-open">' + esc(c) + '</span>'; }).join('')
+                : '<span class="tag tag-draft">no cities held</span>') +
+              // Cities recorded on the operator row but NOT held in the claims
+              // table. Surfaced rather than hidden: it is the signature of a
+              // released-but-not-cleaned territory, and the claims table is what
+              // availability actually consults.
+              (t.cities || []).filter(function (c) { return held.indexOf(c) === -1; })
+                .map(function (c) { return '<span class="tag tag-taken" title="on the operator row but not claimed">' + esc(c) + ' ⚠</span>'; }).join('') +
+            '</div>' +
+          '</div>' +
+          '<div class="op-acts">' +
+            (isDemo ? '<span class="tiny muted">demo — not editable</span>' :
+              (t.is_active
+                ? '<button class="btn btn-sm btn-ghost" type="button" data-off="' + esc(t.slug) + '" ' +
+                  'style="background:var(--ink);color:#FFB4A2;">Deactivate</button>'
+                : '<button class="btn btn-sm btn-sign" type="button" data-on="' + esc(t.slug) + '">Reactivate</button>')) +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  $('ops').addEventListener('click', async function (e) {
+    var b = e.target.closest('button[data-off], button[data-on]');
+    if (!b) return;
+    var slug = b.dataset.off || b.dataset.on;
+    var activate = !!b.dataset.on;
+    var t = tenants.find(function (x) { return x.slug === slug; });
+
+    // Both directions are consequential, so both confirm and both say what will
+    // actually happen — including the part people forget, which is the territory.
+    var msg = activate
+      ? 'Reactivate ' + (t ? t.business_name : slug) + '?\n\n' +
+        'Their site goes back online and we will try to re-claim their cities. ' +
+        'Any city sold to someone else in the meantime CANNOT be restored, and you will be told which.'
+      : 'Deactivate ' + (t ? t.business_name : slug) + '?\n\n' +
+        'Their public site goes offline immediately and their cities return to the available pool ' +
+        'for anyone to buy.\n\nTheir sales, items, photos and client list are NOT deleted.';
+    if (!confirm(msg)) return;
+
+    b.disabled = true;
+    b.textContent = activate ? 'Reactivating…' : 'Deactivating…';
+
+    // One RPC, so the status change and the territory release cannot come apart.
+    var r = await supa.rpc('gsb_admin_set_tenant_active', { p_slug: slug, p_active: activate });
+    if (r.error) {
+      GSB.toast('Failed: ' + r.error.message, true);
+      b.disabled = false;
+      b.textContent = activate ? 'Reactivate' : 'Deactivate';
+      return;
+    }
+
+    var d = r.data || {};
+    if (d.warning) {
+      // Never a toast that disappears. This says a paying operator's territory is
+      // partly gone, and it has to still be on screen when the page reloads.
+      $('alerts').innerHTML = '<div class="warn-strip"><h3>⚠️ Reactivated with a problem</h3>' +
+        '<p class="small">' + esc(d.warning) + '</p>' +
+        '<p class="small" style="margin-top:8px;">Their site is live again but advertises a service area ' +
+        'that includes cities another operator now holds. Contact them and agree a replacement city.</p></div>';
+    } else if (activate) {
+      GSB.toast('Reactivated. Cities restored: ' + ((d.reclaimed || []).join(', ') || 'none recorded'));
+    } else {
+      GSB.toast('Deactivated. Cities released: ' + ((d.released || []).join(', ') || 'none were held'));
+    }
+
+    await loadAll();
+  });
+
+  /* ══════════════ CLAIMS ══════════════ */
+  function renderClaims() {
+    if (!claims.length) { $('claims').innerHTML = '<tr><td colspan="4" class="muted">No cities claimed yet.</td></tr>'; return; }
+    $('claims').innerHTML = claims.map(function (c) {
+      var t = tenants.find(function (x) { return x.slug === c.slug; });
+      return '<tr>' +
+        '<td><b>' + esc(c.city_label) + '</b><br><span class="tiny muted mono">' + esc(c.city_norm) + '</span></td>' +
+        '<td>' + esc((c.city_label.indexOf(',') !== -1 ? c.city_label.split(',').pop().trim().toUpperCase() : '—')) + '</td>' +
+        '<td>' + esc(t ? t.business_name : c.slug) +
+          (t && !t.is_active ? ' <span class="tag tag-sold">inactive</span>' : '') + '</td>' +
+        '<td>' + esc(when(c.claimed_at)) + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  /* ══════════════ BILLING ══════════════ */
+  function renderBilling() {
+    var paid = billing.filter(function (b) { return !b.refunded_at; });
+    var gross = paid.reduce(function (a, b) { return a + (b.amount_paid_cents || 0); }, 0);
+    var refundedAmt = billing.filter(function (b) { return b.refunded_at; })
+      .reduce(function (a, b) { return a + (b.refund_amount_cents || b.amount_paid_cents || 0); }, 0);
+    // Payments with no operator behind them. Every one is either a blocked
+    // purchase or a provisioning failure, and each is money that arrived for
+    // something nobody received.
+    var orphan = billing.filter(function (b) { return !b.slug && !b.refunded_at; });
+
+    $('rev-stats').innerHTML = [
+      [billing.length, 'Payments'],
+      [money(gross), 'Net collected'],
+      [money(refundedAmt), 'Refunded'],
+      [orphan.length, 'Paid, not provisioned']
+    ].map(function (s) {
+      return '<div class="stat"><div class="stat-n">' + esc(s[0]) + '</div><div class="stat-l">' + esc(s[1]) + '</div></div>';
+    }).join('');
+
+    if (!billing.length) { $('billing').innerHTML = '<tr><td colspan="6" class="muted">No payments yet.</td></tr>'; return; }
+    $('billing').innerHTML = billing.map(function (b) {
+      var t = tenants.find(function (x) { return x.slug === b.slug; });
+      return '<tr' + (b.refunded_at ? ' style="opacity:.65;"' : '') + '>' +
+        '<td>' + esc(when(b.created_at)) + '</td>' +
+        '<td>' + (b.slug
+          ? esc(t ? t.business_name : b.slug)
+          : '<b style="color:#FFB4A2;">not provisioned</b>') + '</td>' +
+        '<td><b>' + esc(money(b.amount_paid_cents)) + '</b>' +
+          (b.amount_discount_cents ? '<br><span class="tiny muted">−' + esc(money(b.amount_discount_cents)) + ' promo</span>' : '') + '</td>' +
+        '<td class="tiny">' + esc(b.customer_email || '—') + '</td>' +
+        '<td class="mono-cell">' + esc(b.stripe_session_id) + '</td>' +
+        '<td>' + (b.refunded_at
+          ? '<span class="tag tag-sold">' + esc(when(b.refunded_at)) + '</span>'
+          : '<span class="tag tag-open">no</span>') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  /* ══════════════ BLOCKED ══════════════ */
+  function renderBlocked() {
+    var unresolved = blocked.filter(function (b) { return !b.resolved_at; });
+    var h = '';
+
+    if (unresolved.length) {
+      h += '<div class="warn-strip"><h3>' + unresolved.length + ' ' +
+        (unresolved.length === 1 ? 'person is' : 'people are') + ' owed a refund or another city</h3>' +
+        '<p class="small">Each of these paid and could not be given the territory. Refund in Stripe or ' +
+        'contact them to choose another city, then mark it resolved so it stops appearing here.</p></div>';
+    }
+
+    if (!blocked.length) {
+      h += '<div class="empty"><h3>Nothing blocked</h3><p class="small">No purchase has ever failed on a ' +
+        'territory conflict. Because cities are chosen and checked before payment, this table should stay ' +
+        'nearly empty — a run of entries means two people are repeatedly racing for the same city.</p></div>';
+      $('blocked').innerHTML = h;
+      return;
+    }
+
+    h += blocked.map(function (b) {
+      return '<div class="op' + (b.resolved_at ? '' : ' off') + '">' +
+        '<div class="op-top">' +
+          '<div style="flex:1;min-width:240px;">' +
+            '<div class="op-name">' + esc(b.company || b.email || 'Unknown buyer') +
+              (b.resolved_at ? ' <span class="tag tag-open">' + esc(b.resolution) + '</span>'
+                             : ' <span class="tag tag-sold">unresolved</span>') + '</div>' +
+            '<div class="op-meta">' +
+              'Wanted <b>' + esc(b.conflict_city) + '</b>, which was taken' +
+              (b.stage === 'lost-race' ? ' in the same moment (lost the race)' : ' already') + '<br>' +
+              'Requested: ' + esc((b.requested_cities || []).join(', ') || '—') + '<br>' +
+              'Paid <b>' + esc(money(b.amount_paid_cents)) + '</b> · ' + esc(when(b.created_at)) + '<br>' +
+              esc([b.contact, b.email, b.phone].filter(Boolean).join(' · ')) + '<br>' +
+              '<span class="mono-cell">' + esc(b.stripe_session_id) + '</span>' +
+            '</div>' +
+          '</div>' +
+          (b.resolved_at ? '' :
+            '<div class="op-acts">' +
+              '<button class="btn btn-sm" type="button" data-resolve="' + b.id + '" data-r="refunded">Refunded</button>' +
+              '<button class="btn btn-sm btn-sign" type="button" data-resolve="' + b.id + '" data-r="reassigned">Gave another city</button>' +
+            '</div>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    $('blocked').innerHTML = h;
+  }
+
+  $('blocked').addEventListener('click', async function (e) {
+    var b = e.target.closest('button[data-resolve]');
+    if (!b) return;
+    var id = Number(b.dataset.resolve), res = b.dataset.r;
+    if (!confirm('Mark this as ' + res + '?\n\nThis records that the money has been dealt with. ' +
+      'Make sure you have actually issued the refund or agreed the replacement city first.')) return;
+
+    b.disabled = true; b.textContent = 'Saving…';
+    var r = await supa.from('gsb_blocked_purchases')
+      .update({ resolved_at: new Date().toISOString(), resolution: res })
+      .eq('id', id).select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Marking as resolved' })) {
+      b.disabled = false; b.textContent = res === 'refunded' ? 'Refunded' : 'Gave another city';
+      return;
+    }
+    GSB.toast('Marked as ' + res + '.');
+    await loadAll();
+  });
+
+  /* ══════════════ ACCEPTANCES ══════════════ */
+  function renderAcceptances() {
+    if (!acceptances.length) {
+      $('acceptances').innerHTML = '<div class="empty"><h3>No acceptance records yet</h3>' +
+        '<p class="small">One is written for every purchase.</p></div>';
+      return;
+    }
+    $('acceptances').innerHTML = acceptances.map(function (a) {
+      var t = tenants.find(function (x) { return x.client_id === a.client_id; });
+      return '<details class="acc">' +
+        '<summary>' + esc(t ? t.business_name : (a.client_id || 'unknown')) +
+          ' · ' + esc(when(a.accepted_at)) +
+          ' · <span class="mono tiny">' + esc(a.acceptance_version) + '</span></summary>' +
+        '<div class="small" style="margin-top:11px;line-height:1.8;">' +
+          '<b>Server time:</b> ' + esc(a.accepted_at) + '<br>' +
+          '<b>Browser claimed:</b> ' + esc(a.client_claimed_at || '—') + '<br>' +
+          '<b>Stripe session:</b> <span class="mono-cell">' + esc(a.stripe_session_id) + '</span><br>' +
+          '<b>SHA-256 of the text:</b> <span class="mono-cell">' + esc(a.acceptance_sha256) + '</span><br>' +
+          '<b>Documents in force:</b> <span class="mono-cell">' + esc(JSON.stringify(a.documents)) + '</span><br>' +
+          '<b>User agent:</b> <span class="tiny">' + esc(a.user_agent || '—') + '</span>' +
+        '</div>' +
+        '<pre>' + esc(a.acceptance_text) + '</pre>' +
+      '</details>';
+    }).join('');
+  }
+
+  /* ══════════════ PIPELINE ══════════════ */
+  function renderPipeline() {
+    if (!intakes.length) { $('intakes').innerHTML = '<tr><td colspan="5" class="muted">No checkouts started.</td></tr>'; }
+    else {
+      $('intakes').innerHTML = intakes.map(function (i) {
+        var TAG = { provisioned: 'tag-open', awaiting_payment: 'tag-draft', blocked: 'tag-sold', abandoned: 'tag-draft' };
+        return '<tr>' +
+          '<td>' + esc(when(i.created_at)) + '</td>' +
+          '<td>' + esc(i.company) + '</td>' +
+          '<td class="tiny">' + esc((i.claim_cities || []).join(', ')) + '</td>' +
+          '<td><span class="tag ' + (TAG[i.status] || 'tag-draft') + '">' + esc(i.status.replace(/_/g, ' ')) + '</span></td>' +
+          '<td class="tiny">' + esc(i.email || '—') + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    if (!waitlist.length) { $('waitlist').innerHTML = '<tr><td colspan="5" class="muted">Nobody on the waitlist.</td></tr>'; return; }
+    $('waitlist').innerHTML = waitlist.map(function (w) {
+      return '<tr>' +
+        '<td>' + esc(when(w.created_at)) + '</td>' +
+        '<td>' + esc(w.name || '—') + '</td>' +
+        '<td class="tiny">' + esc(w.email) + '</td>' +
+        '<td>' + esc((w.cities_requested || []).join(', ') || '—') + '</td>' +
+        '<td class="tiny muted">' + esc(w.source || '—') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  /* ══════════════ SETTINGS ══════════════ */
+  function renderSettings() {
+    var wl = settings.find(function (s) { return s.key === 'waitlist_mode'; });
+    $('wl-mode').checked = !!(wl && String(wl.value).toLowerCase() === 'true');
+
+    $('settings-rows').innerHTML = settings.map(function (s) {
+      return '<tr><td class="mono-cell">' + esc(s.key) + '</td><td>' + esc(s.value === null ? '(null)' : s.value) + '</td></tr>';
+    }).join('');
+  }
+
+  $('wl-mode').addEventListener('change', async function () {
+    var on = this.checked;
+    var err = $('wl-err');
+    err.classList.remove('show');
+    var r = await supa.from('gsb_settings')
+      .update({ value: on ? 'true' : 'false' }).eq('key', 'waitlist_mode').select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Changing waitlist mode' })) {
+      this.checked = !on;   // revert the switch so it never shows a state that was not saved
+      err.textContent = 'That did not save — the switch has been put back.';
+      err.classList.add('show');
+      return;
+    }
+    GSB.toast(on ? 'Waitlist mode ON — buy buttons hidden on the landing page.'
+                 : 'Waitlist mode OFF — territories are on sale again.');
+    await loadAll();
+  });
+})();
+</script>
+</body>
+</html>

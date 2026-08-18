@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- The real title is set by storefront.js from the operator's business name.
+     This placeholder is what a crawler sees before scripts run, so it must not
+     say "GarageSaleBiz" — on an operator's own domain that would advertise the
+     platform above their business in search results. -->
+<title>Garage &amp; Moving Sales</title>
+<meta name="description" content="Upcoming garage and moving sales, with photos and prices.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<link rel="stylesheet" href="/assets/storefront.css">
+</head>
+<body class="gsb-glow">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     THE OPERATOR STOREFRONT — served at every *.garagesalebiz.com subdomain by
+     middleware.js, which rewrites "/" here.
+
+     This file is a SHELL. Every pixel is rendered by assets/storefront.js from
+     the operator resolved out of location.hostname, so adding an operator never
+     touches this deployment. demo.html is the same shell with its tenant forced,
+     which is what stops the two drifting apart the way EstateSaleBiz's real
+     storefront and its hardcoded marketing pages did.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div id="sf-root"><noscript>
+  <div style="padding:40px 20px;max-width:640px;margin:0 auto;">
+    <h1 class="display">Sale listings need JavaScript</h1>
+    <p class="lede" style="margin-top:12px;">
+      This page loads its sale details live, so it needs JavaScript switched on.
+      If you are looking for a specific sale, the address and times will be on the
+      sign or listing that sent you here.
+    </p>
+  </div>
+</noscript></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script src="/assets/storefront.js"></script>
+</body>
+</html>

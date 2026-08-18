@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Garage Sale Operator Course — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.crs-top { position: sticky; top: 0; z-index: 60; background: var(--ink); border-bottom: 3px solid var(--sign); }
+.crs-top-in {
+  max-width: 940px; margin: 0 auto; padding: 0 var(--gutter); min-height: 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.crs-progress { display: flex; align-items: center; gap: 10px; }
+.crs-track { width: 130px; height: 8px; background: var(--ink-line); border: 2px solid var(--ink-line); }
+.crs-fill { height: 100%; background: var(--sign); transition: width .35s; }
+.crs-plabel { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; white-space: nowrap; color: var(--on-ink-dim); }
+
+.wrap { max-width: 940px; margin: 0 auto; padding: 28px var(--gutter) 80px; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.crs-hero { padding: 28px 26px; margin-bottom: 22px; }
+.crs-hero h1 { font-size: clamp(1.7rem, 4.4vw, 2.5rem); color: var(--ink); }
+.crs-hero p { margin-top: 10px; font-size: 15px; line-height: 1.7; color: #3B3325; max-width: 66ch; }
+.crs-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 16px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #4A4029; }
+
+/* ── MODULE CARDS ─────────────────────────────────────────────────────────── */
+.mod-card {
+  border: 2px solid var(--ink-line); background: var(--ink-soft);
+  margin-bottom: 14px; cursor: pointer; display: flex; gap: 18px; padding: 20px;
+  align-items: flex-start; text-align: left; width: 100%;
+  color: var(--on-ink); font-family: var(--body);
+}
+.mod-card:hover { border-color: var(--sign); }
+.mod-card.done { border-left: 5px solid var(--open); }
+.mod-ico { font-size: 1.9rem; line-height: 1; flex-shrink: 0; }
+.mod-body { flex: 1; min-width: 0; }
+.mod-n { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--on-ink-dim); }
+.mod-t { font-family: var(--display); text-transform: uppercase; font-size: 1.2rem; letter-spacing: .02em; margin: 4px 0 6px; }
+.mod-tag { font-size: 14px; color: var(--on-ink-dim); line-height: 1.6; }
+.mod-foot { display: flex; gap: 8px 18px; flex-wrap: wrap; margin-top: 11px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--on-ink-dim); }
+
+/* ── MODULE VIEW ──────────────────────────────────────────────────────────── */
+.mv-head { margin-bottom: 22px; }
+.mv-back { margin-bottom: 16px; }
+.mv-title { font-size: clamp(1.5rem, 3.6vw, 2.2rem); }
+.mv-tag { margin-top: 8px; font-size: 15px; color: var(--on-ink-dim); line-height: 1.7; max-width: 68ch; }
+
+.obj { border: 2px solid var(--sign); background: rgba(255,206,59,.06); padding: 18px 20px; margin-bottom: 26px; }
+.obj h3 { font-family: var(--display); text-transform: uppercase; font-size: .95rem; color: var(--sign); letter-spacing: .04em; margin-bottom: 10px; }
+.obj ol { margin-left: 20px; }
+.obj li { font-size: 14px; line-height: 1.65; margin-bottom: 6px; }
+
+.lesson { border: 2px solid var(--ink-line); background: var(--ink-soft); margin-bottom: 14px; }
+.lesson-btn {
+  width: 100%; background: none; border: none; color: var(--on-ink);
+  padding: 17px 20px; cursor: pointer; text-align: left;
+  display: flex; align-items: center; gap: 15px; font-family: var(--body);
+}
+.lesson-btn:hover { background: rgba(255,206,59,.06); }
+.lesson-n {
+  width: 32px; height: 32px; flex-shrink: 0; border: 2px solid var(--sign); color: var(--sign);
+  display: grid; place-items: center; font-family: var(--display); font-size: 1rem;
+}
+.lesson-t { flex: 1; font-weight: 800; font-size: 15px; line-height: 1.4; }
+.lesson-m { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--on-ink-dim); flex-shrink: 0; }
+.lesson-mark { color: var(--sign); font-family: var(--mono); font-size: 17px; flex-shrink: 0; }
+.lesson.open .lesson-mark { transform: rotate(45deg); }
+.lesson-body { display: none; padding: 4px 20px 24px; }
+.lesson.open .lesson-body { display: block; }
+
+/* ── LESSON PROSE ─────────────────────────────────────────────────────────── */
+.lesson-body h3 {
+  font-family: var(--display); text-transform: uppercase; font-size: 1.05rem;
+  letter-spacing: .03em; color: var(--sign); margin: 24px 0 9px;
+}
+.lesson-body h3:first-child { margin-top: 8px; }
+.lesson-body p { font-size: 15px; line-height: 1.75; margin-bottom: 13px; color: var(--on-ink); }
+.lesson-body ul, .lesson-body ol { margin: 0 0 15px 22px; }
+.lesson-body li { font-size: 15px; line-height: 1.7; margin-bottom: 8px; }
+.lesson-body strong { color: #FFE49A; }
+.lesson-body blockquote {
+  border-left: 4px solid var(--sign); background: rgba(255,206,59,.06);
+  padding: 13px 17px; margin: 0 0 15px; font-size: 15px; line-height: 1.7; font-style: italic;
+}
+.lesson-body em { font-style: italic; }
+.crs-mono { font-family: var(--mono); font-size: .92em; background: rgba(255,255,255,.06); padding: 1px 5px; }
+
+.crs-tip, .crs-note, .crs-warn {
+  border-left: 5px solid var(--sign); background: rgba(255,206,59,.07);
+  padding: 14px 17px; margin: 18px 0; font-size: 14px; line-height: 1.7;
+}
+.crs-note { border-left-color: #7FB2E0; background: rgba(127,178,224,.08); }
+.crs-warn { border-left-color: var(--stamp); background: rgba(192,49,31,.1); }
+
+.crs-diagram { margin: 20px 0; border: 2px solid var(--ink-line); background: #F6F0E1; padding: 14px; }
+.crs-diagram svg { display: block; width: 100%; height: auto; }
+.crs-caption { font-size: 13px; line-height: 1.6; color: #4A4029; margin-top: 10px; font-style: italic; }
+
+.mv-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; padding-top: 22px; border-top: 2px solid var(--ink-line); }
+.mv-nav .btn { flex: 1; min-width: 170px; }
+
+.legal-note {
+  border: 2px solid var(--ink-line); border-left: 5px solid var(--ink-line);
+  padding: 14px 17px; margin-bottom: 22px; font-size: 13px; line-height: 1.65; color: var(--on-ink-dim);
+}
+</style>
+</head>
+<body class="gsb-glow">
+
+<header class="crs-top">
+  <div class="crs-top-in">
+    <a class="brand" href="#" id="crs-home" style="font-size:.95rem;">
+      <span class="brand-mark" aria-hidden="true">🎓</span>
+      <span>The Operator Course</span>
+    </a>
+    <div class="crs-progress">
+      <div class="crs-track"><div class="crs-fill" id="crs-fill" style="width:0%;"></div></div>
+      <div class="crs-plabel" id="crs-plabel">0 of 4</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="legal-note">
+    Educational material for GarageSaleBiz operators. <strong>Not legal, tax, or insurance advice.</strong>
+    Permit rules, sign ordinances, licensing, sales tax, and the employee-versus-contractor question all
+    vary by state and city — verify anything of that kind with the relevant authority or a licensed
+    professional where you operate. © 2026 Kingdom Creatives LLC. Licensed to the registered operator
+    for their own business use; not for redistribution or resale.
+  </div>
+
+  <div id="mount"></div>
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="small">
+      <a href="/dashboard.html">← Back to dashboard</a> ·
+      Questions? <a href="mailto:info@kingdom-creatives.com">info@kingdom-creatives.com</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/course-data.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var mount = $('mount');
+
+  /* Progress lives in localStorage, per browser. Deliberately NOT in the
+     database: it is a reading bookmark, not a record anything depends on, and
+     nothing in this product gates on course completion — so a table, an RLS
+     policy, and a write path on every lesson click would all be cost with no
+     corresponding benefit. EstateSaleBiz gated module completion on a quiz and
+     needed schema for it; there are no quizzes here. */
+  var LS = 'gsb_course_done';
+
+  function loadDone() {
+    try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); }
+    catch (e) { return new Set(); }
+  }
+  function saveDone(s) {
+    try { localStorage.setItem(LS, JSON.stringify([].concat(Array.from(s)))); } catch (e) {}
+  }
+
+  var done = loadDone();
+  var view = null;   // null = module list, otherwise a module number
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function totals() {
+    var mins = COURSE_MODULES.reduce(function (a, m) { return a + (m.minutes || 0); }, 0);
+    var lessons = COURSE_MODULES.reduce(function (a, m) { return a + m.lessons.length; }, 0);
+    return { mins: mins, lessons: lessons };
+  }
+
+  function refreshProgress() {
+    var total = COURSE_MODULES.length;
+    $('crs-fill').style.width = Math.round((done.size / total) * 100) + '%';
+    $('crs-plabel').textContent = done.size + ' of ' + total;
+  }
+
+  /* ── LIST VIEW ────────────────────────────────────────────────────────── */
+  function renderList() {
+    var t = totals();
+    var h = '';
+
+    h += '<div class="sign-surface stapled crs-hero">' +
+      '<div class="eyebrow eyebrow-dark">' + esc(COURSE_META.moduleCount) + ' modules · ' + t.lessons + ' lessons</div>' +
+      '<h1 class="display">' + esc(COURSE_META.title) + '</h1>' +
+      '<p>' + esc(COURSE_META.tagline) + ' Work through them in order — each module assumes the one ' +
+      'before it. There are no quizzes and nothing is locked; tick a module off when you have read it, ' +
+      'so you know where you got to.</p>' +
+      '<div class="crs-meta">' +
+        '<span>📚 ' + COURSE_MODULES.length + ' modules</span>' +
+        '<span>📖 ' + t.lessons + ' lessons</span>' +
+        '<span>⏱️ about ' + Math.round(t.mins / 60 * 10) / 10 + ' hours</span>' +
+      '</div>' +
+    '</div>';
+
+    COURSE_MODULES.forEach(function (m) {
+      var isDone = done.has(m.num);
+      h += '<button type="button" class="mod-card' + (isDone ? ' done' : '') + '" data-open="' + m.num + '">' +
+        '<span class="mod-ico" aria-hidden="true">' + esc(m.icon) + '</span>' +
+        '<span class="mod-body">' +
+          '<span class="mod-n">Module ' + m.num + (isDone ? ' · read' : '') + '</span>' +
+          '<span class="mod-t" style="display:block;">' + esc(m.title) + '</span>' +
+          '<span class="mod-tag" style="display:block;">' + esc(m.tagline) + '</span>' +
+          '<span class="mod-foot">' +
+            '<span>' + m.lessons.length + ' lessons</span>' +
+            '<span>~' + m.minutes + ' min</span>' +
+            (isDone ? '<span style="color:var(--open);">✓ Read</span>' : '') +
+          '</span>' +
+        '</span>' +
+      '</button>';
+    });
+
+    mount.innerHTML = h;
+    refreshProgress();
+  }
+
+  /* ── MODULE VIEW ──────────────────────────────────────────────────────── */
+  function renderModule(num) {
+    var m = COURSE_MODULES.find(function (x) { return x.num === num; });
+    if (!m) { view = null; renderList(); return; }
+    var isDone = done.has(m.num);
+
+    var h = '';
+    h += '<div class="mv-back"><button class="btn btn-sm btn-ghost" type="button" id="back-btn" ' +
+      'style="background:var(--ink-soft);">← All modules</button></div>';
+
+    h += '<div class="mv-head">' +
+      '<div class="eyebrow">Module ' + m.num + ' of ' + COURSE_MODULES.length + ' · ~' + m.minutes + ' min</div>' +
+      '<h1 class="display mv-title">' + esc(m.icon) + ' ' + esc(m.title) + '</h1>' +
+      '<p class="mv-tag">' + esc(m.tagline) + '</p>' +
+    '</div>';
+
+    if (m.objectives && m.objectives.length) {
+      h += '<div class="obj"><h3>By the end of this module you can</h3><ol>' +
+        m.objectives.map(function (o) { return '<li>' + esc(o) + '</li>'; }).join('') +
+        '</ol></div>';
+    }
+
+    m.lessons.forEach(function (l, i) {
+      // l.html is authored content from course-data.js, NOT user input, so it is
+      // inserted as markup on purpose — the lessons contain headings, lists, and
+      // inline SVG diagrams. Titles are escaped because they are interpolated
+      // into attributes and text nodes, and escaping them costs nothing.
+      h += '<div class="lesson' + (i === 0 ? ' open' : '') + '">' +
+        '<button class="lesson-btn" type="button">' +
+          '<span class="lesson-n">' + (i + 1) + '</span>' +
+          '<span class="lesson-t">' + esc(l.title) + '</span>' +
+          '<span class="lesson-m">' + l.minutes + ' min</span>' +
+          '<span class="lesson-mark">+</span>' +
+        '</button>' +
+        '<div class="lesson-body">' + l.html + '</div>' +
+      '</div>';
+    });
+
+    var prev = COURSE_MODULES.find(function (x) { return x.num === m.num - 1; });
+    var next = COURSE_MODULES.find(function (x) { return x.num === m.num + 1; });
+
+    h += '<div class="mv-nav">' +
+      (prev ? '<button class="btn btn-ghost" type="button" data-open="' + prev.num + '" ' +
+        'style="background:var(--ink-soft);">← Module ' + prev.num + '</button>' : '') +
+      '<button class="btn ' + (isDone ? 'btn-ghost' : 'btn-sign') + '" type="button" id="mark-btn"' +
+        (isDone ? ' style="background:var(--ink-soft);color:var(--on-ink);"' : '') + '>' +
+        (isDone ? '✓ Marked as read — undo' : 'Mark module ' + m.num + ' as read') +
+      '</button>' +
+      (next ? '<button class="btn" type="button" data-open="' + next.num + '">Module ' + next.num + ' →</button>' : '') +
+    '</div>';
+
+    mount.innerHTML = h;
+    refreshProgress();
+
+    $('back-btn').addEventListener('click', function () { view = null; renderList(); window.scrollTo({ top: 0 }); });
+    $('mark-btn').addEventListener('click', function () {
+      if (done.has(m.num)) done.delete(m.num); else done.add(m.num);
+      saveDone(done);
+      renderModule(m.num);
+    });
+  }
+
+  /* ── EVENTS ───────────────────────────────────────────────────────────── */
+  mount.addEventListener('click', function (e) {
+    var open = e.target.closest('[data-open]');
+    if (open) {
+      view = Number(open.dataset.open);
+      renderModule(view);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    var lb = e.target.closest('.lesson-btn');
+    if (lb) lb.parentElement.classList.toggle('open');
+  });
+
+  $('crs-home').addEventListener('click', function (e) {
+    e.preventDefault();
+    view = null;
+    renderList();
+    window.scrollTo({ top: 0 });
+  });
+
+  renderList();
+})();
+</script>
+</body>
+</html>

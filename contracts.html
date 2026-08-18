@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client agreements — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+.app { display: grid; grid-template-columns: 380px 1fr; min-height: 100vh; }
+@media (max-width: 1020px) { .app { grid-template-columns: 1fr; } }
+
+.panel { background: var(--ink-soft); border-right: 3px solid var(--sign); padding: 22px 20px 60px; overflow-y: auto; }
+@media (min-width: 1021px) { .panel { max-height: 100vh; position: sticky; top: 0; } }
+.panel h1 { font-family: var(--display); text-transform: uppercase; font-size: 1.15rem; letter-spacing: .04em; }
+.panel .sub { font-size: 14px; color: var(--on-ink-dim); margin: 6px 0 18px; line-height: 1.6; }
+fieldset { border: none; margin-bottom: 20px; }
+legend {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--on-ink-dim);
+  border-bottom: 2px solid var(--ink-line); width: 100%; padding-bottom: 6px; margin-bottom: 12px;
+}
+.hint { font-size: 13px; color: var(--on-ink-dim); margin-top: 7px; line-height: 1.55; }
+
+.variant-tabs { display: flex; gap: 8px; }
+.variant-tab {
+  flex: 1; background: var(--ink-soft); color: var(--on-ink); border: 2px solid var(--ink-line);
+  padding: 11px 12px; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.variant-tab.on { background: var(--sign); color: var(--ink); border-color: var(--ink); }
+
+.stage { padding: 26px 20px 70px; background: #0F0D09; overflow-x: auto; }
+.stage-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.scale-wrap { transform-origin: top left; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   THE DOCUMENT — real US Letter, sized in inches so print output is
+   dimensionally correct rather than whatever the browser guesses.
+   ══════════════════════════════════════════════════════════════════════════ */
+.doc {
+  background: #fff; color: #111;
+  width: 8.5in; min-height: 11in;
+  padding: .85in .9in;
+  box-shadow: 0 20px 50px rgba(0,0,0,.6);
+  font-family: 'Libre Franklin', Georgia, serif;
+  font-size: 10.5pt; line-height: 1.6;
+  margin-bottom: 26px;
+}
+.doc h1 {
+  font-family: 'Anton', Impact, sans-serif; text-transform: uppercase;
+  font-size: 22pt; line-height: 1.05; letter-spacing: .01em; margin-bottom: .06in;
+}
+.doc .doc-sub { font-size: 9.5pt; letter-spacing: .16em; text-transform: uppercase; color: #555; }
+.doc-rule { border-top: 2px solid #111; margin: .18in 0 .22in; }
+.doc h2 {
+  font-family: 'Anton', Impact, sans-serif; text-transform: uppercase;
+  font-size: 12pt; letter-spacing: .04em; margin: .24in 0 .07in;
+}
+.doc p { margin-bottom: .1in; }
+.doc ul, .doc ol { margin: .05in 0 .12in .26in; }
+.doc li { margin-bottom: .05in; }
+.doc .field-line { border-bottom: 1px solid #111; display: inline-block; min-width: 2.2in; }
+
+.parties { display: grid; grid-template-columns: 1fr 1fr; gap: .3in; margin-bottom: .1in; }
+.party-lbl { font-family: 'Space Mono', monospace; font-size: 8pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #666; }
+.party-val { font-weight: 800; font-size: 12pt; margin-top: .03in; }
+.party-sub { font-size: 9.5pt; color: #444; }
+
+.keyterms { border: 2px solid #111; margin: .2in 0; }
+.keyterms-row { display: grid; grid-template-columns: 1.5in 1fr; border-bottom: 1px solid #999; }
+.keyterms-row:last-child { border-bottom: none; }
+.keyterms-k {
+  background: #F2EDE0; padding: .09in .12in; border-right: 1px solid #999;
+  font-family: 'Space Mono', monospace; font-size: 8pt; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.keyterms-v { padding: .09in .12in; font-weight: 700; }
+
+.callout { background: #F2EDE0; border-left: 4px solid #111; padding: .12in .14in; margin: .16in 0; font-size: 10pt; }
+
+.sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .45in; margin-top: .3in; }
+.sig-line { border-bottom: 1.5px solid #111; height: .42in; }
+.sig-lbl { font-family: 'Space Mono', monospace; font-size: 8pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #555; margin-top: .05in; }
+.sig-name { font-size: 10pt; margin-top: .1in; }
+
+.doc-foot {
+  margin-top: .3in; padding-top: .12in; border-top: 1px solid #999;
+  font-size: 8pt; color: #666; line-height: 1.5;
+}
+
+/* Legal-review banner. Deliberately printed ON the document, not only shown in
+   the app: an operator who prints this and never sees the app again must still
+   have the warning in front of them. */
+.review-banner {
+  border: 2px solid #111; background: #FFF3CC;
+  padding: .12in .14in; margin-bottom: .2in; font-size: 9.5pt; line-height: 1.5;
+}
+
+@page { margin: 0; }
+@media print {
+  html, body { background: #fff !important; }
+  .app { display: block; }
+  .panel, .stage-head, .no-print { display: none !important; }
+  .stage { padding: 0; background: #fff; overflow: visible; }
+  .scale-wrap { transform: none !important; height: auto !important; }
+  .doc { box-shadow: none; margin: 0; width: auto; min-height: 0; page-break-after: always; }
+  .doc:last-of-type { page-break-after: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="panel no-print">
+    <h1>Client agreements</h1>
+    <p class="sub">Fill this in, print two copies, and both sign before you touch anything in the
+      garage. The agreement is what turns a favour into a job.</p>
+
+    <div id="prefill-note"></div>
+
+    <fieldset>
+      <legend>Which agreement</legend>
+      <div class="variant-tabs" id="variant-tabs">
+        <button type="button" class="variant-tab on" data-v="garage">Garage sale</button>
+        <button type="button" class="variant-tab" data-v="moving">Moving sale</button>
+      </div>
+      <p class="hint" id="variant-hint"></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>You</legend>
+      <div class="field"><label for="f-op">Your business name</label><input type="text" id="f-op"></div>
+      <div class="field"><label for="f-op-person">Your name</label><input type="text" id="f-op-person"></div>
+      <div class="row-2">
+        <div class="field"><label for="f-op-phone">Phone</label><input type="tel" id="f-op-phone"></div>
+        <div class="field"><label for="f-op-email">Email</label><input type="email" id="f-op-email"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your client</legend>
+      <div class="field"><label for="f-client">Client name</label>
+        <input type="text" id="f-client" list="client-list">
+        <datalist id="client-list"></datalist></div>
+      <div class="row-2">
+        <div class="field"><label for="f-client-phone">Phone</label><input type="tel" id="f-client-phone"></div>
+        <div class="field"><label for="f-client-email">Email</label><input type="email" id="f-client-email"></div>
+      </div>
+      <div class="field"><label for="f-addr">Property address</label><input type="text" id="f-addr"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>The sale</legend>
+      <div class="row-2">
+        <div class="field"><label for="f-start">First day</label><input type="date" id="f-start"></div>
+        <div class="field"><label for="f-end">Last day</label><input type="date" id="f-end"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label for="f-open">Opens</label><input type="time" id="f-open" value="08:00"></div>
+        <div class="field"><label for="f-close">Closes</label><input type="time" id="f-close" value="15:00"></div>
+      </div>
+      <div class="field"><label for="f-setup">Set-up starts</label><input type="date" id="f-setup"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Money</legend>
+      <div class="row-2">
+        <div class="field"><label for="f-comm">Your commission %</label>
+          <input type="number" id="f-comm" min="1" max="99" step="1" value="50"></div>
+        <div class="field"><label for="f-min">Minimum fee $</label>
+          <input type="number" id="f-min" min="0" step="10" placeholder="250"></div>
+      </div>
+      <p class="hint">The minimum fee protects you when a sale takes far less than expected — you
+        still did the same days of work. Leave it blank for no minimum.</p>
+      <div class="field"><label for="f-settle">Settle up within</label>
+        <select id="f-settle">
+          <option value="3">3 days of the sale ending</option>
+          <option value="5">5 days of the sale ending</option>
+          <option value="7" selected>7 days of the sale ending</option>
+          <option value="14">14 days of the sale ending</option>
+        </select></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Leftovers</legend>
+      <div class="field"><label for="f-unsold">What happens to unsold items</label>
+        <select id="f-unsold">
+          <option value="client">Client keeps everything unsold</option>
+          <option value="donate" selected>Operator donates unsold items, client gets the receipt</option>
+          <option value="haul">Operator hauls away for an agreed fee</option>
+          <option value="mixed">Client picks through, operator clears the rest</option>
+        </select></div>
+      <div class="field" id="haul-wrap" style="display:none;"><label for="f-haul">Haul-away fee $</label>
+        <input type="number" id="f-haul" min="0" step="10" placeholder="200"></div>
+      <div class="field" id="deadline-wrap" style="display:none;"><label for="f-deadline">Property must be clear by</label>
+        <input type="date" id="f-deadline"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Extras</legend>
+      <div class="check-row" style="margin-bottom:10px;">
+        <input type="checkbox" id="f-photos" checked>
+        <label for="f-photos" style="font-size:14px;">Permission to photograph and advertise items online</label>
+      </div>
+      <div class="check-row" style="margin-bottom:10px;">
+        <input type="checkbox" id="f-signs" checked>
+        <label for="f-signs" style="font-size:14px;">Permission to place signs on the property</label>
+      </div>
+      <div class="check-row" style="margin-bottom:10px;">
+        <input type="checkbox" id="f-exclusive" checked>
+        <label for="f-exclusive" style="font-size:14px;">Client won't sell listed items privately during the sale</label>
+      </div>
+      <div class="field" style="margin-top:12px;"><label for="f-excluded">Items NOT included in the sale</label>
+        <textarea id="f-excluded" rows="3" placeholder="Washer and dryer, the piano, anything in the locked closet"></textarea></div>
+      <div class="field"><label for="f-notes">Anything else you've agreed</label>
+        <textarea id="f-notes" rows="3" placeholder="Client will clear the garage floor before Thursday. Dog stays inside during the sale."></textarea></div>
+    </fieldset>
+
+    <button class="btn btn-block" type="button" id="btn-print">Print / Save as PDF</button>
+    <button class="btn btn-block btn-sign" type="button" id="btn-save" style="margin-top:10px;">Save to my records</button>
+    <p class="hint" style="text-align:center;">Saving keeps a copy of the exact wording, so you always
+      know what you and this client actually signed.</p>
+
+    <p style="margin-top:20px;"><a class="btn-link" href="/dashboard.html">← Back to dashboard</a></p>
+  </aside>
+
+  <div class="stage">
+    <div class="stage-head no-print">
+      <div>
+        <div class="eyebrow">Preview</div>
+        <div class="small muted">Print two copies — one each</div>
+      </div>
+      <div style="display:flex;gap:9px;align-items:center;">
+        <span class="tiny muted">Zoom</span>
+        <input type="range" id="zoom" min="35" max="110" value="65" step="5" style="width:120px;min-height:0;">
+      </div>
+    </div>
+    <div class="scale-wrap" id="scale"><div id="doc-mount"></div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc, $ = function (id) { return document.getElementById(id); };
+
+  /* Bumped whenever the wording below changes. Stored on every saved contract so
+     an operator can always tell which version of the agreement a given client
+     actually signed — the same reasoning as the acceptance versioning on the
+     purchase flow. */
+  var TERMS_VERSION = 'gsb-client-agreement-v1-2026-08-18';
+
+  var variant = 'garage';
+  var HINTS = {
+    garage: 'For a normal weekend sale. The client keeps living there and there is no hard deadline.',
+    moving: 'For a client who is moving out. Adds a date the property must be clear by, and covers what ' +
+            'happens to whatever has not sold by then — which is the part that causes arguments.'
+  };
+
+  function v(id) { return ($(id).value || '').trim(); }
+  function n(id) { var x = Number($(id).value); return isFinite(x) ? x : null; }
+  function on(id) { return !!$(id).checked; }
+
+  function blank(width) { return '<span class="field-line" style="min-width:' + width + ';">&nbsp;</span>'; }
+  function orBlank(s, width) { return s ? esc(s) : blank(width || '2.2in'); }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     THE AGREEMENT
+
+     Written in plain English on purpose. An agreement a homeowner cannot read
+     is one they will not sign, and one they sign without reading is worth less
+     than it looks in a dispute.
+
+     ⚠️ THIS IS A TEMPLATE, NOT LEGAL ADVICE, AND THE DOCUMENT SAYS SO ON ITS
+     FACE. Consumer-protection rules, cooling-off periods, sales-tax collection,
+     bailment liability and permit requirements all vary by state and city, and
+     some states regulate contracts for services performed at a consumer's home
+     specifically. The banner is printed on the page rather than shown only in
+     the app, because the operator who most needs to read it is the one who
+     prints this once and never opens the app again.
+     ══════════════════════════════════════════════════════════════════════ */
+  function buildDoc() {
+    var isMoving = variant === 'moving';
+    var comm = n('f-comm');
+    var commText = comm != null ? comm + '%' : '____%';
+    var clientShare = comm != null ? (100 - comm) + '%' : '____%';
+    var minFee = n('f-min');
+    var settle = v('f-settle') || '7';
+    var unsold = v('f-unsold');
+    var haul = n('f-haul');
+
+    var dates = (v('f-start') || v('f-end'))
+      ? GSB.fmtDateRange(v('f-start'), v('f-end') || v('f-start'))
+      : '';
+    var hours = v('f-open')
+      ? GSB.fmtTime(v('f-open')) + (v('f-close') ? ' to ' + GSB.fmtTime(v('f-close')) : '')
+      : '';
+
+    var UNSOLD_TEXT = {
+      client: 'Anything unsold at the end of the sale stays with the Client. The Operator will leave it ' +
+              'stacked tidily in one place and is not responsible for storing, moving, or disposing of it.',
+      donate: 'Anything unsold at the end of the sale will be taken by the Operator to a charitable ' +
+              'donation centre at no charge to the Client. The Operator will give the Client the donation ' +
+              'receipt. The Operator does not value the donated goods and gives no tax advice about them — ' +
+              'the Client should speak to their own accountant about claiming anything.',
+      haul: 'Anything unsold at the end of the sale will be removed and disposed of by the Operator for a ' +
+            'fee of ' + (haul != null ? '$' + haul.toFixed(2) : '$______') + ', which the Client agrees to ' +
+            'pay and which may be deducted from the Client\'s share of the proceeds.',
+      mixed: 'At the end of the sale the Client has the opportunity to keep anything they want back. ' +
+             'Whatever they do not want will be donated or disposed of by the Operator, and the Operator ' +
+             'will tell the Client which before doing it.'
+    };
+
+    var h = '';
+
+    h += '<div class="doc">';
+
+    // ── HEADER ──
+    h += '<h1>' + (isMoving ? 'Moving Sale Agreement' : 'Garage Sale Agreement') + '</h1>' +
+         '<div class="doc-sub">' +
+           (v('f-op') ? esc(v('f-op')) + ' &nbsp;·&nbsp; ' : '') +
+           'Sale services agreement' +
+         '</div>' +
+         '<div class="doc-rule"></div>';
+
+    h += '<div class="review-banner">' +
+      '<b>Read this before you sign.</b> This is a plain-English template, not legal advice. ' +
+      'The rules that apply to sales run at someone else\'s home differ from state to state and ' +
+      'sometimes city to city — including permits, sign rules, sales tax, and cancellation rights. ' +
+      '<b>Both parties should have this reviewed by an attorney licensed where the property is</b> ' +
+      'before relying on it. Neither GarageSaleBiz nor Kingdom Creatives LLC is a party to this ' +
+      'agreement and neither provides legal advice.' +
+    '</div>';
+
+    // ── PARTIES ──
+    // The || fallbacks below are PARENTHESISED deliberately. Without the parens,
+    // `+` binds tighter than `||`, so the expression parses as
+    // ('<div…>' + joined) || (blank + '</div>') — the left operand is always a
+    // non-empty string, so the closing tag is silently never emitted and the
+    // document's markup breaks from that point down.
+    var opContact = [v('f-op-phone'), v('f-op-email')].filter(Boolean).map(esc).join(' · ');
+    var clContact = [v('f-client-phone'), v('f-client-email')].filter(Boolean).map(esc).join(' · ');
+
+    h += '<div class="parties">' +
+      '<div>' +
+        '<div class="party-lbl">The Operator</div>' +
+        '<div class="party-val">' + orBlank(v('f-op'), '2.4in') + '</div>' +
+        '<div class="party-sub">' + orBlank(v('f-op-person'), '2in') + '</div>' +
+        '<div class="party-sub">' + (opContact || blank('2in')) + '</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="party-lbl">The Client</div>' +
+        '<div class="party-val">' + orBlank(v('f-client'), '2.4in') + '</div>' +
+        '<div class="party-sub">' + (clContact || blank('2in')) + '</div>' +
+      '</div>' +
+    '</div>';
+
+    // ── KEY TERMS ──
+    h += '<div class="keyterms">' +
+      row('Property', v('f-addr')) +
+      row('Sale dates', dates) +
+      row('Sale hours', hours) +
+      (v('f-setup') ? row('Set-up begins', GSB.fmtDate(v('f-setup'), { weekday: 'long', month: 'long', day: 'numeric' })) : '') +
+      row('Operator\'s commission', commText + ' of gross sales') +
+      row('Client receives', clientShare + ' of gross sales') +
+      (minFee != null && minFee > 0 ? row('Minimum fee', '$' + minFee.toFixed(2)) : '') +
+      row('Settlement', 'Within ' + settle + ' days of the sale ending') +
+      (isMoving && v('f-deadline')
+        ? row('Property clear by', GSB.fmtDate(v('f-deadline'), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }))
+        : '') +
+    '</div>';
+
+    // ── 1 ──
+    h += '<h2>1. What this agreement is</h2>' +
+      '<p>The Client owns personal property at the address above and wants it sold. The Client hires the ' +
+      'Operator to organise and run a ' + (isMoving ? 'moving' : 'garage') + ' sale at that property on ' +
+      'the dates above. The Operator is an independent contractor running their own business — not the ' +
+      'Client\'s employee, partner, or agent for any other purpose.</p>' +
+      '<p><b>The Client keeps ownership of everything until it is sold.</b> The Operator is selling the ' +
+      'Client\'s property on the Client\'s behalf and does not buy any of it.</p>';
+
+    // ── 2 ──
+    h += '<h2>2. What the Operator does</h2><ul>' +
+      '<li>Sorts, prices, and arranges the items for sale.</li>' +
+      '<li>Advertises the sale' + (on('f-photos') ? ', including photographs of items posted online' : '') + '.</li>' +
+      (on('f-signs') ? '<li>Places directional and sale signs, including on the property, and removes them when the sale ends.</li>' : '') +
+      '<li>Staffs the sale during the hours above and handles all money taken.</li>' +
+      '<li>Keeps a record of what sold and for how much, and gives that record to the Client at settlement.</li>' +
+      '<li>Leaves the sale area broom-clean at the end.</li>' +
+      '</ul>';
+
+    // ── 3 ──
+    h += '<h2>3. What the Client does</h2><ul>' +
+      '<li>Gives the Operator access to the property from the set-up date until the sale is cleared.</li>' +
+      '<li>Removes anything that is <b>not</b> for sale before set-up begins, or clearly marks it.</li>' +
+      '<li>Confirms they own everything being sold and have the right to sell it.</li>' +
+      (on('f-exclusive')
+        ? '<li>Does not sell, give away, or remove items that have been priced for the sale once set-up has begun, ' +
+          'unless the Operator agrees. If the Client does, the Operator\'s commission on those items is still owed.</li>'
+        : '') +
+      '<li>Keeps pets secured and away from the sale area.</li>' +
+      '<li>Tells the Operator about anything on the property that could hurt someone — bad steps, a loose ' +
+      'railing, a broken paving slab.</li>' +
+      '</ul>';
+
+    if (v('f-excluded')) {
+      h += '<div class="callout"><b>Not included in this sale:</b> ' + esc(v('f-excluded')) + '</div>';
+    }
+
+    // ── 4 ──
+    h += '<h2>4. Money</h2>' +
+      '<p>The Operator keeps <b>' + commText + ' of gross sales</b> as their fee. Gross sales means everything ' +
+      'taken in at the sale before any deduction. The Client receives the remaining ' + clientShare + '.</p>';
+    if (minFee != null && minFee > 0) {
+      h += '<p><b>Minimum fee.</b> If ' + commText + ' of gross sales comes to less than ' +
+        '$' + minFee.toFixed(2) + ', the Operator\'s fee is $' + minFee.toFixed(2) + ' instead. ' +
+        'The Operator commits the same days of work regardless of what the sale takes in, and this is ' +
+        'what that work is worth at a minimum. If gross sales are less than $' + minFee.toFixed(2) + ', ' +
+        'the Operator\'s fee is capped at the total taken in — <b>the Client will never owe the Operator ' +
+        'money out of their own pocket.</b></p>';
+    }
+    h += '<p><b>Settlement.</b> Within ' + settle + ' days of the sale ending, the Operator will give the ' +
+      'Client a written summary of gross sales, the Operator\'s fee' +
+      (unsold === 'haul' ? ', the haul-away fee' : '') +
+      ', and the amount due — together with payment of the Client\'s share.</p>' +
+      '<p><b>Pricing.</b> The Operator sets prices using their judgement of what items will actually sell ' +
+      'for, and may discount as the sale goes on — that is normal and is how a sale clears. If there is an ' +
+      'item the Client does not want sold below a certain figure, <b>they must say so in writing before ' +
+      'set-up begins</b> (Section 9 is the place for it).</p>' +
+      '<p><b>Taxes.</b> Each party is responsible for their own taxes. If sales tax applies to this sale ' +
+      'where the property is, the parties will agree in writing who collects and remits it before the sale ' +
+      'opens. Neither party is giving the other tax advice.</p>';
+
+    // ── 5 ──
+    h += '<h2>5. Unsold items</h2><p>' + UNSOLD_TEXT[unsold] + '</p>';
+
+    if (isMoving) {
+      h += '<h2>6. The moving deadline</h2>' +
+        '<p>The Client has to be out of the property' +
+        (v('f-deadline')
+          ? ' by <b>' + esc(GSB.fmtDate(v('f-deadline'), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })) + '</b>'
+          : ' by the date written in the key terms above') +
+        ', and this sale exists to get the property clear by then. Both parties will work to that date.</p>' +
+        '<p><b>If the deadline moves earlier</b> after this is signed, the Operator will do what they ' +
+        'reasonably can but cannot guarantee the same result from a shorter sale, and the commission does ' +
+        'not change.</p>' +
+        '<p><b>If items remain after the deadline</b> and the Client has not collected them, the Client ' +
+        'authorises the Operator to donate or dispose of them as set out in Section 5. The Operator will ' +
+        'give the Client at least 48 hours\' notice before doing so and is not liable for the value of ' +
+        'anything disposed of after that notice.</p>';
+    }
+
+    var s = isMoving ? 7 : 6;
+
+    // ── RISK ──
+    h += '<h2>' + s + '. Risk, damage, and what the Operator is not responsible for</h2>' +
+      '<p>The Operator will take reasonable care of the Client\'s property while it is in their hands. ' +
+      'The Operator is <b>not</b> responsible for:</p><ul>' +
+      '<li>Theft or shoplifting by members of the public during the sale, unless it happened because the ' +
+      'Operator was careless.</li>' +
+      '<li>Ordinary wear or minor damage that happens while items are being handled and moved by shoppers.</li>' +
+      '<li>Items the Client left in the sale area by mistake and did not mark as not-for-sale.</li>' +
+      '<li>An item selling for less than the Client hoped, or not selling at all.</li>' +
+      '<li>Pre-existing damage or defects in items, or in the property itself.</li>' +
+      '</ul>' +
+      '<p>The Operator does not guarantee any total, any number of shoppers, or any particular result. ' +
+      'A sale can be affected by weather, the time of year, and what people happen to want that week.</p>' +
+      '<p><b>Insurance.</b> Each party is responsible for their own insurance. Homeowner policies often ' +
+      'exclude a commercial activity at the property, and general liability policies often exclude property ' +
+      'in a contractor\'s care or custody. Both parties are encouraged to check their own cover before ' +
+      'the sale.</p>';
+    s++;
+
+    // ── CANCELLATION ──
+    h += '<h2>' + s + '. Cancelling or postponing</h2>' +
+      '<p>Either party may cancel by telling the other in writing.</p><ul>' +
+      '<li><b>More than 7 days before set-up:</b> no fee is owed either way.</li>' +
+      '<li><b>Within 7 days of set-up, or after set-up has begun:</b> the Client agrees to pay the Operator ' +
+      'for the work already done — the hours spent sorting, pricing, advertising, and any costs already ' +
+      'paid out. The Operator will provide a written breakdown and will not charge more than the ' +
+      (minFee != null && minFee > 0 ? 'minimum fee above' : 'value of the work actually done') + '.</li>' +
+      '<li><b>Weather or something outside either party\'s control:</b> the parties will reschedule to the ' +
+      'next workable date at no extra charge.</li>' +
+      '</ul>' +
+      '<p>If the Client has a cancellation right under the law where the property is, that right applies ' +
+      'and nothing in this section reduces it.</p>';
+    s++;
+
+    // ── EVERYTHING ELSE ──
+    h += '<h2>' + s + '. Anything else the parties have agreed</h2>';
+    if (v('f-notes')) {
+      h += '<p>' + esc(v('f-notes')).replace(/\n/g, '<br>') + '</p>';
+    } else {
+      h += '<p style="line-height:2.4;">' + blank('100%') + '<br>' + blank('100%') + '<br>' + blank('100%') + '</p>';
+    }
+    s++;
+
+    // ── GENERAL ──
+    h += '<h2>' + s + '. General</h2>' +
+      '<p>This is the whole agreement between the parties about this sale and replaces anything said or ' +
+      'written beforehand. Changes must be in writing and signed by both. If any part of it turns out to ' +
+      'be unenforceable, the rest still stands. It is governed by the law of the state where the property ' +
+      'is. Both parties have read it, understand it, and have had the chance to take their own advice on it.</p>';
+
+    // ── SIGNATURES ──
+    h += '<div class="sig-grid">' +
+      '<div>' +
+        '<div class="sig-line"></div><div class="sig-lbl">Operator signature</div>' +
+        '<div class="sig-name">' + orBlank(v('f-op-person') || v('f-op'), '1.9in') + '</div>' +
+        '<div class="sig-line" style="margin-top:.2in;height:.3in;"></div><div class="sig-lbl">Date</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="sig-line"></div><div class="sig-lbl">Client signature</div>' +
+        '<div class="sig-name">' + orBlank(v('f-client'), '1.9in') + '</div>' +
+        '<div class="sig-line" style="margin-top:.2in;height:.3in;"></div><div class="sig-lbl">Date</div>' +
+      '</div>' +
+    '</div>';
+
+    h += '<div class="doc-foot">' +
+      'Two copies — one for each party. &nbsp;·&nbsp; Template version ' + esc(TERMS_VERSION) + '. ' +
+      'Prepared using GarageSaleBiz, which is not a party to this agreement and provides no legal advice.' +
+    '</div>';
+
+    h += '</div>';
+    return h;
+
+    function row(k, val) {
+      return '<div class="keyterms-row"><div class="keyterms-k">' + esc(k) + '</div>' +
+        '<div class="keyterms-v">' + (val ? esc(val) : blank('2.4in')) + '</div></div>';
+    }
+  }
+
+  function render() {
+    $('doc-mount').innerHTML = buildDoc();
+    applyZoom();
+  }
+
+  /* ── UI ──────────────────────────────────────────────────────────────── */
+  function setVariant(x) {
+    variant = x;
+    [].forEach.call(document.querySelectorAll('.variant-tab'), function (b) {
+      b.classList.toggle('on', b.dataset.v === x);
+    });
+    $('variant-hint').textContent = HINTS[x];
+    $('deadline-wrap').style.display = x === 'moving' ? '' : 'none';
+    render();
+  }
+  $('variant-tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('.variant-tab');
+    if (b) setVariant(b.dataset.v);
+  });
+
+  $('f-unsold').addEventListener('change', function () {
+    $('haul-wrap').style.display = this.value === 'haul' ? '' : 'none';
+  });
+
+  function applyZoom() {
+    var z = Number($('zoom').value) / 100;
+    $('scale').style.transform = 'scale(' + z + ')';
+    $('scale').style.height = ($('doc-mount').scrollHeight * z) + 'px';
+  }
+  $('zoom').addEventListener('input', applyZoom);
+
+  document.querySelector('.panel').addEventListener('input', render);
+  document.querySelector('.panel').addEventListener('change', render);
+
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  /* ── SAVE ────────────────────────────────────────────────────────────────
+     Stores the RENDERED terms, not a reference to this template. A contract is a
+     record of what two people agreed on a particular day; if it re-read the
+     template, editing the wording here would retroactively rewrite every
+     agreement already signed. Same reasoning as the acceptance evidence on the
+     purchase flow. */
+  $('btn-save').addEventListener('click', async function () {
+    var btn = this;
+
+    var res = await GSB.checkAuth();
+    if (!res.ok) {
+      GSB.toast('Sign in to save agreements to your records. You can still print this one.', true);
+      return;
+    }
+    if (!v('f-client')) { GSB.toast('Add the client name before saving.', true); return; }
+    if (!await GSB.requireSession('Saving the agreement')) return;
+
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    // The plain-text body, stripped from the rendered document. Stored rather
+    // than the HTML so it stays readable in ten years without this stylesheet.
+    var tmp = document.createElement('div');
+    tmp.innerHTML = buildDoc();
+    var body = (tmp.textContent || '').replace(/\n{3,}/g, '\n\n').trim();
+
+    var comm = n('f-comm');
+    var row = {
+      client_id: GSB.clientId,
+      variant: variant,
+      operator_name: v('f-op') || (res.tenant && res.tenant.business_name) || 'Operator',
+      client_name: v('f-client'),
+      sale_address: v('f-addr') || null,
+      sale_dates: (v('f-start') ? GSB.fmtDateRange(v('f-start'), v('f-end') || v('f-start')) : null),
+      commission_pct: comm != null && comm > 0 && comm < 100 ? comm : 50,
+      minimum_fee: n('f-min'),
+      terms_snapshot: body,
+      terms_version: TERMS_VERSION,
+      status: 'draft'
+    };
+
+    var sel = $('f-client').value.trim();
+    var match = (window.__gsbClients || []).find(function (c) { return c.name === sel; });
+    if (match) row.crm_client_id = match.id;
+
+    var r = await GSB.supa.from('gsb_contracts').insert(row).select();
+
+    btn.disabled = false; btn.textContent = 'Save to my records';
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Saving the agreement' })) return;
+    GSB.toast('Agreement saved to your records.');
+  });
+
+  /* ══════════════ PREFILL ══════════════
+     Every assignment is unconditional and blanks when there is no value — the
+     same rule as the sign maker, and for the same reason. There are no example
+     values anywhere in this page's markup, so an unauthenticated visitor gets
+     empty fields rather than somebody else's real business details. */
+  (async function prefill() {
+    var note = $('prefill-note');
+
+    var res = await GSB.checkAuth();
+    if (!res.ok) {
+      note.innerHTML = '<div class="notice" style="margin-bottom:16px;">' +
+        '<p class="small" style="line-height:1.6;"><b>Not signed in.</b> You can still fill this in and ' +
+        'print it. <a href="/dashboard.html" style="color:var(--sign);">Sign in</a> and your details ' +
+        'and client list fill themselves in.</p></div>';
+      $('f-op').value = '';
+      $('f-op-phone').value = '';
+      $('f-op-email').value = '';
+      render();
+      return;
+    }
+
+    var t = res.tenant;
+    $('f-op').value = t.business_name || '';
+    $('f-op-person').value = (res.mapping && res.mapping.display_name) || '';
+    $('f-op-phone').value = t.phone || '';
+    $('f-op-email').value = t.email || '';
+    if (t.default_commission_pct != null) $('f-comm').value = t.default_commission_pct;
+
+    // The client list feeds the datalist so a repeat client is picked, not
+    // retyped — and picking one links the saved contract to their CRM record.
+    var cl = await GSB.supa.from('gsb_clients')
+      .select('id, name, phone, email, address')
+      .eq('client_id', GSB.clientId).order('created_at', { ascending: false });
+    window.__gsbClients = cl.data || [];
+    $('client-list').innerHTML = window.__gsbClients
+      .map(function (c) { return '<option value="' + esc(c.name) + '"></option>'; }).join('');
+
+    $('f-client').addEventListener('change', function () {
+      var typed = this.value;
+      var m = (window.__gsbClients || []).find(function (c) { return c.name === typed; });
+      if (!m) return;
+      // Unconditional, so switching from a client who has a phone to one who does
+      // not clears the field instead of carrying the previous client's number
+      // into a document with a different name on it.
+      $('f-client-phone').value = m.phone || '';
+      $('f-client-email').value = m.email || '';
+      $('f-addr').value = m.address || '';
+      render();
+    });
+
+    // Prefill from the next upcoming sale, which is the one an operator is most
+    // likely to be writing an agreement for.
+    var sq = await GSB.supa.from('gsb_sales')
+      .select('*').eq('client_id', GSB.clientId)
+      .order('start_date', { ascending: false, nullsFirst: false }).limit(20);
+    var list = sq.data || [];
+    var today = new Date(); today.setHours(12, 0, 0, 0);
+    var next = list.filter(function (x) {
+      var d = GSB.parseDate(x.start_date);
+      return d && d >= today && x.status !== 'cancelled';
+    }).sort(function (a, b) { return GSB.parseDate(a.start_date) - GSB.parseDate(b.start_date); })[0];
+
+    if (next) {
+      $('f-client').value = next.client_name || '';
+      $('f-addr').value = [next.street_address, next.city_state_zip].filter(Boolean).join(', ');
+      $('f-start').value = next.start_date || '';
+      $('f-end').value = next.end_date || '';
+      $('f-open').value = next.open_time || '08:00';
+      $('f-close').value = next.close_time || '15:00';
+      if (next.commission_pct != null) $('f-comm').value = next.commission_pct;
+      if (next.sale_type === 'moving') setVariant('moving');
+      note.innerHTML = '<div class="notice notice-good" style="margin-bottom:16px;">' +
+        '<p class="small" style="line-height:1.6;">Filled in from <b>' + esc(next.title || 'your next sale') +
+        '</b>. Change anything — nothing here writes back to the sale.</p></div>';
+    } else {
+      note.innerHTML = '<div class="notice" style="margin-bottom:16px;">' +
+        '<p class="small" style="line-height:1.6;">Your business details are filled in. Add the client ' +
+        'and the dates and you are ready to print.</p></div>';
+    }
+
+    render();
+  })();
+
+  setVariant('garage');
+})();
+</script>
+</body>
+</html>

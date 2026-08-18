@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live demo — what your GarageSaleBiz site looks like</title>
+<meta name="description" content="A working GarageSaleBiz operator site with a real sale, item listings, photos, and prices. This is exactly what you get.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<link rel="stylesheet" href="/assets/storefront.css">
+</head>
+<body class="gsb-glow">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     THE DEMO — the same shell as storefront.html with its tenant forced to
+     'demo', so what a prospect sees here is byte-for-byte the code a paying
+     operator gets. Not a mockup, not a screenshot, and not a separate hardcoded
+     page that can quietly fall out of step with the product.
+
+     THE DEMO DATA NEVER GOES STALE AND NEEDS NO REFRESH SCRIPT. Its sale dates
+     are computed from a rolling weekly anchor in SETUP.sql PART 8.3, so the
+     demo sale is always the next upcoming weekend. EstateSaleBiz's demo used
+     fixed relative dates and carried an instruction to re-run a seed file
+     "1-2 days before any launch or podcast date" — a manual step whose failure
+     mode is a prospect looking at a sale that ended last month.
+
+     Its cities are deliberately NOT claimed in gsb_city_claims, so the demo
+     consumes no sellable territory (asserted by check 10l in SETUP.sql).
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="demo-bar">
+  <div class="demo-bar-in">
+    <span>▲ Demo site · a made-up business, a real product</span>
+    <span><a href="/#price">Claim your own — $249</a> · <a href="/">Back to GarageSaleBiz</a></span>
+  </div>
+</div>
+
+<div id="sf-root"></div>
+
+<div class="shell" style="padding:34px 20px 60px;">
+  <div class="paper-surface" style="padding:26px;">
+    <div class="eyebrow eyebrow-dark">About this demo</div>
+    <h2 class="display" style="font-size:1.5rem;margin:6px 0 10px;">Everything above is the real thing.</h2>
+    <p class="small" style="color:var(--on-paper-dim);max-width:70ch;">
+      Clearwater Sale Co. is invented, and so is the Reyes family's sale — but the page,
+      the item grid, the photo handling, and the "sold" stamps are the exact code that runs on
+      every operator's site. Yours would sit at
+      <span class="mono">yourname.garagesalebiz.com</span> with your name, your colour, and your sales,
+      and you would fill it from your dashboard in a few minutes.
+    </p>
+    <p class="small" style="color:var(--on-paper-dim);max-width:70ch;margin-top:12px;">
+      The item photos in this demo are stock images. Yours would be the ones you take on your phone
+      in the homeowner's garage.
+    </p>
+    <a class="btn btn-sm" href="/#price" style="margin-top:18px;">See what's included</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+  // Forces the tenant instead of resolving one from the hostname. This page lives
+  // on the apex, where there is no subdomain to read — and resolveSlug() would
+  // correctly return null and render "site not found", which is right for a
+  // mistyped subdomain and wrong here.
+  window.GSB_DEMO = true;
+</script>
+<script src="/assets/storefront.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   STOREFRONT — the operator's own public site.
+
+   Loaded on top of gsb.css. Uses --brand, which is set at runtime from the
+   operator's primary_color, so two operators' sites look meaningfully different
+   without either of them touching CSS.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sf-nav { border-bottom-color: var(--brand); }
+.sf-logo {
+  height: 34px; width: auto; max-width: 150px;
+  border: 2px solid var(--ink); background: var(--paper); padding: 2px;
+}
+
+.sf-center { min-height: 78vh; display: grid; place-items: center; padding: 40px 20px; }
+.sf-msg { max-width: 520px; padding: 34px 30px; text-align: center; }
+.sf-msg-mark { font-size: 2.4rem; margin-bottom: 6px; }
+
+/* ── HERO ─────────────────────────────────────────────────────────────────── */
+.sf-hero { padding: 46px 0 30px; }
+.sf-h1 { font-size: clamp(2.2rem, 6.5vw, 4rem); }
+.sf-h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
+.sf-about { margin-top: 14px; font-size: 1.05rem; line-height: 1.65; color: var(--on-ink-dim); max-width: 62ch; }
+.sf-area {
+  margin-top: 14px; font-size: 12px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--brand);
+}
+
+.sf-flag {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--open); color: #fff; border: 3px solid var(--ink);
+  padding: 8px 15px; margin-bottom: 16px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  box-shadow: var(--hard-sm);
+}
+.sf-flag-soon { background: var(--sign); color: var(--ink); }
+.sf-dot {
+  width: 9px; height: 9px; border-radius: 50%; background: #fff;
+  animation: sf-pulse 1.5s ease-in-out infinite;
+}
+@keyframes sf-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+/* A blinking dot is decoration, not information — the text beside it already
+   says the sale is on. Stopped for anyone who has asked for less motion. */
+@media (prefers-reduced-motion: reduce) { .sf-dot { animation: none; } }
+
+/* ── SALE CARD ────────────────────────────────────────────────────────────── */
+.sf-sale { padding: 28px 26px 26px; margin: 0 0 34px; }
+.sf-sale-top { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.sf-sale-title { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--ink); }
+
+.sf-when {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  margin-top: 20px; padding: 18px 0;
+  border-top: 2px solid rgba(22,19,14,.28); border-bottom: 2px solid rgba(22,19,14,.28);
+}
+@media (max-width: 620px) { .sf-when { grid-template-columns: 1fr; gap: 16px; } }
+.sf-wl {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; color: #6B5A33; margin-bottom: 5px;
+}
+.sf-wv { font-family: var(--display); text-transform: uppercase; font-size: 1.15rem; line-height: 1.15; color: var(--ink); }
+.sf-wv-sub { font-size: 14px; color: #4A4029; margin-top: 3px; }
+.sf-maps {
+  display: inline-block; margin-top: 8px; font-size: 14px; font-weight: 700;
+  color: var(--stamp); text-decoration: underline;
+}
+
+.sf-desc { margin-top: 18px; font-size: 15px; line-height: 1.7; color: #3B3325; max-width: 72ch; }
+
+/* ── PHOTOS ───────────────────────────────────────────────────────────────── */
+.sf-photos {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px; margin-top: 20px;
+}
+.sf-photo { margin: 0; border: 2px solid var(--ink); background: var(--paper); }
+.sf-photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.sf-photo figcaption { font-size: 12px; padding: 6px 8px; color: #4A4029; border-top: 2px solid var(--ink); }
+
+/* ── ITEMS ────────────────────────────────────────────────────────────────── */
+.sf-items-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 14px; flex-wrap: wrap; margin: 26px 0 12px; color: var(--ink);
+}
+.sf-items-head .mono { color: #6B5A33; }
+.sf-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.sf-item {
+  background: var(--paper); border: 2px solid var(--ink);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sf-item-sold { opacity: .62; }
+.sf-item-img { position: relative; background: var(--paper-2); }
+.sf-item-img img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.sf-item-emoji {
+  place-items: center; aspect-ratio: 4 / 3; font-size: 2.6rem;
+  background: var(--paper-2);
+}
+.sf-stamp {
+  position: absolute; top: 10px; right: -6px;
+  background: var(--stamp); color: #fff; border: 2px solid var(--ink);
+  padding: 4px 12px; transform: rotate(4deg);
+  font-family: var(--display); text-transform: uppercase;
+  font-size: .9rem; letter-spacing: .08em;
+}
+.sf-stamp-pending { background: var(--sign); color: var(--ink); }
+.sf-item-body { padding: 12px 13px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; color: var(--on-paper); }
+.sf-item-name { font-weight: 800; font-size: 15px; line-height: 1.35; }
+.sf-item-desc { font-size: 14px; line-height: 1.55; color: var(--on-paper-dim); }
+.sf-item-price {
+  margin-top: auto; padding-top: 8px;
+  font-family: var(--display); text-transform: uppercase; font-size: 1.3rem; color: var(--stamp);
+}
+.sf-item-note { margin-top: 14px; color: #5C5140; }
+
+/* ── PAST / EMPTY / CONTACT ───────────────────────────────────────────────── */
+.sf-empty { padding: 30px 26px; margin-bottom: 30px; }
+.sf-past { margin: 10px 0 40px; }
+.sf-past-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 16px; }
+.sf-past-item { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 15px; }
+.sf-past-title { font-family: var(--display); text-transform: uppercase; font-size: 1rem; margin: 8px 0 5px; letter-spacing: .02em; }
+
+.sf-contact { border-top: 3px solid var(--ink-line); padding: 46px 0; }
+.sf-contact-rows { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.sf-contact-row {
+  display: inline-flex; align-items: center; gap: 11px;
+  background: var(--sign); color: var(--ink); border: 3px solid var(--ink);
+  padding: 13px 20px; text-decoration: none;
+  font-family: var(--display); text-transform: uppercase; font-size: 1rem; letter-spacing: .03em;
+  box-shadow: var(--hard-sm);
+}
+.sf-contact-row:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(0,0,0,.5); }
+.sf-ci { font-size: 1.05rem; }
+
+/* ── DEMO RIBBON ──────────────────────────────────────────────────────────── */
+/* Only on demo.html. A demo that a prospect could mistake for a real business
+   would be dishonest, so it says what it is on every screen. */
+.demo-bar {
+  position: sticky; top: 0; z-index: 90;
+  background: var(--flame); color: #fff;
+  border-bottom: 3px solid var(--ink);
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.demo-bar-in {
+  max-width: var(--max); margin: 0 auto; padding: 10px var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.demo-bar a { color: #fff; text-decoration: underline; }
+.demo-bar .sf-nav, .demo-bar ~ #sf-root .sf-nav { top: 41px; }

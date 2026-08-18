@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GarageSaleBiz — Run Garage &amp; Moving Sales in Your Town</title>
+<meta name="description" content="Claim three cities, exclusively. Run garage and moving sales for homeowners on commission, with the website, contracts, signs, and training included. $249 one time — no monthly fee.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Own the garage sales in your town.">
+<meta property="og:description" content="Three cities, exclusively yours. $249 one time, no monthly fee. Website, contracts, sign maker, and training included.">
+<meta property="og:url" content="https://garagesalebiz.com/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+/* ── HERO ────────────────────────────────────────────────────────────────── */
+.hero { padding: 54px 0 40px; }
+.hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: start; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+.hero-board { padding: 34px 30px 30px; position: relative; }
+.hero-board h1 { margin: 12px 0 0; }
+.hero-board .kicker {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--ink);
+  opacity: .72;
+}
+.hero-board .sub {
+  margin-top: 16px; font-size: 1.06rem; line-height: 1.6; color: #3B3325; max-width: 46ch;
+}
+.hero-board .sub b { color: var(--ink); }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.hero-facts {
+  display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 22px;
+  padding-top: 18px; border-top: 2px solid rgba(22,19,14,.25);
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: #4A4029;
+}
+
+/* ── CHECKER ─────────────────────────────────────────────────────────────── */
+.checker { padding: 24px 22px; }
+.checker h2 { font-size: 1.35rem; margin-bottom: 4px; }
+.checker-form { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+.checker-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 10px; }
+@media (max-width: 420px) { .checker-row { grid-template-columns: 1fr; } }
+.checker-out { margin-top: 16px; display: none; }
+.checker-out.show { display: block; }
+.chk-verdict { font-family: var(--display); text-transform: uppercase; font-size: 1.5rem; line-height: 1.1; }
+.chk-yes { color: var(--open); }
+.chk-no  { color: var(--stamp); }
+.chk-note { font-size: 14px; line-height: 1.6; color: var(--on-paper-dim); margin-top: 8px; }
+.chk-wl { display: grid; gap: 9px; margin-top: 14px; }
+
+/* ── STEPS ───────────────────────────────────────────────────────────────── */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 34px; }
+@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+.step { background: var(--ink-soft); border: 2px solid var(--ink-line); padding: 20px 18px; position: relative; }
+.step-n {
+  font-family: var(--display); font-size: 2.6rem; line-height: 1;
+  color: var(--sign); opacity: .9;
+}
+.step h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.05rem; margin: 8px 0 6px; letter-spacing: .02em; }
+.step p { font-size: 14px; color: var(--on-ink-dim); line-height: 1.6; }
+
+/* ── WHAT YOU GET ────────────────────────────────────────────────────────── */
+.kit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+@media (max-width: 860px) { .kit { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .kit { grid-template-columns: 1fr; } }
+.kit-item { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 18px; }
+.kit-item .ico { font-size: 1.6rem; line-height: 1; }
+.kit-item h3 { font-family: var(--display); text-transform: uppercase; font-size: 1rem; margin: 10px 0 6px; letter-spacing: .03em; }
+.kit-item p { font-size: 14px; color: var(--on-ink-dim); line-height: 1.6; }
+
+/* ── PRICE ───────────────────────────────────────────────────────────────── */
+.price-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: stretch; }
+@media (max-width: 820px) { .price-wrap { grid-template-columns: 1fr; } }
+.price-card { padding: 30px 26px; }
+.price-fig { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 4px; }
+.price-num { font-family: var(--display); font-size: 4.4rem; line-height: .9; color: var(--ink); }
+.price-per { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #4A4029; }
+.price-once {
+  display: inline-block; margin-top: 6px; padding: 6px 12px;
+  background: var(--open); color: #fff; border: 2px solid var(--ink);
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+}
+.incl { list-style: none; margin: 20px 0 0; }
+.incl li { display: flex; gap: 11px; padding: 8px 0; font-size: 15px; line-height: 1.55; border-bottom: 1px solid rgba(22,19,14,.14); }
+.incl li:last-child { border-bottom: none; }
+.incl .tick { color: var(--open); font-weight: 800; flex-shrink: 0; }
+.price-side { display: flex; flex-direction: column; gap: 18px; }
+.price-note { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 18px; font-size: 14px; line-height: 1.65; color: var(--on-ink-dim); }
+.price-note h4 { font-family: var(--display); text-transform: uppercase; font-size: .95rem; color: var(--on-ink); margin-bottom: 7px; letter-spacing: .03em; }
+
+/* ── FAQ ─────────────────────────────────────────────────────────────────── */
+.faq { margin-top: 26px; border: 2px solid var(--ink-line); }
+.faq-item { border-bottom: 2px solid var(--ink-line); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  width: 100%; text-align: left; background: var(--ink-soft); color: var(--on-ink);
+  border: none; cursor: pointer; padding: 16px 18px;
+  font-family: var(--body); font-size: 15px; font-weight: 700; line-height: 1.5;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+}
+.faq-q:hover { background: #282218; }
+.faq-mark { color: var(--sign); font-family: var(--mono); font-size: 18px; flex-shrink: 0; }
+.faq-a { display: none; padding: 0 18px 18px; font-size: 15px; line-height: 1.7; color: var(--on-ink-dim); }
+.faq-a p + p { margin-top: 10px; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-mark { transform: rotate(45deg); }
+
+/* ── WAITLIST MODE ───────────────────────────────────────────────────────── */
+/* Hidden by default and revealed only when gsb_settings.waitlist_mode is 'true'.
+   Sold-out state must be driven by data, not by a redeploy. */
+#sold-out { display: none; }
+body.waitlist-mode #sold-out { display: block; }
+body.waitlist-mode .buy-cta { display: none !important; }
+</style>
+</head>
+<body class="gsb-glow">
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+      </span>
+      GarageSaleBiz
+    </a>
+    <div class="nav-links">
+      <a href="#how" class="nav-hide-sm">How it works</a>
+      <a href="#included" class="nav-hide-sm">What's included</a>
+      <a href="/demo.html">See a live site</a>
+      <a href="#price" class="btn btn-sm btn-sign">Claim your town</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<header class="hero">
+  <div class="shell hero-grid">
+
+    <div class="sign-surface stapled hero-board">
+      <div class="kicker">One operator per city · 3 cities included</div>
+      <h1 class="display">Own the<br>garage sales<br>in your town.</h1>
+      <p class="sub">
+        Homeowners have a garage full of things they want gone and no appetite for running a sale.
+        You run it for them and take a commission on everything that sells.
+        <b>We give you the website, the contracts, the signs, and the playbook</b> — and we lock three
+        cities to you so nobody else can buy them.
+      </p>
+      <div class="hero-cta">
+        <a href="#check" class="btn">
+          Check my city
+          <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z"/></svg>
+        </a>
+        <a href="/demo.html" class="btn btn-ghost" style="background:rgba(22,19,14,.08);color:var(--ink);">See a real operator site</a>
+      </div>
+      <div class="hero-facts">
+        <span>$249 · one time</span>
+        <span>No monthly fee</span>
+        <span>Live the same day</span>
+      </div>
+    </div>
+
+    <!-- ── AVAILABILITY CHECKER ──
+         The only place a visitor can answer "can I do this where I live?" BEFORE
+         money changes hands. Checking reserves nothing, and the result says so. -->
+    <div class="paper-surface checker" id="check">
+      <div class="eyebrow eyebrow-dark">Territory check</div>
+      <h2 class="display">Is your city still open?</h2>
+      <p class="small" style="color:var(--on-paper-dim);">
+        Once a city is claimed we cannot sell it again — that exclusivity is the whole point.
+      </p>
+
+      <form class="checker-form" id="chk-form" novalidate>
+        <div class="checker-row">
+          <div class="field" style="margin:0;">
+            <label for="chk-city">City</label>
+            <input type="text" id="chk-city" placeholder="Nampa" autocomplete="address-level2">
+          </div>
+          <div class="field" style="margin:0;">
+            <label for="chk-state">State</label>
+            <select id="chk-state"></select>
+          </div>
+        </div>
+        <!-- Honeypot: bots fill every field they find. Never shown, never
+             announced, and a filled value silently drops the submission. -->
+        <input type="text" id="chk-hp" tabindex="-1" autocomplete="off"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true">
+        <button class="btn btn-block" type="submit" id="chk-btn">Check availability</button>
+      </form>
+
+      <div class="checker-out" id="chk-out" role="status" aria-live="polite"></div>
+    </div>
+
+  </div>
+</header>
+
+<!-- ══════════════ SOLD OUT / WAITLIST ══════════════ -->
+<section class="section-tight" id="sold-out">
+  <div class="shell">
+    <div class="paper-surface" style="padding:26px;">
+      <div class="eyebrow eyebrow-dark">Every territory is currently claimed</div>
+      <h2 class="display" style="margin:6px 0 8px;">The next opening goes to the list.</h2>
+      <p class="small" style="color:var(--on-paper-dim);max-width:60ch;">
+        We are not taking new operators right now. Tell us the city you want and you get the first
+        offer if it opens up, before it is listed publicly. Nothing is charged and there is nothing to cancel.
+      </p>
+      <form id="wl-form" class="checker-form" style="max-width:520px;" novalidate>
+        <div class="checker-row">
+          <div class="field" style="margin:0;">
+            <label for="wl-name">Your name</label>
+            <input type="text" id="wl-name" autocomplete="name">
+          </div>
+          <div class="field" style="margin:0;">
+            <label for="wl-city">City you want</label>
+            <input type="text" id="wl-city" placeholder="Nampa, ID">
+          </div>
+        </div>
+        <div class="field" style="margin:0;">
+          <label for="wl-email">Email</label>
+          <input type="email" id="wl-email" placeholder="you@email.com" autocomplete="email">
+        </div>
+        <button class="btn btn-block" type="submit" id="wl-btn">Put me on the list</button>
+        <p class="err" id="wl-err"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ HOW IT WORKS ══════════════ -->
+<section class="section" id="how">
+  <div class="shell">
+    <div class="eyebrow">The business, in four steps</div>
+    <h2 class="display">You are the person who<br>makes the sale happen.</h2>
+    <p class="lede" style="margin-top:12px;">
+      No inventory, no storefront, no van full of stock. The goods belong to the homeowner
+      until they sell, and you get paid out of what they sell for.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <h3>Find the sale</h3>
+        <p>People moving, downsizing, clearing a parent's garage. Module 1 covers the five places these
+          jobs come from and the exact words that get you the appointment.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <h3>Sign the agreement</h3>
+        <p>Generate a plain-language agreement in the dashboard — your commission, the dates, who pays for
+          what. It prints or saves as a PDF. Signed before you lift a single box.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <h3>Price, stage, advertise</h3>
+        <p>Photograph the good pieces onto your own website, print arrow signs for every corner
+          within half a mile, and post to the local groups.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <h3>Run it and settle up</h3>
+        <p>Work the sale, mark items sold as they go, drop prices on the last day, hand the homeowner
+          their share, and keep yours.</p>
+      </div>
+    </div>
+
+    <div class="notice" style="margin-top:28px;">
+      <strong>You set your own rate.</strong> Operators in this trade commonly charge somewhere between
+      40% and 60% of what a sale takes in, depending on how much of the work is theirs — a full
+      clear-out where you price, stage, staff, and clean up is worth more than a Saturday
+      where the homeowner does half of it. The dashboard defaults to 50% and you change it per job.
+      <span class="muted">We do not set your prices and we make no promise about what you will earn.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ WHAT'S INCLUDED ══════════════ -->
+<section class="section" id="included" style="border-top:2px solid var(--ink-line);">
+  <div class="shell">
+    <div class="eyebrow">What $249 puts in your hands</div>
+    <h2 class="display">Everything except the driveway.</h2>
+
+    <div class="kit">
+      <div class="kit-item">
+        <div class="ico">🌐</div>
+        <h3>Your own website</h3>
+        <p>At <span class="mono">yourname.garagesalebiz.com</span>, live before you finish reading this.
+          Your name, your colour, your sales, with photos and prices. Shoppers browse it before they drive over.</p>
+      </div>
+      <div class="kit-item">
+        <div class="ico">📍</div>
+        <h3>Three cities, exclusively</h3>
+        <p>Pick them at checkout. Nobody else can buy those cities from us, for as long as your
+          account is active. There is no bidding and no renewal auction.</p>
+      </div>
+      <div class="kit-item">
+        <div class="ico">📋</div>
+        <h3>Client agreements</h3>
+        <p>A garage-sale version and a moving-sale version, pre-filled with your details and the
+          homeowner's. Plain English, print-ready. Review with your own attorney before you use it.</p>
+      </div>
+      <div class="kit-item">
+        <div class="ico">🪧</div>
+        <h3>The sign maker</h3>
+        <p>Directional arrow signs and a full-size sale sign, laid out to print at home or at a copy shop.
+          Address, dates, times, and a QR code to your listing baked in.</p>
+      </div>
+      <div class="kit-item">
+        <div class="ico">🗂️</div>
+        <h3>Client list</h3>
+        <p>Every homeowner you talk to, with their address, notes, and where the conversation got to.
+          The ones who said "not yet" in March are your July calendar.</p>
+      </div>
+      <div class="kit-item">
+        <div class="ico">🎓</div>
+        <h3>The course</h3>
+        <p>Four modules, fourteen lessons: finding clients, pricing things people actually buy,
+          running sale day, and turning one job into three.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ PRICE ══════════════ -->
+<section class="section" id="price" style="border-top:2px solid var(--ink-line);">
+  <div class="shell">
+    <div class="eyebrow">One price, one time</div>
+    <h2 class="display">$249. That's the whole thing.</h2>
+
+    <div class="price-wrap" style="margin-top:26px;">
+      <div class="sign-surface price-card">
+        <div class="kicker" style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.72;">
+          Operator territory
+        </div>
+        <div class="price-fig">
+          <span class="price-num">$249</span>
+          <span class="price-per">3 cities<br>one time</span>
+        </div>
+        <div class="price-once">No monthly fee · No renewal · No card kept</div>
+
+        <ul class="incl">
+          <li><span class="tick">✓</span> Three cities of your choice, exclusively yours</li>
+          <li><span class="tick">✓</span> Your branded website on your own subdomain</li>
+          <li><span class="tick">✓</span> Sale &amp; item manager with photo uploads</li>
+          <li><span class="tick">✓</span> Client agreement generator, two variants</li>
+          <li><span class="tick">✓</span> Arrow &amp; sale sign maker, print-ready</li>
+          <li><span class="tick">✓</span> Client list to track every lead</li>
+          <li><span class="tick">✓</span> The four-module operator course</li>
+          <li><span class="tick">✓</span> Email support from a person, not a bot</li>
+        </ul>
+
+        <div class="buy-cta">
+          <a href="/intake.html" class="btn btn-block" style="margin-top:22px;">
+            Claim my three cities
+            <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z"/></svg>
+          </a>
+          <p class="tiny" style="text-align:center;margin-top:10px;color:#4A4029;">
+            You pick your cities and read the agreement <b>before</b> you pay.
+          </p>
+        </div>
+      </div>
+
+      <div class="price-side">
+        <div class="price-note">
+          <h4>Why there is no monthly fee</h4>
+          <p>Because we would rather not have to explain one. Your site, your dashboard, and your
+            training do not switch off after 30 days and no invoice arrives next month. We charge
+            once, for the territory and the tools, and that is the end of the transaction.</p>
+        </div>
+        <div class="price-note">
+          <h4>What we do not do</h4>
+          <p>We do not find your clients, book your jobs, or run your sales. We do not tell you what
+            to charge, and we make no claim about what you will earn — some operators build something
+            real out of this and some never book a single job. This is a set of tools and a protected
+            patch of ground, not a job offer.</p>
+        </div>
+        <div class="price-note">
+          <h4>This is not a franchise</h4>
+          <p>You operate under your own business name, keep every dollar you collect, and pay us no
+            royalty. We exercise no control over how you work. There is no franchise fee because
+            there is no franchise.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FAQ ══════════════ -->
+<section class="section" id="faq" style="border-top:2px solid var(--ink-line);">
+  <div class="shell shell-narrow" style="margin:0 auto;">
+    <div class="eyebrow">Straight answers</div>
+    <h2 class="display">Questions people actually ask.</h2>
+
+    <div class="faq" id="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" type="button">Do I need any experience?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>No. What you need is a car, a phone, a weekend, and the willingness to knock on a door
+            and have a conversation. The course starts from "you have never done this" and the first
+            module is about getting your first client, not about theory.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What does "exclusive territory" actually mean?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>It means we will not sell GarageSaleBiz to another operator in your three cities. The
+            moment your payment clears, those cities are recorded against your account and the
+            availability checker on this page starts telling everyone else they are taken.</p>
+          <p>It does not mean you are the only person in town who can run a garage sale — we cannot
+            grant that and nobody can. Anyone is free to hold their own sale, and other companies
+            may operate near you. What you get is exclusivity within this platform, and the tools
+            and training that come with it.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Is there really no monthly fee?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Really. $249 once. We do not store your card after checkout, there is no renewal, and
+            no invoice arrives next month or next year. If anything ever changes about that, it
+            would apply to new purchases and not retroactively to yours.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">How much can I make?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>We will not answer that, and you should be wary of anyone who does. It depends on your
+            town, how many jobs you book, what the goods are worth, and how hard you work.
+            Some operators never book a job. You could lose money on this.</p>
+          <p>What we can tell you is the mechanics: you charge a percentage of what a sale takes in,
+            you set that percentage, and the dashboard defaults to 50%. What that adds up to is
+            entirely down to you.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Do I need a permit or a licence?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Often, yes — and it varies enormously. Many cities require a permit for a garage sale,
+            cap how many a household may hold per year, and regulate where signs may be placed and
+            for how long. Some require a business licence to run sales for other people.</p>
+          <p>Module 1 walks you through finding your own city's rules, but you must check them
+            yourself and comply with them. We are not able to advise you on the law where you live,
+            and nothing on this site is legal advice.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What if the city I want is taken?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Check it above before you buy anything. If it is taken, you can pick a neighbouring city
+            instead, or join the list for that one and get the first offer if the operator there ever
+            releases it.</p>
+          <p>You choose your cities and we confirm they are free <em>before</em> you reach the payment
+            page, so the ordinary way to discover a city is taken costs you nothing. In the rare case
+            that two people are paying for the same city at the same moment, whoever completes first
+            gets it and we refund the other in full, immediately, without asking for anything.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Can I add more cities later?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Email <a href="mailto:info@kingdom-creatives.com">info@kingdom-creatives.com</a> and we
+            will tell you what is open next to you. There is no automated upsell in the dashboard
+            because we would rather look at whether a fourth city actually makes sense for you first.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What happens right after I pay?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Your cities are locked, your website goes live at your subdomain, and you land in your
+            dashboard already signed in. You also get an email with your address, your login, and
+            the three things worth doing first. No onboarding call, no waiting on us to build
+            anything.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="buy-cta" style="margin-top:28px;text-align:center;">
+      <a href="/intake.html" class="btn">
+        Claim my three cities — $249
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="shell">
+    <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+      <div>
+        <div class="brand" style="font-size:1rem;">GarageSaleBiz</div>
+        <div class="small" style="margin-top:6px;">A Kingdom Creatives product.</div>
+      </div>
+      <div class="small" style="text-align:right;">
+        Questions? <a href="mailto:info@kingdom-creatives.com">info@kingdom-creatives.com</a><br>
+        © 2026 Kingdom Creatives LLC
+      </div>
+    </div>
+    <div class="foot-links">
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/operator-agreement.html">Operator Agreement</a>
+      <a href="/demo.html">Live demo</a>
+    </div>
+    <p class="tiny" style="margin-top:14px;max-width:80ch;">
+      GarageSaleBiz provides software, documents, and training. It does not provide clients, leads, or
+      sale locations, and makes no representation about income, revenue, profit, or results. Operators
+      are independent businesses, not franchisees, employees, or agents of Kingdom Creatives LLC.
+      Nothing on this site is legal, tax, or insurance advice.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc;
+
+  /* ── FAQ ───────────────────────────────────────────────────────────────── */
+  document.getElementById('faq-list').addEventListener('click', function (e) {
+    var q = e.target.closest('.faq-q');
+    if (!q) return;
+    q.parentElement.classList.toggle('open');
+  });
+
+  /* ── WAITLIST MODE ──────────────────────────────────────────────────────
+     Read from gsb_settings, never hardcoded. A sold-out state that needs a
+     redeploy is a sold-out state that stays wrong for a week. Failure is
+     silent and leaves the buy CTAs visible: if this read fails we would rather
+     show a purchasable page than a false "sold out". */
+  (async function () {
+    try {
+      var r = await GSB.supa.from('gsb_settings').select('value').eq('key', 'waitlist_mode').maybeSingle();
+      if (r.data && String(r.data.value).toLowerCase() === 'true') {
+        document.body.classList.add('waitlist-mode');
+      }
+    } catch (e) { /* leave the page purchasable */ }
+  })();
+
+  /* ══════════════════════════════════════════════════════════════════════
+     AVAILABILITY CHECKER
+
+     A FAST LANE, NOT A GATE. Checking reserves nothing — the atomic insert on
+     gsb_city_claims.city_norm is the only real guarantee, and the copy below
+     says so rather than implying a hold.
+
+     THE ONE OUTPUT THIS MUST NEVER PRODUCE is a green "available" derived from
+     a failed request. Not knowing is not the same as being free, and that is
+     the failure direction that costs somebody $249. Every error path renders
+     the can't-check state instead.
+     ══════════════════════════════════════════════════════════════════════ */
+  var COOLDOWN_MS = 1200;
+  var lastCheck = 0;
+  var wlSent = false;
+
+  document.getElementById('chk-state').innerHTML = GSB.stateOptions('State…');
+
+  function show(html) {
+    var box = document.getElementById('chk-out');
+    box.innerHTML = html;
+    box.classList.add('show');
+  }
+
+  document.getElementById('chk-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    checkCity();
+  });
+
+  async function checkCity() {
+    var hp = document.getElementById('chk-hp');
+    if (hp && hp.value) return;                      // honeypot
+    var now = Date.now();
+    if (now - lastCheck < COOLDOWN_MS) return;       // throttle
+    lastCheck = now;
+
+    var city = document.getElementById('chk-city').value.trim();
+    var st = document.getElementById('chk-state').value;
+
+    if (!city || !st) {
+      show('<p class="chk-note">Enter a city and pick its state — "Springfield" on its own could be '
+         + 'any of a dozen places, and we would rather not guess which one is yours.</p>');
+      return;
+    }
+
+    var btn = document.getElementById('chk-btn');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+
+    var label = city + ', ' + st;
+    var taken = null;   // stays null on ANY failure — never coerced to false
+
+    try {
+      /* gsb_check_cities normalises through gsb_norm_city server-side, so the
+         answer is computed by the same rule the atomic insert enforces on. A
+         visitor cannot get a different answer by spelling a city differently,
+         and we never ship the whole customer registry to the browser. */
+      var r = await GSB.supa.rpc('gsb_check_cities', { p_cities: [label] });
+      if (!r.error && Array.isArray(r.data) && r.data.length) taken = !!r.data[0].is_taken;
+    } catch (err) { /* taken stays null */ }
+
+    btn.disabled = false;
+    btn.textContent = 'Check availability';
+
+    if (taken === null) {
+      show('<p class="chk-note"><b>We couldn\'t check availability just now.</b> '
+         + 'Try again in a moment, or <a href="#price" style="color:var(--stamp);font-weight:700;">see the package</a> — '
+         + 'we confirm your cities are free before you reach the payment page, and refund in full '
+         + 'in the rare case one is claimed while you are checking out.</p>');
+      return;
+    }
+
+    if (taken) {
+      wlSent = false;
+      show(
+        '<p class="chk-verdict chk-no">' + esc(label) + ' is taken.</p>'
+        + '<p class="chk-note">One operator per city — that is the part you are buying, and it is why '
+        + 'we cannot sell it twice. Try a neighbouring city, or get first refusal on this one:</p>'
+        + '<div class="chk-wl">'
+        +   '<input type="text" id="chk-wl-name" placeholder="Your name" aria-label="Your name">'
+        +   '<input type="email" id="chk-wl-email" placeholder="you@email.com" aria-label="Your email">'
+        +   '<button class="btn btn-sm" type="button" id="chk-wl-btn">Notify me if it opens</button>'
+        + '</div>'
+        + '<p class="chk-note" id="chk-wl-msg"></p>'
+      );
+      document.getElementById('chk-wl-btn').addEventListener('click', function () { joinList(label); });
+      return;
+    }
+
+    show(
+      '<p class="chk-verdict chk-yes">' + esc(label) + ' is open.</p>'
+      + '<p class="chk-note">Two more cities are included, and you pick them on the next page.</p>'
+      + '<a class="btn btn-block buy-cta" href="/intake.html?city=' + encodeURIComponent(city)
+      +   '&state=' + encodeURIComponent(st) + '" style="margin-top:12px;">Claim ' + esc(label) + ' — $249</a>'
+      + '<p class="chk-note"><b>Checking does not reserve it.</b> Your cities are locked when your '
+      + 'payment completes, and we check them again at that moment.</p>'
+    );
+  }
+
+  async function joinList(label) {
+    if (wlSent) return;
+    var name = (document.getElementById('chk-wl-name') || {}).value || '';
+    var email = ((document.getElementById('chk-wl-email') || {}).value || '').trim();
+    var msg = document.getElementById('chk-wl-msg');
+    var btn = document.getElementById('chk-wl-btn');
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (msg) msg.innerHTML = '<b style="color:var(--stamp);">Please enter a valid email.</b>';
+      return;
+    }
+    wlSent = true;
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+    var ok = await saveWaitlist({ email: email, name: name.trim(), cities: [label], source: 'city-checker' });
+
+    if (!ok) {
+      /* Honest failure. Telling someone they are on a list they are not on is
+         worse than telling them it did not work. */
+      wlSent = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Notify me if it opens'; }
+      if (msg) msg.innerHTML = '<b style="color:var(--stamp);">That didn\'t save.</b> Email '
+        + '<a href="mailto:info@kingdom-creatives.com" style="color:var(--stamp);">info@kingdom-creatives.com</a> '
+        + 'with the city instead and we will add you by hand.';
+      return;
+    }
+
+    show('<p class="chk-verdict chk-yes">You\'re on the list for ' + esc(label) + '.</p>'
+       + '<p class="chk-note">If it opens up you get the first offer, before it is listed publicly. '
+       + 'Nothing has been charged and there is nothing to cancel.</p>');
+  }
+
+  /* gsb_waitlist is the only table the public may write to, and it is INSERT
+     only — a visitor can add themselves but can never read the list back to see
+     who else wants their town. */
+  async function saveWaitlist(entry) {
+    try {
+      var r = await GSB.supa.from('gsb_waitlist').insert({
+        email: entry.email,
+        name: entry.name || null,
+        cities_requested: entry.cities || [],
+        source: entry.source || null
+      });
+      if (r.error) { console.error('[waitlist]', r.error.message); return false; }
+      return true;
+    } catch (e) { console.error('[waitlist]', e); return false; }
+  }
+
+  /* ── SOLD-OUT FORM ─────────────────────────────────────────────────────── */
+  document.getElementById('wl-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var email = document.getElementById('wl-email').value.trim();
+    var err = document.getElementById('wl-err');
+    var btn = document.getElementById('wl-btn');
+    err.classList.remove('show');
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      err.textContent = 'Please enter a valid email address.';
+      err.classList.add('show');
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    var city = document.getElementById('wl-city').value.trim();
+    var ok = await saveWaitlist({
+      email: email,
+      name: document.getElementById('wl-name').value.trim(),
+      cities: city ? [city] : [],
+      source: 'sold-out'
+    });
+
+    btn.disabled = false;
+    if (ok) {
+      btn.textContent = "You're on the list ✓";
+      btn.disabled = true;
+    } else {
+      btn.textContent = 'Put me on the list';
+      err.innerHTML = "That didn't save. Email <a href=\"mailto:info@kingdom-creatives.com\">info@kingdom-creatives.com</a> and we will add you by hand.";
+      err.classList.add('show');
+    }
+  });
+
+  /* ── PREFILL FROM A DEEP LINK ──────────────────────────────────────────── */
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.get('city')) document.getElementById('chk-city').value = p.get('city');
+    if (p.get('state')) document.getElementById('chk-state').value = p.get('state');
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

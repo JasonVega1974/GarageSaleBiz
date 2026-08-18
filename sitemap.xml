@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Only the four public pages. The buyer flow, the operator tools, and the demo are
+  excluded here and in robots.txt.
+
+  Operator subdomains are NOT listed. Each one is its own host, so it needs its own
+  sitemap to be useful, and enumerating every paying operator in a single public
+  file on the apex would publish the customer list — the same reason
+  gsb_public_city_claims drops client_id and slug.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://garagesalebiz.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://garagesalebiz.com/operator-agreement.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://garagesalebiz.com/terms.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://garagesalebiz.com/privacy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

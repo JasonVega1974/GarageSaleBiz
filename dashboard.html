@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — GarageSaleBiz</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Franklin:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/gsb.css">
+<style>
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.app { display: grid; grid-template-columns: 236px 1fr; min-height: 100vh; }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } }
+
+.side {
+  background: var(--ink-soft); border-right: 3px solid var(--sign);
+  padding: 20px 0; display: flex; flex-direction: column;
+}
+@media (max-width: 900px) { .side { border-right: none; border-bottom: 3px solid var(--sign); } }
+.side-brand { padding: 0 18px 18px; border-bottom: 2px solid var(--ink-line); }
+.side-biz { font-family: var(--display); text-transform: uppercase; font-size: 1.05rem; letter-spacing: .03em; line-height: 1.2; }
+.side-sub { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--on-ink-dim); margin-top: 5px; }
+.side-nav { padding: 12px 0; flex: 1; }
+.side-nav button, .side-nav a {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  background: none; border: none; border-left: 4px solid transparent;
+  color: var(--on-ink); font-family: var(--body); font-size: 14px; font-weight: 600;
+  padding: 11px 18px; cursor: pointer; text-align: left; text-decoration: none;
+}
+.side-nav button:hover, .side-nav a:hover { background: rgba(255,206,59,.07); }
+.side-nav button.on { border-left-color: var(--sign); background: rgba(255,206,59,.11); color: var(--sign); }
+.side-ico { width: 18px; text-align: center; flex-shrink: 0; }
+.side-foot { padding: 16px 18px 0; border-top: 2px solid var(--ink-line); font-size: 13px; }
+.side-foot a { color: var(--on-ink-dim); display: block; padding: 4px 0; }
+
+.main { padding: 26px var(--gutter) 70px; max-width: 1000px; }
+.tab { display: none; }
+.tab.on { display: block; }
+.tab-head { margin-bottom: 20px; }
+.tab-head h1 { font-size: clamp(1.5rem, 3.6vw, 2.1rem); }
+.tab-head p { margin-top: 7px; font-size: 15px; color: var(--on-ink-dim); max-width: 66ch; }
+
+/* ── GATES ────────────────────────────────────────────────────────────────── */
+.gate {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(22,19,14,.96); padding: 22px;
+}
+.gate.on { display: flex; }
+.gate-card { max-width: 440px; width: 100%; padding: 30px 26px; }
+
+/* ── STATS ────────────────────────────────────────────────────────────────── */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.stat { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 15px 16px; }
+.stat-n { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--sign); }
+.stat-l { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--on-ink-dim); margin-top: 6px; }
+
+.site-strip {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  background: var(--sign); color: var(--ink); border: 3px solid var(--ink);
+  padding: 15px 18px; margin-bottom: 22px; box-shadow: var(--hard-sm);
+}
+.site-strip .u { font-family: var(--mono); font-weight: 700; font-size: 14px; word-break: break-all; }
+
+/* ── LISTS ────────────────────────────────────────────────────────────────── */
+.row-item {
+  border: 2px solid var(--ink-line); background: var(--ink-soft);
+  padding: 15px 16px; margin-bottom: 11px;
+  display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+}
+.row-item.sel { border-color: var(--sign); }
+.row-main { flex: 1; min-width: 220px; }
+.row-title { font-weight: 800; font-size: 15px; }
+.row-meta { font-size: 13px; color: var(--on-ink-dim); margin-top: 4px; line-height: 1.6; }
+.row-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.empty { border: 3px dashed var(--ink-line); padding: 30px 22px; text-align: center; color: var(--on-ink-dim); }
+.empty h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.1rem; color: var(--on-ink); margin-bottom: 7px; }
+
+/* ── ITEM GRID ────────────────────────────────────────────────────────────── */
+.igrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 13px; }
+.icard { border: 2px solid var(--ink-line); background: var(--ink-soft); overflow: hidden; }
+.icard-img { position: relative; aspect-ratio: 4/3; background: #12100C; display: grid; place-items: center; }
+.icard-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.icard-emoji { font-size: 2.2rem; }
+.icard-body { padding: 11px 12px 13px; }
+.icard-name { font-weight: 800; font-size: 14px; line-height: 1.35; }
+.icard-meta { font-size: 12px; color: var(--on-ink-dim); margin-top: 3px; }
+.icard-price { font-family: var(--display); font-size: 1.15rem; color: var(--sign); margin-top: 7px; }
+.icard-acts { display: flex; gap: 6px; padding: 0 12px 12px; }
+
+.photo-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
+.pcard { border: 2px solid var(--ink-line); position: relative; }
+.pcard img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.pcard button {
+  position: absolute; top: 5px; right: 5px;
+  background: var(--stamp); color: #fff; border: 2px solid var(--ink);
+  width: 26px; height: 26px; cursor: pointer; font-weight: 800; line-height: 1;
+}
+
+.upload-zone {
+  border: 3px dashed var(--ink-line); padding: 22px; text-align: center; cursor: pointer;
+  background: rgba(255,255,255,.02); display: block;
+}
+.upload-zone:hover { border-color: var(--sign); }
+
+/* ── MODAL ────────────────────────────────────────────────────────────────── */
+.modal {
+  position: fixed; inset: 0; z-index: 900; display: none;
+  align-items: flex-start; justify-content: center;
+  background: rgba(22,19,14,.9); padding: 22px; overflow-y: auto;
+}
+.modal.on { display: flex; }
+.modal-card { max-width: 620px; width: 100%; padding: 24px; margin: auto 0; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 16px; }
+.modal-x { background: none; border: none; color: var(--on-ink-dim); font-size: 1.6rem; cursor: pointer; line-height: 1; }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 9px; }
+.swatch { width: 46px; height: 46px; border: 3px solid var(--ink); cursor: pointer; position: relative; box-shadow: var(--hard-sm); padding: 0; }
+.swatch[aria-pressed="true"]::after {
+  content: '✓'; position: absolute; inset: 0; display: grid; place-items: center;
+  color: #fff; font-size: 1.2rem; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,.7);
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ GATES ══════════════
+     Four distinct states, deliberately not collapsed into one. Telling a paying
+     operator their account is inactive because a read failed is the failure this
+     separation exists to prevent. -->
+
+<div class="gate" id="gate-login">
+  <div class="paper-surface gate-card">
+    <div class="eyebrow eyebrow-dark">Operator sign in</div>
+    <h2 class="display" style="margin:6px 0 14px;">Welcome back.</h2>
+    <div class="field"><label for="li-email">Email</label>
+      <input type="email" id="li-email" autocomplete="username"></div>
+    <div class="field"><label for="li-pw">Password</label>
+      <input type="password" id="li-pw" autocomplete="current-password"></div>
+    <p class="err" id="li-err"></p>
+    <button class="btn btn-block" type="button" id="li-btn">Sign in</button>
+    <p style="margin-top:14px;text-align:center;">
+      <button class="btn-link" type="button" id="li-reset" style="color:var(--stamp);">Forgot your password?</button>
+    </p>
+    <p class="tiny" style="margin-top:16px;color:var(--on-paper-dim);text-align:center;">
+      Not an operator yet? <a href="/" style="color:var(--stamp);font-weight:700;">See what's included →</a>
+    </p>
+  </div>
+</div>
+
+<div class="gate" id="gate-noterritory">
+  <div class="paper-surface gate-card">
+    <div class="eyebrow eyebrow-dark">No territory on this account</div>
+    <h2 class="display" style="margin:6px 0 12px;">You're signed in, but there's no territory here.</h2>
+    <p class="small" style="color:var(--on-paper-dim);line-height:1.7;">
+      This account exists but no territory is attached to it. That usually means checkout was
+      started and not finished — in which case <b>nothing was charged</b>.
+    </p>
+    <p class="small" style="color:var(--on-paper-dim);line-height:1.7;margin-top:10px;">
+      If you did pay, do not pay again. Email us and we will attach your territory today.
+    </p>
+    <a class="btn btn-block" href="/intake.html" style="margin-top:18px;">Claim a territory</a>
+    <p style="margin-top:12px;text-align:center;">
+      <a class="btn-link" href="mailto:info@kingdom-creatives.com" style="color:var(--stamp);">I already paid — email us</a>
+      &nbsp;·&nbsp;
+      <button class="btn-link" type="button" onclick="GSB.signOut()">Sign out</button>
+    </p>
+  </div>
+</div>
+
+<div class="gate" id="gate-deactivated">
+  <div class="paper-surface gate-card">
+    <div class="eyebrow eyebrow-dark">Account inactive</div>
+    <h2 class="display" style="margin:6px 0 12px;">Your account is switched off.</h2>
+    <p class="small" style="color:var(--on-paper-dim);line-height:1.7;">
+      Your public site is offline and your territory has been released. This normally follows a
+      refund. <b>Your sales, items, photos and client list have not been deleted</b> — they are
+      still here and can be switched back on.
+    </p>
+    <p class="small" style="color:var(--on-paper-dim);line-height:1.7;margin-top:10px;">
+      If this is not what you expected, email us and we will look at it the same day.
+    </p>
+    <a class="btn btn-block" href="mailto:info@kingdom-creatives.com" style="margin-top:18px;">Email us about this</a>
+    <p style="margin-top:12px;text-align:center;">
+      <button class="btn-link" type="button" onclick="GSB.signOut()">Sign out</button>
+    </p>
+  </div>
+</div>
+
+<div class="gate" id="gate-error">
+  <div class="paper-surface gate-card">
+    <div class="eyebrow eyebrow-dark">Couldn't load your account</div>
+    <h2 class="display" style="margin:6px 0 12px;">Something went wrong at our end.</h2>
+    <p class="small" style="color:var(--on-paper-dim);line-height:1.7;">
+      We could not read your account details. <b>This is not a problem with your account and
+      nothing is wrong with your territory</b> — it is a connection or server issue.
+    </p>
+    <button class="btn btn-block" type="button" onclick="location.reload()" style="margin-top:18px;">Try again</button>
+    <p style="margin-top:12px;text-align:center;">
+      <button class="btn-link" type="button" onclick="GSB.signOut()">Sign out</button>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div class="app" id="app" style="visibility:hidden;">
+
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-biz" id="sb-biz">Loading…</div>
+      <div class="side-sub" id="sb-area"></div>
+    </div>
+    <nav class="side-nav" id="side-nav">
+      <button type="button" data-tab="overview" class="on"><span class="side-ico">🏠</span> Overview</button>
+      <button type="button" data-tab="sales"><span class="side-ico">📅</span> Sales</button>
+      <button type="button" data-tab="items"><span class="side-ico">🏷️</span> Items &amp; photos</button>
+      <button type="button" data-tab="clients"><span class="side-ico">🗂️</span> Client list</button>
+      <button type="button" data-tab="settings"><span class="side-ico">⚙️</span> Settings</button>
+      <a href="/signs.html"><span class="side-ico">🪧</span> Sign maker ↗</a>
+      <a href="/contracts.html"><span class="side-ico">📋</span> Agreements ↗</a>
+      <a href="/course.html"><span class="side-ico">🎓</span> The course ↗</a>
+    </nav>
+    <div class="side-foot">
+      <a href="#" id="sb-site" target="_blank" rel="noopener">View my public site ↗</a>
+      <a href="mailto:info@kingdom-creatives.com">Get help</a>
+      <button class="btn-link" type="button" onclick="GSB.signOut()" style="color:var(--on-ink-dim);padding:4px 0;">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <section class="tab on" id="tab-overview">
+      <div class="tab-head">
+        <h1 class="display">Your dashboard</h1>
+        <p>Everything your operator business runs on. Start by setting up a sale, then add the items
+          worth photographing.</p>
+      </div>
+
+      <div class="site-strip">
+        <div>
+          <div class="lbl" style="color:#6B5A33;">Your public site</div>
+          <div class="u" id="ov-url">—</div>
+        </div>
+        <a class="btn btn-sm btn-ink" id="ov-visit" href="#" target="_blank" rel="noopener">Open it ↗</a>
+      </div>
+
+      <div class="stats" id="ov-stats"></div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Your territory</div></div>
+        <div class="card-body">
+          <div id="ov-cities" style="display:flex;flex-wrap:wrap;gap:9px;"></div>
+          <p class="tiny muted" style="margin-top:12px;">
+            These cities are exclusively yours. To add another, email
+            <a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);">info@kingdom-creatives.com</a>
+            and we will tell you what is open next to you.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Next sale</div></div>
+        <div class="card-body" id="ov-next"></div>
+      </div>
+    </section>
+
+    <!-- ══ SALES ══ -->
+    <section class="tab" id="tab-sales">
+      <div class="tab-head">
+        <h1 class="display">Sales</h1>
+        <p>One row per job. A sale only appears on your public site once you publish it, so you can
+          set it up as far ahead as you like.</p>
+      </div>
+      <button class="btn" type="button" id="new-sale">+ New sale</button>
+      <div id="sales-list" style="margin-top:20px;"></div>
+    </section>
+
+    <!-- ══ ITEMS ══ -->
+    <section class="tab" id="tab-items">
+      <div class="tab-head">
+        <h1 class="display">Items &amp; photos</h1>
+        <p>Photograph the things worth driving for. Shoppers decide whether to come based on this,
+          so a dozen good items beat a hundred boxes of odds and ends.</p>
+      </div>
+
+      <div class="field" style="max-width:440px;">
+        <label for="item-sale">Which sale</label>
+        <select id="item-sale"></select>
+      </div>
+
+      <div id="items-area"></div>
+    </section>
+
+    <!-- ══ CLIENTS ══ -->
+    <section class="tab" id="tab-clients">
+      <div class="tab-head">
+        <h1 class="display">Client list</h1>
+        <p>Every homeowner you have spoken to. The ones who said "not yet" in March are your
+          July calendar — which only works if you wrote them down.</p>
+      </div>
+      <button class="btn" type="button" id="new-client">+ Add a client</button>
+      <div id="clients-list" style="margin-top:20px;"></div>
+    </section>
+
+    <!-- ══ SETTINGS ══ -->
+    <section class="tab" id="tab-settings">
+      <div class="tab-head">
+        <h1 class="display">Settings</h1>
+        <p>What shoppers see on your public site.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Brand colour</div></div>
+        <div class="card-body">
+          <p class="small muted" style="margin-bottom:14px;">Used for headings and accents on your
+            public site. Takes effect immediately.</p>
+          <div class="swatches" id="set-swatches" role="group" aria-label="Brand colour"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Your details</div></div>
+        <div class="card-body">
+          <div class="tbl-wrap"><table class="tbl"><tbody id="set-details"></tbody></table></div>
+          <p class="tiny muted" style="margin-top:14px;">
+            To change your business name, phone, email, or web address, email
+            <a href="mailto:info@kingdom-creatives.com" style="color:var(--sign);">info@kingdom-creatives.com</a>.
+            These are deliberately not self-editable: your web address is printed on signs and baked
+            into QR codes, and changing it silently would break every sign already in the ground.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══════════════ SALE MODAL ══════════════ -->
+<div class="modal" id="m-sale">
+  <div class="paper-surface modal-card on-paper">
+    <div class="modal-head">
+      <h2 class="display" style="font-size:1.4rem;" id="ms-title">New sale</h2>
+      <button class="modal-x" type="button" data-close="m-sale" aria-label="Close">×</button>
+    </div>
+
+    <div class="row-2">
+      <div class="field"><label for="ms-type">Sale type</label>
+        <select id="ms-type">
+          <option value="garage">Garage Sale</option>
+          <option value="moving">Moving Sale</option>
+          <option value="multi-family">Multi-Family Sale</option>
+          <option value="estate-lite">Downsizing Sale</option>
+        </select></div>
+      <div class="field"><label for="ms-status">Status</label>
+        <select id="ms-status">
+          <option value="planned">Planned</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="live">Running now</option>
+          <option value="done">Finished</option>
+          <option value="cancelled">Cancelled</option>
+        </select></div>
+    </div>
+
+    <div class="field"><label for="ms-title-in">Sale title <span style="text-transform:none;letter-spacing:0;">(shoppers see this)</span></label>
+      <input type="text" id="ms-title-in" placeholder="Orchard Heights — Whole-Garage Clear-Out"></div>
+
+    <div class="row-2">
+      <div class="field"><label for="ms-client">Client name <span style="text-transform:none;letter-spacing:0;">(private)</span></label>
+        <input type="text" id="ms-client" placeholder="The Reyes Family"></div>
+      <div class="field"><label for="ms-commission">Your commission %</label>
+        <input type="number" id="ms-commission" min="1" max="99" step="1" placeholder="50"></div>
+    </div>
+
+    <div class="field"><label for="ms-street">Street address</label>
+      <input type="text" id="ms-street" placeholder="1427 W Orchard Ave"></div>
+    <div class="field"><label for="ms-city">City, state, ZIP</label>
+      <input type="text" id="ms-city" placeholder="Nampa, ID 83651"></div>
+
+    <div class="notice" style="margin:4px 0 16px;">
+      <div class="check-row">
+        <input type="checkbox" id="ms-showaddr" checked>
+        <label for="ms-showaddr" style="font-size:14px;line-height:1.6;">
+          <b>Show the full address on my public site.</b>
+          <span style="display:block;color:var(--on-paper-dim);margin-top:4px;">
+            Leave this on unless the homeowner has asked you not to — a listing without an address is
+            hard for shoppers to act on. Switched off, your site shows the city only and says the
+            address is released on the morning of the sale.
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div class="row-2">
+      <div class="field"><label for="ms-start">First day</label><input type="date" id="ms-start"></div>
+      <div class="field"><label for="ms-end">Last day</label><input type="date" id="ms-end"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label for="ms-open">Opens</label><input type="time" id="ms-open" value="08:00"></div>
+      <div class="field"><label for="ms-close">Closes</label><input type="time" id="ms-close" value="15:00"></div>
+    </div>
+    <div class="field"><label for="ms-days">Days label <span style="text-transform:none;letter-spacing:0;">(optional, e.g. "Fri – Sun")</span></label>
+      <input type="text" id="ms-days" placeholder="Fri – Sun"></div>
+
+    <div class="field"><label for="ms-desc">Description</label>
+      <textarea id="ms-desc" placeholder="What's in this sale, how pricing works over the weekend, payment methods, anything shoppers should know."></textarea></div>
+
+    <div class="notice notice-good">
+      <div class="check-row">
+        <input type="checkbox" id="ms-live">
+        <label for="ms-live" style="font-size:14px;line-height:1.6;">
+          <b>Publish this sale on my public site.</b>
+          <span style="display:block;color:var(--on-paper-dim);margin-top:4px;">
+            Until this is ticked, nothing about this sale is visible to anyone but you.
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <p class="err" id="ms-err"></p>
+    <div style="display:flex;gap:11px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn" type="button" id="ms-save" style="flex:1;min-width:150px;">Save sale</button>
+      <button class="btn btn-ghost" type="button" data-close="m-sale"
+              style="background:var(--paper-2);color:var(--ink);">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ITEM MODAL ══════════════ -->
+<div class="modal" id="m-item">
+  <div class="paper-surface modal-card on-paper">
+    <div class="modal-head">
+      <h2 class="display" style="font-size:1.4rem;" id="mi-title">New item</h2>
+      <button class="modal-x" type="button" data-close="m-item" aria-label="Close">×</button>
+    </div>
+
+    <div class="field"><label for="mi-name">What is it</label>
+      <input type="text" id="mi-name" placeholder="DeWalt 20V drill &amp; impact set"></div>
+
+    <div class="row-2">
+      <div class="field"><label for="mi-cat">Category</label>
+        <input type="text" id="mi-cat" placeholder="Tools" list="cat-list">
+        <datalist id="cat-list">
+          <option>Tools</option><option>Furniture</option><option>Outdoor</option><option>Yard</option>
+          <option>Kitchen</option><option>Kids</option><option>Sporting Goods</option><option>Camping</option>
+          <option>Electronics</option><option>Storage</option><option>Décor</option><option>Clothing</option>
+        </datalist></div>
+      <div class="field"><label for="mi-cond">Condition</label>
+        <select id="mi-cond">
+          <option value="">—</option>
+          <option>Like new</option><option>Very good</option><option>Good</option>
+          <option>Fair</option><option>Needs work</option>
+        </select></div>
+    </div>
+
+    <div class="row-2">
+      <div class="field"><label for="mi-price">Asking price</label>
+        <input type="number" id="mi-price" min="0" step="1" placeholder="165"></div>
+      <div class="field">
+        <label for="mi-floor">Your floor <span style="text-transform:none;letter-spacing:0;">(private)</span></label>
+        <input type="number" id="mi-floor" min="0" step="1" placeholder="120">
+      </div>
+    </div>
+    <p class="tiny" style="color:var(--on-paper-dim);margin:-8px 0 16px;">
+      The floor is the lowest you will take. <b>It is never shown publicly</b> — it is left out of the
+      public listing entirely, not just hidden — so you can negotiate on the day without guessing.
+    </p>
+
+    <div class="row-2">
+      <div class="field"><label for="mi-status">Status</label>
+        <select id="mi-status">
+          <option value="available">Available</option>
+          <option value="pending">On hold</option>
+          <option value="sold">Sold</option>
+          <option value="held">Kept by owner</option>
+        </select></div>
+      <div class="field"><label for="mi-emoji">Icon <span style="text-transform:none;letter-spacing:0;">(if no photo)</span></label>
+        <input type="text" id="mi-emoji" maxlength="4" placeholder="🔧"></div>
+    </div>
+
+    <div class="field"><label for="mi-desc">Description</label>
+      <textarea id="mi-desc" placeholder="Drill, impact driver, two batteries, charger, hard case."></textarea></div>
+
+    <div class="field">
+      <label>Photo</label>
+      <label class="upload-zone" for="mi-photo">
+        <img id="mi-photo-prev" alt="" style="max-height:120px;margin:0 auto 10px;display:none;border:2px solid var(--ink);">
+        <div class="small" id="mi-photo-txt">Choose a photo — JPG, PNG or WEBP, under 10 MB</div>
+        <input type="file" id="mi-photo" accept="image/png,image/jpeg,image/webp" style="display:none;">
+      </label>
+    </div>
+
+    <div class="check-row" style="margin-bottom:16px;">
+      <input type="checkbox" id="mi-featured">
+      <label for="mi-featured" style="font-size:14px;">Feature this item — shows first on your public site</label>
+    </div>
+
+    <p class="err" id="mi-err"></p>
+    <div style="display:flex;gap:11px;flex-wrap:wrap;">
+      <button class="btn" type="button" id="mi-save" style="flex:1;min-width:150px;">Save item</button>
+      <button class="btn btn-ghost" type="button" data-close="m-item"
+              style="background:var(--paper-2);color:var(--ink);">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CLIENT MODAL ══════════════ -->
+<div class="modal" id="m-client">
+  <div class="paper-surface modal-card on-paper">
+    <div class="modal-head">
+      <h2 class="display" style="font-size:1.4rem;" id="mc-title">Add a client</h2>
+      <button class="modal-x" type="button" data-close="m-client" aria-label="Close">×</button>
+    </div>
+
+    <div class="field"><label for="mc-name">Name</label>
+      <input type="text" id="mc-name" placeholder="Marisol Reyes"></div>
+    <div class="row-2">
+      <div class="field"><label for="mc-phone">Phone</label><input type="tel" id="mc-phone"></div>
+      <div class="field"><label for="mc-email">Email</label><input type="email" id="mc-email"></div>
+    </div>
+    <div class="field"><label for="mc-addr">Address</label>
+      <input type="text" id="mc-addr" placeholder="1427 W Orchard Ave, Nampa, ID"></div>
+    <div class="field"><label for="mc-status">Where it stands</label>
+      <select id="mc-status">
+        <option value="lead">Lead — not spoken to yet</option>
+        <option value="contacted">Contacted</option>
+        <option value="booked">Booked</option>
+        <option value="completed">Completed</option>
+        <option value="lost">Didn't go ahead</option>
+      </select></div>
+    <div class="field"><label for="mc-notes">Notes</label>
+      <textarea id="mc-notes" placeholder="What they need cleared, when they're moving, how they prefer to be contacted."></textarea></div>
+
+    <div class="notice">
+      <p class="small" style="line-height:1.6;">
+        <b>This list is private to you.</b> It is never published, never included in any public
+        listing, and not readable by us for support — these are your clients' personal details, and
+        they did not agree to anything with us.
+      </p>
+    </div>
+
+    <p class="err" id="mc-err"></p>
+    <div style="display:flex;gap:11px;flex-wrap:wrap;">
+      <button class="btn" type="button" id="mc-save" style="flex:1;min-width:150px;">Save client</button>
+      <button class="btn btn-ghost" type="button" data-close="m-client"
+              style="background:var(--paper-2);color:var(--ink);">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/gsb.js"></script>
+<script>
+(function () {
+  'use strict';
+  var esc = GSB.esc, $ = function (id) { return document.getElementById(id); };
+  var supa = GSB.supa;
+
+  var PHOTO_BUCKET = 'gsb-sale-photos';
+  var PHOTO_MAX = 10 * 1024 * 1024;
+  var PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
+  var sales = [], items = [], photos = [], clients = [];
+  var editSaleId = null, editItemId = null, editClientId = null;
+  var selectedSaleId = null;
+  var pendingPhotoFile = null;
+
+  /* Exposed for gsb.js: resumeSession() calls this when a re-auth succeeds but
+     lands on a deactivated account, so the operator sees the real state instead
+     of a dashboard that silently fails every write. */
+  window.gsbShowDeactivated = function () { showGate('gate-deactivated'); };
+
+  function showGate(id) {
+    ['gate-login', 'gate-noterritory', 'gate-deactivated', 'gate-error'].forEach(function (g) {
+      $(g).classList.toggle('on', g === id);
+    });
+    document.body.style.overflow = id ? 'hidden' : '';
+    $('app').style.visibility = 'hidden';
+  }
+  function hideGates() {
+    ['gate-login', 'gate-noterritory', 'gate-deactivated', 'gate-error'].forEach(function (g) {
+      $(g).classList.remove('on');
+    });
+    document.body.style.overflow = '';
+    $('app').style.visibility = 'visible';
+  }
+
+  /* ══════════════ BOOT ══════════════ */
+  (async function boot() {
+    var res = await GSB.checkAuth();
+    if (!res.ok) {
+      if (res.reason === 'no_session') showGate('gate-login');
+      else if (res.reason === 'not_provisioned') showGate('gate-noterritory');
+      else if (res.reason === 'deactivated' || res.reason === 'no_tenant_row') showGate('gate-deactivated');
+      else showGate('gate-error');
+      return;
+    }
+    hideGates();
+    paintChrome(res.tenant);
+    await loadAll();
+  })();
+
+  /* ══════════════ LOGIN ══════════════ */
+  $('li-btn').addEventListener('click', signIn);
+  $('li-pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
+
+  async function signIn() {
+    var email = $('li-email').value.trim(), pw = $('li-pw').value;
+    var err = $('li-err'), btn = $('li-btn');
+    err.classList.remove('show');
+    if (!email || !pw) { err.textContent = 'Enter your email and password.'; err.classList.add('show'); return; }
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    var r = await supa.auth.signInWithPassword({ email: email, password: pw });
+    btn.disabled = false; btn.textContent = 'Sign in';
+    if (r.error) { err.textContent = r.error.message || 'Could not sign in.'; err.classList.add('show'); return; }
+    location.reload();
+  }
+
+  $('li-reset').addEventListener('click', async function () {
+    var email = $('li-email').value.trim();
+    var err = $('li-err');
+    if (!email) { err.textContent = 'Enter your email first, then press this again.'; err.classList.add('show'); return; }
+    await supa.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/dashboard.html' });
+    // Deliberately the same message whether or not the address is registered:
+    // a different response would confirm which emails have accounts.
+    err.classList.remove('show');
+    GSB.toast('If that address has an account, a reset link is on its way.');
+  });
+
+  /* ══════════════ CHROME ══════════════
+     Every assignment is UNCONDITIONAL, blanking when the operator has no value.
+     `if (x) el.textContent = x` leaves whatever the markup shipped with in place
+     — which is how EstateSaleBiz's sign creator printed a stranger's phone
+     number onto a flyer someone was about to take to a copy shop. */
+  function paintChrome(t) {
+    $('sb-biz').textContent = t.business_name || 'Your business';
+    $('sb-area').textContent = t.service_area || '';
+    var url = 'https://' + t.slug + '.' + GSB.APEX;
+    $('sb-site').href = url;
+    $('ov-url').textContent = url.replace(/^https?:\/\//, '');
+    $('ov-visit').href = url;
+
+    $('ov-cities').innerHTML = (t.cities || []).length
+      ? t.cities.map(function (c) { return '<span class="tag tag-open">' + esc(c) + '</span>'; }).join('')
+      : '<span class="small muted">No cities recorded — email us.</span>';
+
+    $('set-details').innerHTML = [
+      ['Business name', t.business_name],
+      ['Web address', url.replace(/^https?:\/\//, '')],
+      ['Phone', t.phone],
+      ['Email', t.email],
+      ['Service area', t.service_area],
+      ['Territory', (t.cities || []).join(', ')],
+      ['Default commission', t.default_commission_pct != null ? t.default_commission_pct + '%' : '—'],
+      ['Operator since', t.created_at ? GSB.fmtDate(t.created_at, { year: 'numeric', month: 'long', day: 'numeric' }) : '—']
+    ].map(function (r) {
+      return '<tr><th style="width:180px;">' + esc(r[0]) + '</th><td>' + esc(r[1] || '—') + '</td></tr>';
+    }).join('');
+
+    paintSwatches(t.primary_color);
+  }
+
+  /* ══════════════ TABS ══════════════ */
+  $('side-nav').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-tab]');
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll('button[data-tab]'), function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    ['overview', 'sales', 'items', 'clients', 'settings'].forEach(function (t) {
+      $('tab-' + t).classList.toggle('on', t === b.dataset.tab);
+    });
+    window.scrollTo({ top: 0 });
+  });
+
+  /* ══════════════ LOAD ══════════════ */
+  async function loadAll() {
+    var cid = GSB.clientId;
+    if (!cid) { showGate('gate-error'); return; }
+
+    var out = await Promise.all([
+      supa.from('gsb_sales').select('*').eq('client_id', cid).order('start_date', { ascending: false, nullsFirst: false }),
+      supa.from('gsb_items').select('*').eq('client_id', cid).order('display_order', { ascending: true }),
+      supa.from('gsb_photos').select('*').eq('client_id', cid).order('display_order', { ascending: true }),
+      supa.from('gsb_clients').select('*').eq('client_id', cid).order('created_at', { ascending: false })
+    ]);
+
+    // A failed READ is surfaced, never rendered as "you have nothing". An
+    // operator seeing an empty dashboard because a query failed would reasonably
+    // conclude their data was gone.
+    for (var i = 0; i < out.length; i++) {
+      if (out[i].error) {
+        console.error('[dash] load failed:', out[i].error.message);
+        GSB.toast('Could not load some of your data — reload the page.', true);
+      }
+    }
+
+    sales = out[0].data || [];
+    items = out[1].data || [];
+    photos = out[2].data || [];
+    clients = out[3].data || [];
+
+    renderOverview();
+    renderSales();
+    renderSalePicker();
+    renderItems();
+    renderClients();
+  }
+
+  /* ══════════════ OVERVIEW ══════════════ */
+  function renderOverview() {
+    var live = sales.filter(function (s) { return s.is_live; }).length;
+    var listed = items.filter(function (i) { return i.status === 'available'; }).length;
+    var soldValue = items.filter(function (i) { return i.status === 'sold'; })
+      .reduce(function (a, i) { return a + (Number(i.price) || 0); }, 0);
+    var openClients = clients.filter(function (c) { return c.status === 'lead' || c.status === 'contacted'; }).length;
+
+    $('ov-stats').innerHTML = [
+      [sales.length, 'Sales total'],
+      [live, 'Published'],
+      [listed, 'Items available'],
+      [GSB.money(soldValue), 'Marked sold'],
+      [openClients, 'Open leads']
+    ].map(function (s) {
+      return '<div class="stat"><div class="stat-n">' + esc(s[0]) + '</div><div class="stat-l">' + esc(s[1]) + '</div></div>';
+    }).join('');
+
+    var upcoming = sales.filter(function (s) {
+      var d = GSB.parseDate(s.start_date); if (!d) return false;
+      var today = new Date(); today.setHours(12, 0, 0, 0);
+      return d >= today && s.status !== 'cancelled';
+    }).sort(function (a, b) { return GSB.parseDate(a.start_date) - GSB.parseDate(b.start_date); });
+
+    if (!upcoming.length) {
+      $('ov-next').innerHTML =
+        '<div class="empty"><h3>No sale coming up</h3>' +
+        '<p class="small">Set one up and it appears here — and on your public site once you publish it.</p>' +
+        '<button class="btn btn-sm" type="button" style="margin-top:14px;" id="ov-new">+ New sale</button></div>';
+      var b = $('ov-new'); if (b) b.addEventListener('click', function () { openSale(null); });
+      return;
+    }
+
+    var s = upcoming[0];
+    var n = items.filter(function (i) { return i.sale_id === s.id; }).length;
+    $('ov-next').innerHTML =
+      '<div class="row-title">' + esc(s.title || GSB.SALE_TYPES[s.sale_type] || 'Sale') + '</div>' +
+      '<div class="row-meta">' +
+        esc(GSB.fmtDateRange(s.start_date, s.end_date)) +
+        (s.open_time ? ' · ' + esc(GSB.fmtTime(s.open_time)) + '–' + esc(GSB.fmtTime(s.close_time)) : '') +
+        '<br>' + esc([s.street_address, s.city_state_zip].filter(Boolean).join(', ') || 'No address yet') +
+        '<br>' + n + ' item' + (n === 1 ? '' : 's') + ' listed · ' +
+        (s.is_live ? '<span class="tag tag-live">Published</span>' : '<span class="tag tag-draft">Not published</span>') +
+      '</div>' +
+      '<div class="row-acts" style="margin-top:14px;">' +
+        '<button class="btn btn-sm" type="button" id="ov-edit">Edit sale</button>' +
+        '<button class="btn btn-sm btn-sign" type="button" id="ov-items">Add items</button>' +
+      '</div>';
+    $('ov-edit').addEventListener('click', function () { openSale(s.id); });
+    $('ov-items').addEventListener('click', function () {
+      selectedSaleId = s.id;
+      $('item-sale').value = String(s.id);
+      document.querySelector('button[data-tab="items"]').click();
+      renderItems();
+    });
+  }
+
+  /* ══════════════ SALES ══════════════ */
+  $('new-sale').addEventListener('click', function () { openSale(null); });
+
+  function renderSales() {
+    if (!sales.length) {
+      $('sales-list').innerHTML =
+        '<div class="empty"><h3>No sales yet</h3>' +
+        '<p class="small">Your first job goes here. Set up the dates and address, add the good items, ' +
+        'then publish it to your site.</p></div>';
+      return;
+    }
+    $('sales-list').innerHTML = sales.map(function (s) {
+      var n = items.filter(function (i) { return i.sale_id === s.id; }).length;
+      return '<div class="row-item">' +
+        '<div class="row-main">' +
+          '<div class="row-title">' + esc(s.title || GSB.SALE_TYPES[s.sale_type] || 'Untitled sale') + '</div>' +
+          '<div class="row-meta">' +
+            '<span class="tag ' + (s.is_live ? 'tag-live' : 'tag-draft') + '">' +
+              (s.is_live ? 'Published' : 'Draft') + '</span> ' +
+            '<span class="tag tag-taken">' + esc(GSB.SALE_TYPES[s.sale_type] || s.sale_type) + '</span><br>' +
+            esc(GSB.fmtDateRange(s.start_date, s.end_date) || 'No dates set') +
+            (s.client_name ? ' · for ' + esc(s.client_name) : '') + '<br>' +
+            esc([s.street_address, s.city_state_zip].filter(Boolean).join(', ') || 'No address') +
+            (s.show_address === false ? ' <span class="tag tag-draft">address private</span>' : '') +
+            '<br>' + n + ' item' + (n === 1 ? '' : 's') +
+            (s.commission_pct ? ' · ' + esc(s.commission_pct) + '% commission' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="row-acts">' +
+          '<button class="btn btn-sm" type="button" data-edit-sale="' + s.id + '">Edit</button>' +
+          '<button class="btn btn-sm btn-sign" type="button" data-items-sale="' + s.id + '">Items</button>' +
+          '<button class="btn btn-sm btn-ghost" type="button" data-del-sale="' + s.id + '" ' +
+            'style="background:var(--ink);color:#FFB4A2;">Delete</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  $('sales-list').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.editSale) openSale(Number(b.dataset.editSale));
+    if (b.dataset.itemsSale) {
+      selectedSaleId = Number(b.dataset.itemsSale);
+      $('item-sale').value = b.dataset.itemsSale;
+      document.querySelector('button[data-tab="items"]').click();
+      renderItems();
+    }
+    if (b.dataset.delSale) deleteSale(Number(b.dataset.delSale));
+  });
+
+  function openSale(id) {
+    editSaleId = id;
+    var s = id ? sales.find(function (x) { return x.id === id; }) : null;
+    $('ms-title').textContent = s ? 'Edit sale' : 'New sale';
+    $('ms-err').classList.remove('show');
+
+    $('ms-type').value      = s ? (s.sale_type || 'garage') : 'garage';
+    $('ms-status').value    = s ? (s.status || 'planned') : 'planned';
+    $('ms-title-in').value  = s ? (s.title || '') : '';
+    $('ms-client').value    = s ? (s.client_name || '') : '';
+    $('ms-commission').value = s && s.commission_pct != null
+      ? s.commission_pct
+      : (GSB.tenant && GSB.tenant.default_commission_pct != null ? GSB.tenant.default_commission_pct : 50);
+    $('ms-street').value    = s ? (s.street_address || '') : '';
+    $('ms-city').value      = s ? (s.city_state_zip || '') : '';
+    $('ms-showaddr').checked = s ? s.show_address !== false : true;
+    $('ms-start').value     = s ? (s.start_date || '') : '';
+    $('ms-end').value       = s ? (s.end_date || '') : '';
+    $('ms-open').value      = s ? (s.open_time || '08:00') : '08:00';
+    $('ms-close').value     = s ? (s.close_time || '15:00') : '15:00';
+    $('ms-days').value      = s ? (s.day_of_week || '') : '';
+    $('ms-desc').value      = s ? (s.description || '') : '';
+    $('ms-live').checked    = s ? !!s.is_live : false;
+
+    $('m-sale').classList.add('on');
+  }
+
+  $('ms-save').addEventListener('click', async function () {
+    var err = $('ms-err');
+    err.classList.remove('show');
+
+    var title = $('ms-title-in').value.trim();
+    if (!title) { err.textContent = 'Give the sale a title — shoppers see it.'; err.classList.add('show'); return; }
+    var start = $('ms-start').value;
+    if (!start) { err.textContent = 'Set at least a first day.'; err.classList.add('show'); return; }
+    var end = $('ms-end').value || start;
+    if (end < start) { err.textContent = 'The last day cannot be before the first day.'; err.classList.add('show'); return; }
+
+    var commission = $('ms-commission').value === '' ? null : Number($('ms-commission').value);
+    if (commission !== null && (!(commission > 0) || !(commission < 100))) {
+      err.textContent = 'Commission must be between 1 and 99.';
+      err.classList.add('show'); return;
+    }
+
+    if (!await GSB.requireSession('Saving the sale')) return;
+
+    var btn = this; btn.disabled = true; btn.textContent = 'Saving…';
+
+    var row = {
+      client_id: GSB.clientId,
+      title: title,
+      sale_type: $('ms-type').value,
+      status: $('ms-status').value,
+      client_name: $('ms-client').value.trim() || null,
+      commission_pct: commission,
+      street_address: $('ms-street').value.trim() || null,
+      city_state_zip: $('ms-city').value.trim() || null,
+      show_address: $('ms-showaddr').checked,
+      start_date: start,
+      end_date: end,
+      open_time: $('ms-open').value || null,
+      close_time: $('ms-close').value || null,
+      day_of_week: $('ms-days').value.trim() || null,
+      description: $('ms-desc').value.trim() || null,
+      is_live: $('ms-live').checked,
+      updated_at: new Date().toISOString()
+    };
+    if ($('ms-live').checked) row.published_at = new Date().toISOString();
+
+    var r;
+    if (editSaleId) {
+      r = await supa.from('gsb_sales').update(row).eq('id', editSaleId).eq('client_id', GSB.clientId).select();
+    } else {
+      r = await supa.from('gsb_sales').insert(row).select();
+    }
+
+    btn.disabled = false; btn.textContent = 'Save sale';
+
+    // LAYER C. A write that reports no error but touched no rows has NOT
+    // succeeded — and without this the UI would close the modal and show the
+    // sale as saved while the public site stayed empty.
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Saving the sale' })) return;
+
+    $('m-sale').classList.remove('on');
+    GSB.toast(editSaleId ? 'Sale updated.' : 'Sale created.');
+    await loadAll();
+  });
+
+  async function deleteSale(id) {
+    var s = sales.find(function (x) { return x.id === id; });
+    var n = items.filter(function (i) { return i.sale_id === id; }).length;
+    // Deliberately a confirm(), not a silent delete: this cascades to every item
+    // and photo on the sale and there is no undo.
+    if (!confirm('Delete "' + (s && s.title ? s.title : 'this sale') + '"?\n\n' +
+        'This also deletes its ' + n + ' item' + (n === 1 ? '' : 's') + ' and every photo on it. ' +
+        'This cannot be undone.')) return;
+
+    if (!await GSB.requireSession('Deleting the sale')) return;
+    var r = await supa.from('gsb_sales').delete().eq('id', id).eq('client_id', GSB.clientId).select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Deleting the sale' })) return;
+    GSB.toast('Sale deleted.');
+    await loadAll();
+  }
+
+  /* ══════════════ ITEMS ══════════════ */
+  function renderSalePicker() {
+    var sel = $('item-sale');
+    if (!sales.length) { sel.innerHTML = '<option value="">No sales yet</option>'; return; }
+    sel.innerHTML = sales.map(function (s) {
+      return '<option value="' + s.id + '">' + esc(s.title || 'Untitled') + ' — ' +
+        esc(GSB.fmtDateRange(s.start_date, s.end_date) || 'no dates') + '</option>';
+    }).join('');
+    if (selectedSaleId && sales.some(function (s) { return s.id === selectedSaleId; })) {
+      sel.value = String(selectedSaleId);
+    } else {
+      selectedSaleId = sales[0].id;
+      sel.value = String(selectedSaleId);
+    }
+  }
+
+  $('item-sale').addEventListener('change', function () {
+    selectedSaleId = Number(this.value) || null;
+    renderItems();
+  });
+
+  function renderItems() {
+    var area = $('items-area');
+    if (!sales.length) {
+      area.innerHTML = '<div class="empty"><h3>Set up a sale first</h3>' +
+        '<p class="small">Items belong to a sale, so there needs to be one to attach them to.</p></div>';
+      return;
+    }
+    var sid = selectedSaleId;
+    var mine = items.filter(function (i) { return i.sale_id === sid; });
+    var myPhotos = photos.filter(function (p) { return p.sale_id === sid; });
+
+    var h = '';
+
+    h += '<div class="card"><div class="card-head">' +
+      '<div class="card-title">Sale photos</div>' +
+      '<span class="tiny muted">Wide shots of the garage or driveway</span>' +
+      '</div><div class="card-body">' +
+      '<label class="upload-zone" for="sale-photo-in">' +
+        '<div class="small">Add sale photos — JPG, PNG or WEBP, under 10 MB each</div>' +
+        '<input type="file" id="sale-photo-in" accept="image/png,image/jpeg,image/webp" multiple style="display:none;">' +
+      '</label>' +
+      '<div id="sale-photo-status" class="small" style="margin-top:10px;"></div>';
+    if (myPhotos.length) {
+      h += '<div class="photo-strip">' + myPhotos.map(function (p) {
+        return '<div class="pcard">' +
+          '<img src="' + esc(p.photo_url) + '" alt="" loading="lazy">' +
+          '<button type="button" data-del-photo="' + p.id + '" aria-label="Delete photo">×</button>' +
+        '</div>';
+      }).join('') + '</div>';
+    }
+    h += '</div></div>';
+
+    h += '<div class="card"><div class="card-head">' +
+      '<div class="card-title">Items — ' + mine.length + '</div>' +
+      '<button class="btn btn-sm" type="button" id="add-item">+ Add item</button>' +
+      '</div><div class="card-body">';
+
+    if (!mine.length) {
+      h += '<div class="empty"><h3>No items listed</h3>' +
+        '<p class="small">Add the things worth driving for — tools, furniture, bikes, yard equipment. ' +
+        'A dozen good listings beat a hundred boxes of odds and ends.</p></div>';
+    } else {
+      h += '<div class="igrid">' + mine.map(function (i) {
+        return '<div class="icard">' +
+          '<div class="icard-img">' +
+            (i.photo_url
+              ? '<img src="' + esc(i.photo_url) + '" alt="' + esc(i.name) + '" loading="lazy">'
+              : '<div class="icard-emoji">' + esc(i.emoji || '📦') + '</div>') +
+          '</div>' +
+          '<div class="icard-body">' +
+            '<div class="icard-name">' + esc(i.name) + '</div>' +
+            '<div class="icard-meta">' +
+              [i.category, i.condition].filter(Boolean).map(esc).join(' · ') +
+              (i.status !== 'available' ? ' · <b>' + esc(i.status) + '</b>' : '') +
+              (i.featured ? ' · ★' : '') +
+            '</div>' +
+            '<div class="icard-price">' + esc(GSB.money(i.price)) +
+              (Number(i.min_price) > 0 ? ' <span class="tiny muted" style="font-family:var(--body);">floor ' +
+                esc(GSB.money(i.min_price)) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="icard-acts">' +
+            '<button class="btn btn-sm" type="button" data-edit-item="' + i.id + '" style="flex:1;">Edit</button>' +
+            '<button class="btn btn-sm btn-ghost" type="button" data-del-item="' + i.id + '" ' +
+              'style="background:var(--ink);color:#FFB4A2;">×</button>' +
+          '</div>' +
+        '</div>';
+      }).join('') + '</div>';
+    }
+    h += '</div></div>';
+
+    area.innerHTML = h;
+
+    $('add-item').addEventListener('click', function () { openItem(null); });
+    $('sale-photo-in').addEventListener('change', function () { uploadSalePhotos(this.files); });
+  }
+
+  $('items-area').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.editItem) openItem(Number(b.dataset.editItem));
+    if (b.dataset.delItem) deleteItem(Number(b.dataset.delItem));
+    if (b.dataset.delPhoto) deletePhoto(Number(b.dataset.delPhoto));
+  });
+
+  function openItem(id) {
+    editItemId = id;
+    pendingPhotoFile = null;
+    var i = id ? items.find(function (x) { return x.id === id; }) : null;
+    $('mi-title').textContent = i ? 'Edit item' : 'New item';
+    $('mi-err').classList.remove('show');
+
+    $('mi-name').value   = i ? (i.name || '') : '';
+    $('mi-cat').value    = i ? (i.category || '') : '';
+    $('mi-cond').value   = i ? (i.condition || '') : '';
+    $('mi-price').value  = i && i.price != null ? i.price : '';
+    $('mi-floor').value  = i && i.min_price != null && Number(i.min_price) > 0 ? i.min_price : '';
+    $('mi-status').value = i ? (i.status || 'available') : 'available';
+    $('mi-emoji').value  = i ? (i.emoji || '') : '';
+    $('mi-desc').value   = i ? (i.description || '') : '';
+    $('mi-featured').checked = i ? !!i.featured : false;
+
+    var prev = $('mi-photo-prev');
+    if (i && i.photo_url) { prev.src = i.photo_url; prev.style.display = 'block'; $('mi-photo-txt').textContent = 'Choose a different photo to replace it'; }
+    else { prev.style.display = 'none'; $('mi-photo-txt').textContent = 'Choose a photo — JPG, PNG or WEBP, under 10 MB'; }
+    $('mi-photo').value = '';
+
+    $('m-item').classList.add('on');
+  }
+
+  $('mi-photo').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var msg = $('mi-photo-txt');
+    if (PHOTO_TYPES.indexOf(f.type) === -1) { this.value = ''; pendingPhotoFile = null; msg.textContent = '✕ JPG, PNG or WEBP only.'; return; }
+    if (f.size > PHOTO_MAX) { this.value = ''; pendingPhotoFile = null; msg.textContent = '✕ That photo is ' + (f.size / 1048576).toFixed(1) + ' MB — keep it under 10 MB.'; return; }
+    pendingPhotoFile = f;
+    var r = new FileReader();
+    r.onload = function (e) { $('mi-photo-prev').src = e.target.result; $('mi-photo-prev').style.display = 'block'; };
+    r.readAsDataURL(f);
+    msg.textContent = '✓ ' + f.name;
+  });
+
+  $('mi-save').addEventListener('click', async function () {
+    var err = $('mi-err');
+    err.classList.remove('show');
+    var name = $('mi-name').value.trim();
+    if (!name) { err.textContent = 'Give the item a name.'; err.classList.add('show'); return; }
+    if (!selectedSaleId) { err.textContent = 'Pick a sale first.'; err.classList.add('show'); return; }
+
+    var price = $('mi-price').value === '' ? 0 : Number($('mi-price').value);
+    var floor = $('mi-floor').value === '' ? 0 : Number($('mi-floor').value);
+    if (floor > 0 && price > 0 && floor > price) {
+      err.textContent = 'Your floor is higher than the asking price — check those two numbers.';
+      err.classList.add('show'); return;
+    }
+
+    if (!await GSB.requireSession('Saving the item')) return;
+
+    var btn = this; btn.disabled = true; btn.textContent = 'Saving…';
+
+    var photoUrl = null;
+    if (pendingPhotoFile) {
+      btn.textContent = 'Uploading photo…';
+      photoUrl = await uploadToBucket(pendingPhotoFile, selectedSaleId, 'items');
+      if (!photoUrl) {
+        // The item still saves without its photo. Losing a whole item because an
+        // upload failed would be worse than an item with no picture, and the
+        // message says exactly what happened rather than failing silently.
+        GSB.toast('The photo did not upload — the item was saved without it.', true);
+      }
+    }
+
+    var row = {
+      client_id: GSB.clientId,
+      sale_id: selectedSaleId,
+      name: name,
+      category: $('mi-cat').value.trim() || null,
+      condition: $('mi-cond').value || null,
+      price: price,
+      min_price: floor,
+      status: $('mi-status').value,
+      emoji: $('mi-emoji').value.trim() || '📦',
+      description: $('mi-desc').value.trim() || null,
+      featured: $('mi-featured').checked,
+      updated_at: new Date().toISOString()
+    };
+    if (photoUrl) row.photo_url = photoUrl;
+
+    var r;
+    if (editItemId) {
+      r = await supa.from('gsb_items').update(row).eq('id', editItemId).eq('client_id', GSB.clientId).select();
+    } else {
+      row.display_order = items.filter(function (i) { return i.sale_id === selectedSaleId; }).length + 1;
+      r = await supa.from('gsb_items').insert(row).select();
+    }
+
+    btn.disabled = false; btn.textContent = 'Save item';
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Saving the item' })) return;
+
+    $('m-item').classList.remove('on');
+    GSB.toast(editItemId ? 'Item updated.' : 'Item added.');
+    await loadAll();
+  });
+
+  async function deleteItem(id) {
+    var i = items.find(function (x) { return x.id === id; });
+    if (!confirm('Delete "' + (i ? i.name : 'this item') + '"? This cannot be undone.')) return;
+    if (!await GSB.requireSession('Deleting the item')) return;
+    var r = await supa.from('gsb_items').delete().eq('id', id).eq('client_id', GSB.clientId).select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Deleting the item' })) return;
+    GSB.toast('Item deleted.');
+    await loadAll();
+  }
+
+  /* ══════════════ STORAGE ══════════════
+     THE PATH IS THE SECURITY BOUNDARY. Storage policies test
+     (storage.foldername(name))[1] = gsb_my_client_id(), so the FIRST segment must
+     be this operator's own client_id — an upload to any other prefix is refused
+     by the database, not merely discouraged here. */
+  async function uploadToBucket(file, saleId, sub) {
+    var cid = GSB.clientId;
+    if (!cid) return null;
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Random suffix rather than the original filename: two photos called
+    // IMG_1234.jpg from the same phone would otherwise collide and the second
+    // would silently replace the first.
+    var rand = Math.random().toString(36).slice(2, 10);
+    var path = cid + '/' + saleId + (sub ? '/' + sub : '') + '/' + Date.now() + '-' + rand + '.' + ext;
+
+    var up = await supa.storage.from(PHOTO_BUCKET).upload(path, file, {
+      contentType: file.type, cacheControl: '3600', upsert: false
+    });
+    if (up.error) { console.error('[upload]', up.error.message); return null; }
+
+    var pub = supa.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+    return (pub.data && pub.data.publicUrl) || null;
+  }
+
+  async function uploadSalePhotos(files) {
+    if (!files || !files.length) return;
+    if (!selectedSaleId) return;
+    if (!await GSB.requireSession('Uploading photos')) return;
+
+    var status = $('sale-photo-status');
+    var list = [].slice.call(files);
+    var done = 0, failed = 0;
+
+    for (var i = 0; i < list.length; i++) {
+      var f = list[i];
+      status.textContent = 'Uploading ' + (i + 1) + ' of ' + list.length + '…';
+
+      if (PHOTO_TYPES.indexOf(f.type) === -1 || f.size > PHOTO_MAX) { failed++; continue; }
+
+      var url = await uploadToBucket(f, selectedSaleId, null);
+      if (!url) { failed++; continue; }
+
+      var r = await supa.from('gsb_photos').insert({
+        client_id: GSB.clientId,
+        sale_id: selectedSaleId,
+        photo_url: url,
+        display_order: photos.filter(function (p) { return p.sale_id === selectedSaleId; }).length + done + 1
+      }).select();
+      if (r.error || !r.data || !r.data.length) { failed++; continue; }
+      done++;
+    }
+
+    status.textContent = '';
+    if (done) GSB.toast(done + ' photo' + (done === 1 ? '' : 's') + ' added.');
+    if (failed) GSB.toast(failed + ' photo' + (failed === 1 ? '' : 's') + ' did not upload — check the file type and size.', true);
+    await loadAll();
+  }
+
+  async function deletePhoto(id) {
+    if (!confirm('Delete this photo? This cannot be undone.')) return;
+    if (!await GSB.requireSession('Deleting the photo')) return;
+    var p = photos.find(function (x) { return x.id === id; });
+
+    var r = await supa.from('gsb_photos').delete().eq('id', id).eq('client_id', GSB.clientId).select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Deleting the photo' })) return;
+
+    // The row is the source of truth for what the site shows, so it goes first.
+    // A leftover file in the bucket is invisible and costs a few kilobytes; a
+    // leftover ROW points the public site at a deleted file and shows a broken
+    // image. Best-effort, and never blocks the delete succeeding.
+    if (p && p.photo_url) {
+      var marker = '/' + PHOTO_BUCKET + '/';
+      var at = p.photo_url.indexOf(marker);
+      if (at !== -1) {
+        var path = decodeURIComponent(p.photo_url.slice(at + marker.length));
+        var rm = await supa.storage.from(PHOTO_BUCKET).remove([path]);
+        if (rm.error) console.warn('[storage] file left behind:', path, rm.error.message);
+      }
+    }
+
+    GSB.toast('Photo deleted.');
+    await loadAll();
+  }
+
+  /* ══════════════ CLIENTS ══════════════ */
+  $('new-client').addEventListener('click', function () { openClient(null); });
+
+  function renderClients() {
+    if (!clients.length) {
+      $('clients-list').innerHTML = '<div class="empty"><h3>No clients yet</h3>' +
+        '<p class="small">Add everyone you talk to, even the ones who say no. A "not until spring" ' +
+        'is a booking with a date on it.</p></div>';
+      return;
+    }
+    var LABEL = { lead: 'Lead', contacted: 'Contacted', booked: 'Booked', completed: 'Completed', lost: "Didn't go ahead" };
+    $('clients-list').innerHTML = clients.map(function (c) {
+      return '<div class="row-item">' +
+        '<div class="row-main">' +
+          '<div class="row-title">' + esc(c.name) + ' <span class="tag tag-taken">' + esc(LABEL[c.status] || c.status) + '</span></div>' +
+          '<div class="row-meta">' +
+            [c.phone, c.email].filter(Boolean).map(esc).join(' · ') +
+            (c.address ? '<br>' + esc(c.address) : '') +
+            (c.notes ? '<br><span style="color:var(--on-ink-dim);">' + esc(c.notes) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="row-acts">' +
+          '<button class="btn btn-sm" type="button" data-edit-client="' + c.id + '">Edit</button>' +
+          '<button class="btn btn-sm btn-ghost" type="button" data-del-client="' + c.id + '" ' +
+            'style="background:var(--ink);color:#FFB4A2;">Delete</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  $('clients-list').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.editClient) openClient(Number(b.dataset.editClient));
+    if (b.dataset.delClient) deleteClient(Number(b.dataset.delClient));
+  });
+
+  function openClient(id) {
+    editClientId = id;
+    var c = id ? clients.find(function (x) { return x.id === id; }) : null;
+    $('mc-title').textContent = c ? 'Edit client' : 'Add a client';
+    $('mc-err').classList.remove('show');
+    $('mc-name').value   = c ? (c.name || '') : '';
+    $('mc-phone').value  = c ? (c.phone || '') : '';
+    $('mc-email').value  = c ? (c.email || '') : '';
+    $('mc-addr').value   = c ? (c.address || '') : '';
+    $('mc-status').value = c ? (c.status || 'lead') : 'lead';
+    $('mc-notes').value  = c ? (c.notes || '') : '';
+    $('m-client').classList.add('on');
+  }
+
+  $('mc-save').addEventListener('click', async function () {
+    var err = $('mc-err');
+    err.classList.remove('show');
+    var name = $('mc-name').value.trim();
+    if (!name) { err.textContent = 'A name is required.'; err.classList.add('show'); return; }
+    if (!await GSB.requireSession('Saving the client')) return;
+
+    var btn = this; btn.disabled = true; btn.textContent = 'Saving…';
+    var row = {
+      client_id: GSB.clientId,
+      name: name,
+      phone: $('mc-phone').value.trim() || null,
+      email: $('mc-email').value.trim() || null,
+      address: $('mc-addr').value.trim() || null,
+      status: $('mc-status').value,
+      notes: $('mc-notes').value.trim() || null,
+      updated_at: new Date().toISOString()
+    };
+
+    var r = editClientId
+      ? await supa.from('gsb_clients').update(row).eq('id', editClientId).eq('client_id', GSB.clientId).select()
+      : await supa.from('gsb_clients').insert(row).select();
+
+    btn.disabled = false; btn.textContent = 'Save client';
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Saving the client' })) return;
+
+    $('m-client').classList.remove('on');
+    GSB.toast(editClientId ? 'Client updated.' : 'Client added.');
+    await loadAll();
+  });
+
+  async function deleteClient(id) {
+    var c = clients.find(function (x) { return x.id === id; });
+    if (!confirm('Delete ' + (c ? c.name : 'this client') + '? Their sale history stays, but their ' +
+      'contact details and notes are gone for good.')) return;
+    if (!await GSB.requireSession('Deleting the client')) return;
+    var r = await supa.from('gsb_clients').delete().eq('id', id).eq('client_id', GSB.clientId).select();
+    if (!GSB.assertWrote({ data: r.data, error: r.error, what: 'Deleting the client' })) return;
+    GSB.toast('Client deleted.');
+    await loadAll();
+  }
+
+  /* ══════════════ BRAND COLOUR ══════════════
+     Goes through the gsb_set_primary_color RPC, never a direct UPDATE. RLS is
+     row-level, so an update policy on gsb_tenants would also hand over slug,
+     client_id, cities and is_active — the whole territory and billing surface,
+     reachable from a colour picker. */
+  var COLORS = [
+    ['#E8471F', 'Signal orange'], ['#C0311F', 'Stamp red'], ['#F5BE1E', 'Sign yellow'],
+    ['#1E8A4C', 'Open green'], ['#1F6FB2', 'Deep blue'], ['#6C3FA8', 'Purple'],
+    ['#0D7C74', 'Teal'], ['#8A5A22', 'Timber brown'], ['#2B2B2B', 'Near black']
+  ];
+
+  function paintSwatches(current) {
+    $('set-swatches').innerHTML = COLORS.map(function (c) {
+      var on = String(current || '').toLowerCase() === c[0].toLowerCase();
+      return '<button type="button" class="swatch" data-color="' + c[0] + '" title="' + esc(c[1]) + '" ' +
+        'aria-label="' + esc(c[1]) + '" aria-pressed="' + (on ? 'true' : 'false') + '" ' +
+        'style="background:' + c[0] + ';"></button>';
+    }).join('');
+  }
+
+  $('set-swatches').addEventListener('click', async function (e) {
+    var b = e.target.closest('.swatch');
+    if (!b) return;
+    var color = b.dataset.color;
+    if (!await GSB.requireSession('Changing your brand colour')) return;
+
+    var r = await supa.rpc('gsb_set_primary_color', { p_color: color });
+    if (r.error) {
+      console.error('[brand]', r.error.message);
+      GSB.toast('Could not change the colour: ' + r.error.message, true);
+      return;
+    }
+    GSB.applyBrand(color);
+    paintSwatches(color);
+    GSB.toast('Brand colour updated — your public site has changed already.');
+  });
+
+  /* ══════════════ MODAL PLUMBING ══════════════ */
+  document.addEventListener('click', function (e) {
+    var c = e.target.closest('[data-close]');
+    if (c) { $(c.dataset.close).classList.remove('on'); return; }
+    // Backdrop click closes. The inner card stops propagation implicitly because
+    // the check is for the modal element itself being the click target.
+    if (e.target.classList && e.target.classList.contains('modal')) e.target.classList.remove('on');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    ['m-sale', 'm-item', 'm-client'].forEach(function (m) { $(m).classList.remove('on'); });
+  });
+})();
+</script>
+</body>
+</html>

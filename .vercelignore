@@ -1,0 +1,74 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# .vercelignore — what must NOT be deployed.
+#
+# ⚠️ READ THIS BEFORE ADDING A FILE TO THE REPO.
+#
+# This project has no framework and no build output directory, so Vercel serves
+# the git-tracked repo root directly as static files. That means
+# ANYTHING COMMITTED IS FETCHABLE AT garagesalebiz.com/<path>, including files
+# nothing links to. "Nothing links to it" is not privacy — it is a URL nobody has
+# thought to try yet.
+#
+# EstateSaleBiz verified this the hard way: buyer-agreement.md and its full
+# database schema, including RLS policy definitions, both returned 200 on the live
+# site for weeks. Assume every new file is public until it is listed here.
+#
+# Uses .gitignore pattern syntax.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── DATABASE ────────────────────────────────────────────────────────────────
+# The schema, every RLS policy, the storage rules, and the project reference.
+# None of it is fetched by any page, and publishing it hands an attacker the
+# complete map of what is protected and how.
+*.sql
+
+# ── INTERNAL DOCS ───────────────────────────────────────────────────────────
+# Setup runbooks naming env vars, dashboard steps, and the launch sequence.
+# Never linked from a live page, and each one is a checklist of what to attack.
+STRIPE-SETUP.md
+BREVO-SETUP.md
+LAUNCH-CHECKLIST.md
+README.md
+*.md
+
+# ── ARCHIVE ─────────────────────────────────────────────────────────────────
+# Abandoned waitlist work kept for history. Its migration targets a DIFFERENT
+# Supabase project and must never run; serving it would be worse than pointless.
+archive/
+
+# ── THE MULTI-NICHE PAGE ────────────────────────────────────────────────────
+# niches.html is the SystemsByVega umbrella storefront, preserved in git because
+# it will live somewhere else later. It is excluded from THIS deployment for two
+# reasons, and the second is the one that matters:
+#
+#   1. It is not part of GarageSaleBiz and belongs on a different domain.
+#   2. Its content is now WRONG. It lists garage-and-moving-sales as
+#      "waitlist" — a product that is live and on sale on this very domain. A
+#      visitor who found it would be told they cannot buy the thing they can buy.
+#
+# Its script is excluded with it: waitlist.js writes to own_waitlist, a table that
+# was never created and never will be in this project.
+niches.html
+waitlist.js
+
+# ── EDITOR AND BACKUP SCRATCH ───────────────────────────────────────────────
+# A .bak of a page is a second verbatim copy of it at a URL nobody checks.
+# Paired with .gitignore: that rule stops the commit, this one stops the deploy if
+# something is ever force-added or was tracked before the ignore rule existed.
+*.bak
+*.orig
+*.rej
+*~
+*.swp
+.DS_Store
+
+# ── LOCAL TOOLING ───────────────────────────────────────────────────────────
+.claude/
+.playwright-mcp/
+
+# ── NOT EXCLUDED, DELIBERATELY ──────────────────────────────────────────────
+# course-data.js IS served. It is the course content, loaded as a plain <script>
+# by course.html, and gating it behind authentication would mean an async refactor
+# of that page for material that is educational rather than confidential. Anyone
+# who wants it can already read it from a signed-in browser's network tab.
+# Revisit only if the course is ever sold separately from a territory.
