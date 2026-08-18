@@ -972,9 +972,21 @@ begin
 end
 $$;
 
--- service_role (the API) and an admin may run it. Never anon.
-revoke all on function gsb_cleanup_stale_intake() from public, anon;
-grant execute on function gsb_cleanup_stale_intake() to authenticated, service_role;
+-- service_role ONLY — not `authenticated`, and the distinction matters.
+--
+-- This is SECURITY DEFINER and performs unconditional DELETEs, with no caller
+-- check inside it. Granting it to `authenticated` would let any signed-in
+-- operator run it against everyone's records. Low severity (those rows are on a
+-- deletion schedule anyway) but it is an unauthorised write, and a definer
+-- function with no internal authorisation must never be reachable by an ordinary
+-- session.
+--
+-- Deliberately NOT solved by adding `if not gsb_is_admin()` inside: pg_cron
+-- executes as the database owner, where auth.uid() is null, so an admin check
+-- would make the scheduled run fail every night. Restricting the grant is the
+-- right lever — the owner and pg_cron both act as roles that bypass it.
+revoke all on function gsb_cleanup_stale_intake() from public, anon, authenticated;
+grant execute on function gsb_cleanup_stale_intake() to service_role;
 
 -- ── SCHEDULING ──────────────────────────────────────────────────────────────
 -- Attempted automatically, but WHOLLY OPTIONAL and fully guarded. pg_cron needs
@@ -1249,78 +1261,37 @@ create policy "admin reads waitlist" on gsb_waitlist
 -- role needs.
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- Start from a clean slate for both public roles on every table in this schema.
-do $$
-declare t text;
-begin
-  foreach t in array array[
-    'gsb_settings','gsb_admin_settings','gsb_tenants','gsb_client_users',
-    'gsb_city_claims','gsb_sales','gsb_items','gsb_photos','gsb_clients',
-    'gsb_contracts','gsb_intake','gsb_acceptances','gsb_billing',
-    'gsb_blocked_purchases','gsb_waitlist'
-  ] loop
-    execute format('revoke all on table public.%I from anon, authenticated', t);
-  end loop;
-end $$;
-
--- ── anon (the publishable key in every page) ────────────────────────────────
--- Reads: settings (waitlist_mode) and active operator branding.
-grant select on table public.gsb_settings to anon;
-grant select on table public.gsb_tenants  to anon;
--- Writes: the waitlist, and nothing else in the entire database.
-grant insert on table public.gsb_waitlist to anon;
-
--- Everything else is intentionally absent for anon. Sale data, items and photos
--- reach the public ONLY through the views in PART 6.
-
--- ── authenticated (a signed-in operator, or you) ────────────────────────────
+-- ⚠️ THIS SECTION IS NOW A POINTER. ALL PRIVILEGES ARE SET IN PART 6B.
 --
--- ⚠️ THE GRANT AND THE POLICY MUST AGREE. A policy saying `for all to
--- authenticated using (gsb_is_admin())` does nothing without the matching SQL
--- privilege: PostgREST checks the GRANT first and returns "permission denied for
--- table" before RLS is ever consulted. The two tables below carry admin UPDATE
--- and DELETE policies (4.3 and 4.5), so they need the verbs granted here — with
--- gsb_is_admin() in the policy doing the actual restricting.
+-- It used to hold the grants, and that was a REAL VULNERABILITY, not an untidy
+-- ordering. Two compounding mistakes:
 --
--- The inverse mistake is just as easy: granting a verb with no policy for it
--- yields a silent zero-row result rather than an error, which is far harder to
--- diagnose. Cross-check this block against PART 4 whenever either changes.
--- UPDATE is granted because the owner console flips waitlist_mode from the
--- browser; the "admin writes settings" policy (4.1) is what restricts it to an
--- admin. INSERT and DELETE are deliberately withheld: the key set is fixed by
--- this file, and a browser that can invent or remove setting keys can silently
--- change how the landing page behaves.
-grant select, update                 on table public.gsb_settings      to authenticated;
--- SELECT only. Territory and status changes go through the two RPCs in PART 2
--- (gsb_set_primary_color, gsb_admin_set_tenant_active); there is no UPDATE
--- policy on this table for anyone, so an UPDATE grant would be dead privilege.
-grant select                         on table public.gsb_tenants       to authenticated;
-grant select                         on table public.gsb_client_users  to authenticated;
--- SELECT only for the same reason: claims are written and released exclusively by
--- service_role (the webhook) and by gsb_admin_set_tenant_active().
-grant select                         on table public.gsb_city_claims   to authenticated;
-grant select, insert, update, delete on table public.gsb_sales         to authenticated;
-grant select, insert, update, delete on table public.gsb_items         to authenticated;
-grant select, insert, update, delete on table public.gsb_photos        to authenticated;
-grant select, insert, update, delete on table public.gsb_clients       to authenticated;
-grant select, insert, update, delete on table public.gsb_contracts     to authenticated;
--- SELECT so the owner console can read the waitlist; the "admin reads waitlist"
--- policy (4.11) restricts it to an admin, so an ordinary operator granted the
--- same privilege still sees zero rows.
-grant select, insert                 on table public.gsb_waitlist      to authenticated;
--- Admin-only surfaces: the GRANT is needed for the owner dashboard to reach
--- them at all, and gsb_is_admin() in the policy is what actually restricts them.
-grant select, insert, update, delete on table public.gsb_admin_settings    to authenticated;
-grant select                         on table public.gsb_intake           to authenticated;
-grant select                         on table public.gsb_acceptances      to authenticated;
-grant select, insert, update, delete on table public.gsb_billing          to authenticated;
-grant select, update                 on table public.gsb_blocked_purchases to authenticated;
-
--- Sequence usage, required for INSERT on any identity/serial column. Without
--- this an operator's first "Add item" fails with "permission denied for
--- sequence" — a confusing error that looks like an RLS problem and is not.
-grant usage, select on all sequences in schema public to authenticated;
-grant usage, select on all sequences in schema public to anon;
+--   1. Its revoke sweep enumerated the fifteen base tables by name. Views were
+--      not in the list, so nothing ever revoked anything from them.
+--   2. It ran HERE — before PART 6 creates the views — so even a sweep that did
+--      cover views would have run against objects that did not exist yet.
+--
+-- Supabase ships a default privilege rule on this schema:
+--     alter default privileges in schema public
+--       grant all on tables to anon, authenticated, service_role;
+-- so every view created in PART 6 was born with ALL privileges granted to anon —
+-- SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER. The explicit
+-- `grant select` that followed was redundant; SELECT was already there, along
+-- with everything else.
+--
+-- That is not cosmetic over-granting. All four views are AUTO-UPDATABLE by
+-- PostgreSQL's rules (one table in FROM, no DISTINCT/GROUP BY/set-ops; a
+-- subquery in WHERE does not disqualify a view, and expression columns only make
+-- those columns unassignable). Combined with `security_invoker = false`, a write
+-- through the view executes with the VIEW OWNER's rights, and base-table RLS is
+-- evaluated as that owner — who owns the tables and is not subject to FORCE ROW
+-- LEVEL SECURITY. So RLS offered no protection on this path, and
+--     delete from gsb_public_city_claims;
+-- would have released every operator's territory.
+--
+-- The fix is not to add views to a list. It is to set privileges LAST, over
+-- whatever actually exists, by enumerating the catalogue instead of trusting a
+-- hand-maintained array to stay in step with the schema. See PART 6B.
 
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -1412,10 +1383,139 @@ create or replace view public.gsb_public_photos
 -- The views are the public read path, so they get the grant the base tables
 -- deliberately do not. Re-issued idempotently so this file is complete on its
 -- own if a view is ever dropped and rebuilt.
-grant select on public.gsb_public_city_claims to anon, authenticated;
-grant select on public.gsb_public_sales       to anon, authenticated;
-grant select on public.gsb_public_items       to anon, authenticated;
-grant select on public.gsb_public_photos      to anon, authenticated;
+-- Grants for these views are NOT issued here. They are issued in PART 6B, after
+-- a sweep that first removes what Supabase's default privileges granted at
+-- creation. Granting SELECT here without revoking first is what produced the
+-- original hole: SELECT was already present, along with INSERT, UPDATE and
+-- DELETE, and adding a grant that is already held changes nothing.
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- PART 6B · PRIVILEGES — THE AUTHORITATIVE PASS, RUN LAST OVER EVERY OBJECT
+--
+-- RLS POLICIES ALONE DO NOT GRANT API ACCESS, and SQL GRANTS ALONE DO NOT
+-- RESTRICT IT. PostgREST checks the SQL privilege first and RLS second:
+--   • a grant with no policy  → empty result, no error. Reads as "no data".
+--   • a policy with no grant  → "permission denied for table", before RLS runs.
+-- Both layers are stated explicitly here so the intended posture is readable in
+-- one place.
+--
+-- ── WHY THIS RUNS LAST, AND WHY IT ENUMERATES THE CATALOGUE ─────────────────
+-- Every object this file creates — tables in PART 1, views in PART 6 — is born
+-- with Supabase's default privileges: ALL, to anon and authenticated. A revoke
+-- that runs before an object exists cannot touch it, and a revoke driven by a
+-- hand-written list silently misses whatever nobody remembered to add.
+--
+-- So this block runs after everything is created, and asks the CATALOGUE what
+-- exists rather than being told. Add a table or a view anywhere above and it is
+-- swept automatically; the only way to hold a privilege after this point is to
+-- be granted one explicitly below.
+--
+-- IDEMPOTENT BY CONSTRUCTION: revoke-then-grant reaches the same end state on
+-- every paste, whatever the database held beforehand. Re-running this file is
+-- how you repair a drifted database, not something to avoid.
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- ── 6B.1 · CLEAN SLATE — every gsb_ table, view, and materialised view ──────
+-- PUBLIC is included alongside anon and authenticated. Nothing here grants to
+-- PUBLIC, but a privilege held by PUBLIC is held by every role including anon,
+-- so a sweep that ignores it can leave a hole no per-role audit would show.
+do $$
+declare r record;
+begin
+  for r in
+    select c.relname
+      from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public'
+       and c.relname like 'gsb\_%'
+       and c.relkind in ('r','p','v','m')   -- table, partitioned, view, matview
+     order by c.relname
+  loop
+    execute format('revoke all on public.%I from anon, authenticated, public', r.relname);
+  end loop;
+end $$;
+
+-- ── 6B.2 · anon — the publishable key that ships in every page ──────────────
+-- This is the entire reach of the browser. Three base-table grants and four
+-- read-only views. Verification 10c asserts exactly this set and nothing else.
+grant select on table public.gsb_settings to anon;   -- waitlist_mode
+grant select on table public.gsb_tenants  to anon;   -- operator branding
+grant insert on table public.gsb_waitlist to anon;   -- the ONLY public write
+
+-- SELECT ONLY on the views, and the preceding revoke is what makes that true.
+-- These views are auto-updatable, so INSERT/UPDATE/DELETE here are not inert
+-- privileges — they are working write paths straight through base-table RLS.
+grant select on table public.gsb_public_city_claims to anon;
+grant select on table public.gsb_public_sales       to anon;
+grant select on table public.gsb_public_items       to anon;
+grant select on table public.gsb_public_photos      to anon;
+
+-- ── 6B.3 · authenticated — a signed-in operator, or you ─────────────────────
+-- ⚠️ THE GRANT AND THE POLICY MUST AGREE. Cross-check against PART 4 whenever
+-- either changes; verification 10c-bis does it mechanically.
+--
+-- UPDATE on gsb_settings: the owner console flips waitlist_mode from the
+-- browser, and the "admin writes settings" policy (4.1) restricts it. INSERT and
+-- DELETE withheld — a browser that can invent or remove setting keys can change
+-- how the landing page behaves.
+grant select, update                 on table public.gsb_settings          to authenticated;
+-- SELECT only: territory and status changes go through the RPCs in PART 2, and
+-- there is no UPDATE policy on this table for anyone.
+grant select                         on table public.gsb_tenants           to authenticated;
+grant select                         on table public.gsb_client_users      to authenticated;
+-- SELECT only: claims are written by service_role and released by
+-- gsb_admin_set_tenant_active().
+grant select                         on table public.gsb_city_claims       to authenticated;
+grant select, insert, update, delete on table public.gsb_sales             to authenticated;
+grant select, insert, update, delete on table public.gsb_items             to authenticated;
+grant select, insert, update, delete on table public.gsb_photos            to authenticated;
+grant select, insert, update, delete on table public.gsb_clients           to authenticated;
+grant select, insert, update, delete on table public.gsb_contracts         to authenticated;
+grant select, insert                 on table public.gsb_waitlist          to authenticated;
+-- Admin surfaces: the grant makes the owner console able to reach them at all;
+-- gsb_is_admin() in the policy is what actually restricts them.
+grant select, insert, update, delete on table public.gsb_admin_settings    to authenticated;
+grant select                         on table public.gsb_intake            to authenticated;
+grant select                         on table public.gsb_acceptances       to authenticated;
+grant select, insert, update, delete on table public.gsb_billing           to authenticated;
+grant select, update                 on table public.gsb_blocked_purchases to authenticated;
+-- Read-only on the views, same as anon: a signed-in operator viewing their own
+-- public site reads through exactly the path a shopper does.
+grant select on table public.gsb_public_city_claims to authenticated;
+grant select on table public.gsb_public_sales       to authenticated;
+grant select on table public.gsb_public_items       to authenticated;
+grant select on table public.gsb_public_photos      to authenticated;
+
+-- ── 6B.4 · SEQUENCES ────────────────────────────────────────────────────────
+-- Every table here uses `generated always as identity`, whose sequence is
+-- accessed with the table owner's rights — so no role needs a sequence privilege
+-- to insert. (That is the difference from `serial`, which does.)
+--
+-- anon is therefore given USAGE and NOT SELECT. SELECT on a sequence exposes
+-- last_value, which on gsb_billing_id_seq is a live count of how many purchases
+-- have ever been made, readable by anyone holding the publishable key. USAGE is
+-- kept purely as insurance for the waitlist insert; it permits nextval, which
+-- leaks nothing beyond a burned id.
+revoke all on all sequences in schema public from anon, authenticated, public;
+grant usage         on all sequences in schema public to anon;
+grant usage, select on all sequences in schema public to authenticated;
+
+-- ── 6B.5 · FUNCTIONS ────────────────────────────────────────────────────────
+-- Supabase's default privileges cover FUNCTIONS as well as tables, so every
+-- function in this file is also born executable by anon. Each one already has an
+-- explicit revoke beside its definition in PART 2; these two are the leftovers
+-- that had none, tidied here so the audit in 10c-fn returns exactly one row.
+--
+-- An audit that always shows two rows of known noise is an audit people stop
+-- reading, and the row that matters gets lost in it.
+--
+-- Neither revoke can break anything: gsb_check_cities is SECURITY DEFINER and
+-- calls gsb_norm_city with the owner's rights, and the normalisation trigger
+-- fires under service_role, which bypasses privilege checks entirely.
+revoke all on function gsb_norm_city(text)          from anon, public;
+revoke all on function gsb_city_claims_normalize()  from anon, public;
+grant execute on function gsb_norm_city(text) to authenticated;
 
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -1738,14 +1838,53 @@ select 'table with RLS and NO policy' as problem, c.relname
                     where p.schemaname = 'public' and p.tablename = c.relname)
  order by c.relname;
 
--- 10c. THE ONE THAT MATTERS MOST — anon must hold no read grant on any base
---      table except gsb_settings and gsb_tenants, and no write grant except
---      INSERT on gsb_waitlist. Expect EXACTLY three rows:
---        gsb_settings SELECT · gsb_tenants SELECT · gsb_waitlist INSERT
-select 'anon grants' as check, table_name, privilege_type
+-- 10c. THE ONE THAT MATTERS MOST — the complete reach of the publishable key.
+--
+--      ⚠️ THIS CHECK PREVIOUSLY SAID "expect exactly three rows" AND THAT WAS
+--      WRONG, in a way worth recording. information_schema.role_table_grants
+--      covers VIEWS as well as tables, so the correct total is SEVEN: three base
+--      grants plus SELECT on each of the four public views.
+--
+--      Stating the wrong number was not a harmless typo. A first run returned 31
+--      rows — the four views carrying ALL SEVEN privileges each from Supabase's
+--      default privileges — and an expectation of "three" gives no way to tell a
+--      catastrophe from an off-by-a-few. Every row now labels itself, so the
+--      check cannot be passed by miscounting.
+--
+--      EXPECT: seven rows, every verdict 'ok'. ANY row reading 'UNEXPECTED' is a
+--      live hole — read 6B and re-run this file.
+select
+  case
+    when (table_name, privilege_type) in (
+      ('gsb_settings','SELECT'), ('gsb_tenants','SELECT'), ('gsb_waitlist','INSERT'),
+      ('gsb_public_city_claims','SELECT'), ('gsb_public_sales','SELECT'),
+      ('gsb_public_items','SELECT'),       ('gsb_public_photos','SELECT')
+    ) then 'ok'
+    else '*** UNEXPECTED — anon must not hold this ***'
+  end as verdict,
+  table_name, privilege_type
   from information_schema.role_table_grants
  where grantee = 'anon' and table_schema = 'public' and table_name like 'gsb\_%'
- order by table_name, privilege_type;
+ order by verdict desc, table_name, privilege_type;
+
+-- 10c-ter. THE ASSERTION BEHIND 10c, proven at the level that actually matters.
+--
+--      A grant audit tells you what is held. This tells you what is POSSIBLE.
+--      All four public views are auto-updatable by PostgreSQL's rules, and they
+--      run with `security_invoker = false` — so a write through one executes as
+--      the view owner and base-table RLS never applies. The only thing standing
+--      between anon and `delete from gsb_public_city_claims` is the absence of a
+--      DELETE grant, which is exactly what 6B.1 removes and 10c confirms.
+--
+--      is_updatable = YES here is EXPECTED and is not the problem; it is a
+--      property of the view's shape, not of who may use it. The row to care
+--      about is any anon grant other than SELECT in 10c above.
+select 'view write-surface' as check,
+       table_name, is_updatable, is_insertable_into,
+       'writable in principle — 10c must show SELECT only for anon' as note
+  from information_schema.views
+ where table_schema = 'public' and table_name like 'gsb\_public\_%'
+ order by table_name;
 
 -- 10c-bis. GRANT/POLICY CROSS-CHECK — the mismatch that is easiest to ship and
 --      hardest to debug, in both directions:
@@ -1787,17 +1926,85 @@ select 'policy without grant', p.table_name, p.cmd
    )
  order by 1, 2, 3;
 
--- 10d. No storage policy is gated on a bucket name alone. Expect ZERO rows.
+-- 10c-fn. The same default-privilege mechanism that granted anon ALL on the
+--      views also makes every function executable by anon unless revoked.
+--
+--      EXPECT: exactly one row — gsb_check_cities, which the availability
+--      checker on the landing page calls with the publishable key. Anything else
+--      reading 'UNEXPECTED' is reachable from a browser and should not be,
+--      most seriously gsb_admin_set_tenant_active (releases territories) and
+--      gsb_cleanup_stale_intake (deletes records).
+select
+  case when p.proname = 'gsb_check_cities'
+    then 'expected — the public availability checker'
+    else '*** UNEXPECTED — anon must not execute this ***'
+  end as verdict,
+  p.proname as function_name,
+  pg_get_function_identity_arguments(p.oid) as args
+  from pg_proc p
+  join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public'
+   and p.proname like 'gsb\_%'
+   and has_function_privilege('anon', p.oid, 'EXECUTE')
+ order by verdict desc, p.proname;
+
+-- 10d. NO STORAGE **WRITE** MAY BE GATED ON A BUCKET NAME ALONE. Expect ZERO rows.
+--
 --      Checks qual AND with_check: an INSERT policy carries its predicate in
---      with_check with qual NULL, so a wide-open upload policy is invisible to
---      a qual-only filter. That exact blind spot let a cross-tenant delete hole
+--      with_check with qual NULL, so a wide-open upload policy is invisible to a
+--      qual-only filter. That exact blind spot let a cross-tenant delete hole
 --      survive a "verified" migration on EstateSaleBiz for two days.
-select 'bare-bucket-qual' as problem, policyname, cmd, qual, with_check
+--
+--      Zero tolerance, no exceptions list, deliberately. A write policy scoped
+--      only to a bucket lets any self-registered account — signup is open —
+--      write into and delete from every operator's folder.
+select 'UNSCOPED STORAGE WRITE' as problem, policyname, cmd, qual, with_check
   from pg_policies
  where schemaname = 'storage' and tablename = 'objects'
+   and cmd in ('INSERT','UPDATE','DELETE','ALL')
    and coalesce(qual,'') || coalesce(with_check,'') like '%gsb-%'
    and coalesce(qual,'') || coalesce(with_check,'') not like '%foldername%'
    and coalesce(qual,'') || coalesce(with_check,'') not like '%gsb_is_tenant%';
+
+-- 10d-bis. STORAGE READS — one bare policy is EXPECTED. Named here rather than
+--      quietly excluded from 10d, because narrowing a security check until it
+--      passes is how a real hole gets classified as noise.
+--
+--      "gsb public read tenant logos" is gated on bucket_id alone, on purpose:
+--
+--        • Operator logos appear on public storefronts, so they must be readable
+--          by everyone. There is no owner to scope a READ to.
+--        • The bucket is PUBLIC, and public-bucket reads never consult RLS at
+--          all. This policy is therefore DECORATIVE — adding a foldername test
+--          would satisfy the regex in 10d and change nothing whatsoever about
+--          who can fetch a logo. That is theatre, and it is not done here.
+--        • It is SELECT only. No INSERT, UPDATE or DELETE policy exists on the
+--          logos bucket at any scope; only service_role writes there, and
+--          service_role bypasses RLS. So the bare predicate grants no write.
+--
+--      KNOWN LIMITATION, recorded rather than hidden: because the bucket is
+--      public, a DEACTIVATED operator's logo stays fetchable by direct URL. Their
+--      storefront goes dark — the tenant row and all four views gate on
+--      is_active — but the image file itself does not. EstateSaleBiz carried the
+--      identical gap as an open item. The real fix is a private bucket plus
+--      signed URLs in the storefront, which is a change to the read path and not
+--      to this policy. Not worth doing for a logo; worth knowing.
+--
+--      EXPECT: exactly one row, and it must be the logos SELECT policy.
+select
+  case
+    when policyname = 'gsb public read tenant logos' and cmd = 'SELECT'
+      then 'expected — public logos, see 10d-bis'
+    else '*** UNEXPECTED bare read policy — investigate ***'
+  end as verdict,
+  policyname, cmd, qual
+  from pg_policies
+ where schemaname = 'storage' and tablename = 'objects'
+   and cmd = 'SELECT'
+   and coalesce(qual,'') like '%gsb-%'
+   and coalesce(qual,'') not like '%foldername%'
+   and coalesce(qual,'') not like '%gsb_is_tenant%'
+ order by verdict desc;
 
 -- 10e. Exactly one policy per verb on the photo bucket. More than one means an
 --      older set survived and is OR'ing access back open.

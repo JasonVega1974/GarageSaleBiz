@@ -33,14 +33,26 @@ a batch, so scroll the results panel or re-run individual checks. These five are
 matter:
 
 - ▢ **10a** — fifteen `gsb_` tables, every one `rls_enabled = true`.
-- ▢ **10c** — anon holds **exactly three** grants: `gsb_settings` SELECT, `gsb_tenants` SELECT,
-  `gsb_waitlist` INSERT. **Anything else is a leak.**
+- ▢ **10c** — **seven rows, every verdict `ok`.** Three base grants
+  (`gsb_settings` SELECT, `gsb_tenants` SELECT, `gsb_waitlist` INSERT) plus SELECT on each of
+  the four public views. **Any row reading `*** UNEXPECTED ***` is a live hole.**
+  Each row labels itself, so this cannot be passed by miscounting — which matters, because an
+  earlier version of this check said "expect exactly three" and a first run returned **31**.
+- ▢ **10c-ter** — informational. `is_updatable = YES` on the views is expected and is not a
+  problem in itself; it is why 10c has to be clean. These views are writable *in principle*,
+  so the only thing closing that path is the absence of an anon write grant.
+- ▢ **10c-fn** — **exactly one row**, `gsb_check_cities`. Anything else is a function reachable
+  from a browser that should not be.
 - ▢ **10c-bis** — **zero rows.** Any row is a grant/policy mismatch: a grant with no policy
   returns empty results that look like "no data", and a policy with no grant returns
   "permission denied" for a policy that is actually correct.
-- ▢ **10d** — **zero rows.** No storage policy gated on a bucket name alone. This is the check
+- ▢ **10d** — **zero rows.** No storage *write* gated on a bucket name alone. This is the check
   whose absence let a cross-tenant photo-delete hole survive a "verified" migration on ESB for
   two days.
+- ▢ **10d-bis** — **exactly one row**, and it must read *expected* — the public logos SELECT
+  policy. It is bare on purpose: logos display on public storefronts so there is no owner to
+  scope a read to, the bucket is public so RLS is never consulted for reads anyway, and no
+  write policy exists on that bucket at any scope.
 - ▢ **10g** — every row `true`. City normalisation collapses `St.`/`Saint` and `Ft`/`Fort`
   while keeping Portland OR and Portland ME distinct.
 - ▢ **10k** — `leaked_rows = 0` then `visible_rows = 1`. The address guard hides an address

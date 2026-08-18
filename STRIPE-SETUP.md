@@ -235,8 +235,8 @@ Run every line. `▢` means unticked.
 ### Setup
 
 - ▢ `SETUP.sql` has been run against **`jjocmvhqeiudcwtazbwi`** and its verification queries
-  pass — in particular **10c** (anon holds exactly three grants) and **10c-bis**
-  (no grant/policy mismatch).
+  pass — in particular **10c** (seven rows, every verdict `ok`), **10c-fn** (one row),
+  **10c-bis** (no grant/policy mismatch), and **10d** (no unscoped storage write).
 - ▢ Your owner account exists and `select gsb_is_admin();` returns `true`.
 - ▢ All seven env vars are set in Vercel and the project has been **redeployed** since.
 - ▢ `curl -i -X POST https://garagesalebiz.com/api/stripe-webhook` returns **400**.
