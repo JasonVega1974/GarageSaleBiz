@@ -3,12 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GarageSaleBiz — Run Garage &amp; Moving Sales in Your Town</title>
-<meta name="description" content="Claim three cities, exclusively. Run garage and moving sales for homeowners on commission, with the website, contracts, signs, and training included. $249 one time — no monthly fee.">
+<title>Start a Garage Sale Business in Your Town — GarageSaleBiz</title>
+<meta name="description" content="Run garage and moving sales for homeowners on commission. Three cities locked to you — website, contracts, sign maker, and course included. $249 once, no monthly fee.">
+<link rel="canonical" href="https://garagesalebiz.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Own the garage sales in your town.">
-<meta property="og:description" content="Three cities, exclusively yours. $249 one time, no monthly fee. Website, contracts, sign maker, and training included.">
+<meta property="og:site_name" content="GarageSaleBiz">
+<meta property="og:title" content="Three cities. One operator. You.">
+<meta property="og:description" content="Run garage and moving sales for homeowners on commission. Three cities locked to you. $249 once, no monthly fee.">
 <meta property="og:url" content="https://garagesalebiz.com/">
+<meta property="og:image" content="https://garagesalebiz.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GarageSaleBiz — three cities, one operator.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Three cities. One operator. You.">
+<meta name="twitter:description" content="Run garage and moving sales for homeowners on commission. $249 once, no monthly fee.">
+<meta name="twitter:image" content="https://garagesalebiz.com/assets/og.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,17 +64,49 @@
 .chk-note { font-size: 14px; line-height: 1.6; color: var(--on-paper-dim); margin-top: 8px; }
 .chk-wl { display: grid; gap: 9px; margin-top: 14px; }
 
-/* ── STEPS ───────────────────────────────────────────────────────────────── */
-.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 34px; }
-@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
-.step { background: var(--ink-soft); border: 2px solid var(--ink-line); padding: 20px 18px; position: relative; }
-.step-n {
-  font-family: var(--display); font-size: 2.6rem; line-height: 1;
-  color: var(--sign); opacity: .9;
+/* ── THE ROUTE — the day-of timeline ─────────────────────────────────────── */
+/* A garage sale is found by following arrow signs from the main road to the
+   driveway. The timeline is drawn as that route: a placard at every turn, a
+   marker line between them. The order carries real information (you cannot
+   drop prices before you open), which is what earns the device — a decorative
+   01/02/03 rail on content that is not a sequence would not. */
+.route { list-style: none; margin: 34px 0 0; }
+.stop { display: grid; grid-template-columns: 48px 1fr; gap: 22px; padding-bottom: 28px; }
+.stop-rail { position: relative; }
+/* The marker line between placards. Dashed rather than solid: a continuous
+   rule reads as a UI divider, a broken one reads as something drawn. */
+.stop-rail::after {
+  content: ''; position: absolute; left: 22px; top: 54px; bottom: -28px; width: 4px;
+  background: repeating-linear-gradient(180deg, var(--flame) 0 11px, transparent 11px 19px);
 }
-.step h3 { font-family: var(--display); text-transform: uppercase; font-size: 1.05rem; margin: 8px 0 6px; letter-spacing: .02em; }
-.step p { font-size: 14px; color: var(--on-ink-dim); line-height: 1.6; }
+.stop:last-child { padding-bottom: 0; }
+.stop:last-child .stop-rail::after { display: none; }
+.stop-mark {
+  width: 46px; height: 46px; display: grid; place-items: center;
+  background: var(--sign); border: 3px solid var(--ink); box-shadow: var(--hard-sm);
+  color: var(--ink);
+}
+.stop-mark svg { width: 22px; height: 22px; display: block; }
+/* Hand-stapled, not machine-set: every placard sits a degree or two off. */
+.stop:nth-child(1) .stop-mark { transform: rotate(-3deg); }
+.stop:nth-child(2) .stop-mark { transform: rotate(2.5deg); }
+.stop:nth-child(3) .stop-mark { transform: rotate(-1.5deg); }
+.stop:nth-child(4) .stop-mark { transform: rotate(3deg); }
+.stop:nth-child(5) .stop-mark { transform: rotate(-2deg); }
+.stop:nth-child(6) .stop-mark { transform: rotate(1.5deg); }
+.stop:nth-child(7) .stop-mark { transform: rotate(-2.5deg); }
+.stop-when {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--sign);
+  padding-top: 4px;
+}
+.stop-body p { font-size: 15px; line-height: 1.65; color: var(--on-ink-dim); margin-top: 6px; max-width: 58ch; }
+@media (max-width: 520px) {
+  .stop { grid-template-columns: 38px 1fr; gap: 16px; }
+  .stop-mark { width: 36px; height: 36px; border-width: 2px; }
+  .stop-mark svg { width: 17px; height: 17px; }
+  .stop-rail::after { left: 17px; top: 44px; width: 3px; }
+}
 
 /* ── WHAT YOU GET ────────────────────────────────────────────────────────── */
 .kit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
@@ -78,19 +120,6 @@
 /* ── PRICE ───────────────────────────────────────────────────────────────── */
 .price-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: stretch; }
 @media (max-width: 820px) { .price-wrap { grid-template-columns: 1fr; } }
-.price-card { padding: 30px 26px; }
-.price-fig { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 4px; }
-.price-num { font-family: var(--display); font-size: 4.4rem; line-height: .9; color: var(--ink); }
-.price-per { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #4A4029; }
-.price-once {
-  display: inline-block; margin-top: 6px; padding: 6px 12px;
-  background: var(--open); color: #fff; border: 2px solid var(--ink);
-  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-}
-.incl { list-style: none; margin: 20px 0 0; }
-.incl li { display: flex; gap: 11px; padding: 8px 0; font-size: 15px; line-height: 1.55; border-bottom: 1px solid rgba(22,19,14,.14); }
-.incl li:last-child { border-bottom: none; }
-.incl .tick { color: var(--open); font-weight: 800; flex-shrink: 0; }
 .price-side { display: flex; flex-direction: column; gap: 18px; }
 .price-note { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 18px; font-size: 14px; line-height: 1.65; color: var(--on-ink-dim); }
 .price-note h4 { font-family: var(--display); text-transform: uppercase; font-size: .95rem; color: var(--on-ink); margin-bottom: 7px; letter-spacing: .03em; }
@@ -112,6 +141,202 @@
 .faq-item.open .faq-a { display: block; }
 .faq-item.open .faq-mark { transform: rotate(45deg); }
 
+/* ── THE STAMP — used exactly twice ──────────────────────────────────────── */
+/* Hero badge and the receipt. Twice reads as a system; six times reads as
+   noise, and the page already has enough physical objects on it. */
+.stamp {
+  display: inline-block;
+  font-family: var(--mono); font-weight: 700; font-size: 11px;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--stamp); border: 2px solid var(--stamp);
+  padding: 7px 12px; border-radius: 2px;
+  transform: rotate(-4deg); opacity: .88;
+}
+.stamp-lg { font-size: 13px; padding: 10px 16px; border-width: 3px; letter-spacing: .16em; }
+
+/* ── HERO EXTRAS ─────────────────────────────────────────────────────────── */
+.hero-stamp { position: absolute; top: 20px; right: 22px; z-index: 2; }
+/* The kicker and the stamp share the top line of the board, so the kicker is
+   kept clear of the stamp's footprint rather than being allowed to run under
+   it at wider text sizes. */
+.hero-board .kicker { padding-right: 230px; }
+@media (max-width: 620px) {
+  .hero-stamp { position: static; display: inline-block; margin-bottom: 14px; }
+  .hero-board .kicker { padding-right: 0; }
+}
+
+/* Marker-drawn, aimed up-right at the availability checker sitting beside it.
+   Deliberately asymmetric control points — a geometrically perfect arrow is a
+   UI icon, and this system is meant to look stapled up by a person. */
+.hand-arrow {
+  position: absolute; right: 26px; bottom: 104px; width: 124px; height: 62px;
+  color: var(--flame); opacity: .92; pointer-events: none;
+  transform: rotate(-17deg);
+}
+@media (max-width: 1100px) { .hand-arrow { display: none; } }
+
+/* One moment, on load: the board settles like something just stapled up. */
+@keyframes gsb-settle {
+  from { transform: translateY(-3px) rotate(-.35deg); }
+  to   { transform: none; }
+}
+.hero-board { animation: gsb-settle .5s cubic-bezier(.2,.8,.3,1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-board { animation: none; }
+}
+
+/* ── PROOF STRIP ─────────────────────────────────────────────────────────── */
+.proof-grid { display: grid; grid-template-columns: 1.45fr .55fr; gap: 22px; margin-top: 30px; align-items: start; }
+@media (max-width: 900px) { .proof-grid { grid-template-columns: 1fr; } }
+.proof-side { display: grid; gap: 22px; }
+@media (max-width: 900px) { .proof-side { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 460px) { .proof-side { grid-template-columns: 1fr; } }
+.proof-fig { margin: 0; }
+/* Every artifact is a print stapled to the board — no browser chrome, no device
+   mock. A macOS window frame would be the templated answer and belongs to a
+   different visual world than the rest of this page. */
+.proof-shot {
+  display: block; position: relative; line-height: 0;
+  border: 3px solid var(--ink); background: var(--ink);
+  box-shadow: var(--hard); text-decoration: none;
+}
+.proof-shot img { width: 100%; height: auto; display: block; }
+.proof-main .proof-shot { transform: rotate(-1.2deg); }
+.proof-side .proof-fig:nth-child(1) .proof-shot { transform: rotate(1deg); }
+.proof-side .proof-fig:nth-child(2) .proof-shot { transform: rotate(-.6deg); }
+a.proof-shot:hover { box-shadow: var(--hard-lg); }
+.proof-fig figcaption {
+  margin-top: 20px; font-size: 14px; line-height: 1.6; color: var(--on-ink-dim);
+}
+.proof-fig figcaption b { color: var(--on-ink); }
+.proof-fig figcaption a { color: var(--sign); font-weight: 700; }
+
+/* ── REGISTRY ────────────────────────────────────────────────────────────── */
+.reg-wrap { display: grid; grid-template-columns: .8fr 1.2fr; gap: 32px; margin-top: 28px; align-items: start; }
+@media (max-width: 820px) { .reg-wrap { grid-template-columns: 1fr; gap: 24px; } }
+/* A ruled index card, because the registry really is a list of rows. */
+.reg-card { padding: 0; overflow: hidden; transform: rotate(-.8deg); }
+.reg-card-head {
+  background: var(--stamp); color: #fff; padding: 11px 18px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+}
+.reg-card-body {
+  padding: 20px 18px;
+  background: repeating-linear-gradient(180deg,
+    transparent 0 27px, var(--paper-line) 27px 28px);
+}
+.reg-card-body li {
+  list-style: none; font-family: var(--mono); font-size: 13px; line-height: 28px;
+  color: var(--on-paper);
+}
+.reg-count {
+  margin: 16px 18px 20px; padding: 12px;
+  border: 3px solid var(--stamp); text-align: center; transform: rotate(-2deg);
+}
+.reg-count .reg-n { font-family: var(--display); font-size: 2.2rem; line-height: 1; color: var(--stamp); }
+.reg-count .reg-l {
+  display: block; margin-top: 4px;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--stamp);
+}
+.reg-copy p { color: var(--on-ink-dim); line-height: 1.7; }
+.reg-copy p + p { margin-top: 14px; }
+.reg-fine {
+  margin-top: 18px; border-left: 5px solid var(--ink-line); padding-left: 14px;
+  font-size: 13px; line-height: 1.65; color: var(--on-ink-dim);
+}
+
+/* ── THE RECEIPT ─────────────────────────────────────────────────────────── */
+/* min-width:0 on the grid item and on the flex text cells. Without it their
+   automatic minimum size is their min-content width, and the longest mono
+   token (yourname.garagesalebiz.com) pushes the whole receipt wider than a
+   360px viewport — which scrolls the entire page sideways, not just the card. */
+.receipt { padding: 26px 24px 24px; position: relative; min-width: 0; }
+.rcpt-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: #4A4029;
+  padding-bottom: 12px; border-bottom: 3px solid var(--ink);
+}
+.rcpt-lines { list-style: none; margin: 4px 0 0; }
+.rcpt-lines li {
+  display: flex; align-items: baseline; gap: 8px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.5; padding: 9px 0;
+  color: var(--on-paper);
+}
+.rcpt-lines li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.rcpt-dots { flex: 1 1 auto; border-bottom: 2px dotted rgba(22,19,14,.32); transform: translateY(-4px); min-width: 12px; }
+.rcpt-val { flex-shrink: 0; font-weight: 700; letter-spacing: .1em; color: #4A4029; }
+/* On a narrow phone the dotted leader is the first thing to go: it is the one
+   part of the receipt carrying no information. */
+@media (max-width: 430px) {
+  .receipt { padding: 20px 16px 18px; }
+  .rcpt-lines li { font-size: 12px; gap: 10px; }
+  .rcpt-dots { display: none; }
+  .rcpt-lines li > span:first-child { flex: 1 1 auto; }
+  .rcpt-val { font-size: 11px; }
+  .rcpt-row .rcpt-fig { font-size: 2.1rem; }
+}
+.rcpt-total { margin-top: 12px; border-top: 3px solid var(--ink); padding-top: 14px; }
+.rcpt-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  font-family: var(--mono); font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+}
+.rcpt-row .rcpt-fig { font-family: var(--display); font-size: 2.6rem; line-height: 1; letter-spacing: .01em; }
+.rcpt-sub { margin-top: 8px; font-size: 12px; color: #4A4029; }
+.rcpt-stamp-row { margin-top: 18px; }
+.rcpt-refund {
+  margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--paper-line);
+  font-size: 14px; line-height: 1.65; color: #3B3325;
+}
+.rcpt-refund b { color: var(--ink); }
+.rcpt-refund a { color: var(--stamp); font-weight: 700; }
+
+/* ── FOUNDER NOTE ────────────────────────────────────────────────────────── */
+/* The substitute for testimonials. There are no customers yet, so the trust on
+   this page comes from a real person in a real place putting their name to it. */
+.founder { padding: 30px 28px; transform: rotate(-.4deg); }
+.founder-body { margin-top: 12px; }
+.founder-body p { font-size: 16px; line-height: 1.75; color: #3B3325; max-width: 62ch; }
+.founder-body p + p { margin-top: 14px; }
+.founder-sign { margin-top: 22px; padding-top: 18px; border-top: 2px solid var(--paper-line); }
+.sig { width: 190px; height: 66px; color: var(--ink); display: block; }
+.founder-who {
+  margin-top: 6px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: #6B6355;
+}
+
+/* ── MOBILE STICKY CTA ───────────────────────────────────────────────────── */
+/* Hidden entirely on desktop, where both CTAs are already in reach. The buy
+   half carries .buy-cta so waitlist mode hides it through the rule that already
+   governs every other buy button on the page. */
+.mcta { display: none; }
+@media (max-width: 767px) {
+  .mcta {
+    display: flex; gap: 10px; align-items: center;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: var(--ink); border-top: 3px solid var(--sign);
+  }
+  .mcta .btn { flex: 1 1 auto; font-size: .78rem; padding: 12px 10px; }
+  /* The nav's buy button is redundant once the sticky bar is on screen, and at
+     360px it and "See a live site" each wrap onto three lines fighting for the
+     same row. Breakpoint matches .mcta exactly so there is never a width with
+     neither one showing. */
+  .nav-links .btn { display: none; }
+  .nav-links { gap: 14px; }
+  .mcta-check {
+    flex: 0 0 auto; text-decoration: none;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--on-ink);
+    border: 2px solid var(--ink-line); padding: 13px 12px; min-height: 44px;
+    display: inline-flex; align-items: center;
+  }
+  body { padding-bottom: 84px; }
+}
+
 /* ── WAITLIST MODE ───────────────────────────────────────────────────────── */
 /* Hidden by default and revealed only when gsb_settings.waitlist_mode is 'true'.
    Sold-out state must be driven by data, not by a redeploy. */
@@ -119,6 +344,89 @@
 body.waitlist-mode #sold-out { display: block; }
 body.waitlist-mode .buy-cta { display: none !important; }
 </style>
+
+<!-- Structured data. NO aggregateRating and NO review: there are no customers
+     yet, and a rating block is the single easiest place on a page to fabricate
+     social proof by accident. Every FAQ entry below is the visible text of the
+     matching question in #faq-list, verbatim. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Product",
+      "name": "GarageSaleBiz Operator Territory",
+      "description": "An exclusive three-city territory plus the software to run garage and moving sales for homeowners: a branded public website, a client agreement generator, a print-ready sign maker, a client list, and a four-module operator course.",
+      "brand": { "@type": "Brand", "name": "GarageSaleBiz" },
+      "url": "https://garagesalebiz.com/",
+      "image": "https://garagesalebiz.com/assets/og.png",
+      "offers": {
+        "@type": "Offer",
+        "price": "249.00",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://garagesalebiz.com/intake.html",
+        "seller": { "@type": "Organization", "name": "Kingdom Creatives LLC" }
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my city really exclusive?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It means we will not sell GarageSaleBiz to another operator in your three cities. The moment your payment clears, those cities are recorded against your account in the territory registry and the availability checker starts telling everyone else they are taken. It does not mean you are the only person in town who can run a garage sale — we cannot grant that and nobody can. What you get is exclusivity within this platform, and the tools and training that come with it." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I have never done this before?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No experience is assumed. What you need is a car, a phone, a weekend, and the willingness to knock on a door and have a conversation. The course starts from \"you have never done this\" and the first module is about getting your first client, not about theory." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need an LLC?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Nothing about GarageSaleBiz requires one. You buy as yourself and operate under whatever business name you like. Whether you should form one is a question for an accountant or an attorney in your state. A business licence is a different thing from an LLC, and many cities do require one to run sales at other people's homes — that one you do need to check." }
+        },
+        {
+          "@type": "Question",
+          "name": "What exactly happens after I pay?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Your cities are locked into the registry, your website goes live at your subdomain, and you land in your dashboard already signed in. You also get an email with your address, your login, and the three things worth doing first. No onboarding call, and no waiting on us to build anything." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the refund actually conditioned on?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Two things, and only two. Within 14 calendar days of buying, email us and we refund the $249 in full — no form and no explanation required — unless in that time you have either published a live sale to your public site or generated and saved a client agreement in your dashboard. Both are dated records in your own dashboard that you can see as plainly as we can." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there really no monthly fee?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Really. $249 once. We do not store your card after checkout, there is no renewal, and no invoice arrives next month or next year. If anything ever changes about that, it would apply to new purchases and not retroactively to yours." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need a permit or a licence?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Often, yes — and it varies enormously. Many cities require a permit for a garage sale, cap how many a household may hold per year, and regulate where signs may be placed and for how long. Some require a business licence to run sales for other people. You must check your own city's rules and comply with them. Nothing on this site is legal advice." }
+        },
+        {
+          "@type": "Question",
+          "name": "What if the city I want is taken?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Check it before you buy anything. If it is taken, you can pick a neighbouring city instead, or join the list for that one and get the first offer if the operator there ever releases it. You choose your cities and we confirm they are free before you reach the payment page." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I add more cities later?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Email info@kingdom-creatives.com and we will tell you what is open next to you. There is no automated upsell in the dashboard because we would rather look at whether a fourth city actually makes sense for you first." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much can I make?",
+          "acceptedAnswer": { "@type": "Answer", "text": "We will not answer that, and you should be wary of anyone who does. It depends on your town, how many jobs you book, what the goods are worth, and how hard you work. Some operators never book a job. You could lose money on this. What we can tell you is the mechanics: you charge a percentage of what a sale takes in, you set that percentage, and the dashboard defaults to 50%." }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body class="gsb-glow">
 
@@ -144,13 +452,13 @@ body.waitlist-mode .buy-cta { display: none !important; }
   <div class="shell hero-grid">
 
     <div class="sign-surface stapled hero-board">
-      <div class="kicker">One operator per city · 3 cities included</div>
-      <h1 class="display">Own the<br>garage sales<br>in your town.</h1>
+      <div class="stamp hero-stamp">3 cities · yours alone</div>
+      <div class="kicker">One operator per city</div>
+      <h1 class="display">Three cities.<br>One operator.<br>You.</h1>
       <p class="sub">
-        Homeowners have a garage full of things they want gone and no appetite for running a sale.
-        You run it for them and take a commission on everything that sells.
-        <b>We give you the website, the contracts, the signs, and the playbook</b> — and we lock three
-        cities to you so nobody else can buy them.
+        Homeowners have a garage they want emptied and no appetite for running the sale themselves.
+        You price it, stage it, sign the agreement, run the weekend, and
+        <b>take a commission on what sells</b>. They get their driveway back on Monday.
       </p>
       <div class="hero-cta">
         <a href="#check" class="btn">
@@ -164,6 +472,16 @@ body.waitlist-mode .buy-cta { display: none !important; }
         <span>No monthly fee</span>
         <span>Live the same day</span>
       </div>
+
+      <!-- Points at the availability checker sitting beside it. Drawn, not
+           iconographic: the path is deliberately off-true so it reads as marker
+           on corrugate rather than a UI glyph. -->
+      <svg class="hand-arrow" viewBox="0 0 120 60" aria-hidden="true" focusable="false">
+        <path d="M4 34 C 23 30, 45 28.5, 71 27.2 C 78 27, 85 26.6, 93 26.1"
+              fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+        <path d="M77 11 C 84 16.5, 91 21.5, 99 26 C 91 31.5, 83.5 36.5, 76 43"
+              fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
 
     <!-- ── AVAILABILITY CHECKER ──
@@ -232,42 +550,141 @@ body.waitlist-mode .buy-cta { display: none !important; }
   </div>
 </section>
 
-<!-- ══════════════ HOW IT WORKS ══════════════ -->
-<section class="section" id="how">
+<!-- ══════════════ LIVE PROOF ══════════════
+     Every image here is a screenshot of the running product, not a rendering of
+     one. The storefront is the demo site, the sign came out of the sign maker,
+     and the agreement came out of the contract generator — all three with the
+     details of the sale that is on the demo right now, so the page and the
+     product tell the same story instead of two similar ones. -->
+<section class="section" id="proof" style="border-top:2px solid var(--ink-line);">
   <div class="shell">
-    <div class="eyebrow">The business, in four steps</div>
-    <h2 class="display">You are the person who<br>makes the sale happen.</h2>
+    <div class="eyebrow">The actual product</div>
+    <h2 class="display">Not mockups.<br>This is the software.</h2>
     <p class="lede" style="margin-top:12px;">
-      No inventory, no storefront, no van full of stock. The goods belong to the homeowner
-      until they sell, and you get paid out of what they sell for.
+      Three things you get, photographed straight off the screen: the website your shoppers browse,
+      a sign for the corner of the street, and the agreement you sign in the kitchen before you
+      touch a box.
     </p>
 
-    <div class="steps">
-      <div class="step">
-        <div class="step-n">1</div>
-        <h3>Find the sale</h3>
-        <p>People moving, downsizing, clearing a parent's garage. Module 1 covers the five places these
-          jobs come from and the exact words that get you the appointment.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">2</div>
-        <h3>Sign the agreement</h3>
-        <p>Generate a plain-language agreement in the dashboard — your commission, the dates, who pays for
-          what. It prints or saves as a PDF. Signed before you lift a single box.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">3</div>
-        <h3>Price, stage, advertise</h3>
-        <p>Photograph the good pieces onto your own website, print arrow signs for every corner
-          within half a mile, and post to the local groups.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">4</div>
-        <h3>Run it and settle up</h3>
-        <p>Work the sale, mark items sold as they go, drop prices on the last day, hand the homeowner
-          their share, and keep yours.</p>
+    <div class="proof-grid">
+      <figure class="proof-fig proof-main">
+        <a class="proof-shot stapled" href="/demo.html">
+          <img src="/assets/proof/storefront.webp" width="820" height="647" loading="lazy" decoding="async"
+               alt="An operator's public sale page: a moving sale in Nampa, Idaho with dates, address, description, and a grid of items with photos and prices.">
+        </a>
+        <figcaption>
+          <b>Your website.</b> A real operator site with a real sale on it — the item grid, the photos,
+          and the prices are all filled in from the dashboard.
+          <a href="/demo.html">Open the live demo →</a>
+        </figcaption>
+      </figure>
+
+      <div class="proof-side">
+        <figure class="proof-fig">
+          <div class="proof-shot stapled">
+            <img src="/assets/proof/sign.webp" width="500" height="649" loading="lazy" decoding="async"
+                 alt="A printed yard sign reading MOVING SALE with the dates, hours, street address, a list of featured items, and a QR code to the sale listing.">
+          </div>
+          <figcaption>
+            <b>Your yard sign.</b> Address, dates, hours, and a QR code to your listing. Prints at home
+            or at a copy shop.
+          </figcaption>
+        </figure>
+        <figure class="proof-fig">
+          <div class="proof-shot stapled">
+            <img src="/assets/proof/contract.webp" width="470" height="610" loading="lazy" decoding="async"
+                 alt="A generated garage sale agreement showing the operator and client details, the property address, sale dates and hours, the commission split, and the settlement terms.">
+          </div>
+          <figcaption>
+            <b>Your client agreement.</b> Filled from your dashboard, plain English, print-ready.
+          </figcaption>
+        </figure>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ══════════════ THE WEEKEND ══════════════ -->
+<section class="section" id="how" style="border-top:2px solid var(--ink-line);">
+  <div class="shell">
+    <div class="eyebrow">One weekend, start to finish</div>
+    <h2 class="display">What the job<br>actually looks like.</h2>
+    <p class="lede" style="margin-top:12px;">
+      This is the sale on the demo site — the same one you can click into above. No inventory, no
+      storefront, no van full of stock: the goods belong to the homeowner until they sell.
+    </p>
+
+    <ol class="route">
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Thu 6:10 pm</div>
+          <p>You walk the garage with the homeowner, agree your rate, and both sign the agreement on
+            your phone. Nothing gets moved until that is done.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Fri 4:00 pm</div>
+          <p>Price and stage. The good pieces get photographed onto your site so shoppers can see
+            them before they decide to drive over.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Sat 7:40 am</div>
+          <p>Signs go up. Arrows on every corner within half a mile, and the big one at the mouth of
+            the driveway.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Sat 8:00 am</div>
+          <p>Doors open. There are people in the driveway at 7:52. There always are.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Sat 2:00 pm</div>
+          <p>Everything drops 25%. The browsers from this morning come back for the thing they were
+            thinking about all afternoon.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Sun 11:00 am</div>
+          <p>Half price, or make an offer. The goal on the last day is an empty garage, not a
+            maximum price.</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="stop-rail"><span class="stop-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z" fill="currentColor"/></svg>
+        </span></div>
+        <div class="stop-body">
+          <div class="stop-when">Mon 9:00 am</div>
+          <p>You settle up, hand the homeowner their share, and photograph the empty garage. That
+            photo is how you get the next job.</p>
+        </div>
+      </li>
+    </ol>
 
     <div class="notice" style="margin-top:28px;">
       <strong>You set your own rate.</strong> Operators in this trade commonly charge somewhere between
@@ -326,6 +743,57 @@ body.waitlist-mode .buy-cta { display: none !important; }
   </div>
 </section>
 
+<!-- ══════════════ THE REGISTRY ══════════════
+     The scarcity here is structurally real, so it is stated as a mechanism
+     rather than sold with a countdown. The count is read live from
+     gsb_public_city_claims and is NEVER invented: it renders only above a
+     threshold, because a truthful "1 city claimed" undercuts the exclusivity
+     it is meant to evidence, and a fabricated number would be worse than
+     either. Below the threshold the card carries the mechanism on its own. -->
+<section class="section" id="registry" style="border-top:2px solid var(--ink-line);">
+  <div class="shell">
+    <div class="eyebrow">The registry</div>
+    <h2 class="display">One operator per city.<br>Recorded, not promised.</h2>
+
+    <div class="reg-wrap">
+      <div class="paper-surface reg-card">
+        <div class="reg-card-head">Territory registry</div>
+        <ul class="reg-card-body">
+          <li>A city is one row.</li>
+          <li>A row is written once.</li>
+          <li>It cannot be written twice.</li>
+          <li>The checker reads that row.</li>
+        </ul>
+        <div class="reg-count" id="reg-count" hidden>
+          <span class="reg-n">—</span>
+          <span class="reg-l">cities claimed nationwide</span>
+        </div>
+      </div>
+
+      <div class="reg-copy">
+        <p>Exclusivity is only worth something if it is written down somewhere you can check. When a
+          purchase completes, the city is written into the territory registry as a row that cannot be
+          written twice — and the availability checker at the top of this page reads that same row.
+          That is the whole mechanism.</p>
+        <p>There is no bidding, no renewal auction, and no tier that buys you more of the map. Three
+          cities, picked by you, held for as long as your account is active.</p>
+        <p style="margin-top:18px;">
+          <a href="#check" class="btn btn-sign">
+            Check a city
+            <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9h11V4l9 8-9 8v-5H2z"/></svg>
+          </a>
+        </p>
+        <p class="reg-fine">
+          If two people complete checkout for the same city within the same moments, the earlier
+          purchase takes it and the other buyer is offered a different city at no extra cost, a full
+          refund, or a full refund plus first refusal on that city — their choice.
+          <a href="/operator-agreement.html#s3" style="color:var(--sign);">Operator Agreement §3.5</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════════ PRICE ══════════════ -->
 <section class="section" id="price" style="border-top:2px solid var(--ink-line);">
   <div class="shell">
@@ -333,26 +801,40 @@ body.waitlist-mode .buy-cta { display: none !important; }
     <h2 class="display">$249. That's the whole thing.</h2>
 
     <div class="price-wrap" style="margin-top:26px;">
-      <div class="sign-surface price-card">
-        <div class="kicker" style="font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;opacity:.72;">
-          Operator territory
+      <!-- Itemised like something hand-stamped at a counter, because the claim
+           being made is that there is nothing else to pay. A receipt is the one
+           document that settles that question by its nature. -->
+      <div class="paper-surface receipt">
+        <div class="rcpt-head">
+          <span>GarageSaleBiz</span>
+          <span>Operator territory · one-time</span>
         </div>
-        <div class="price-fig">
-          <span class="price-num">$249</span>
-          <span class="price-per">3 cities<br>one time</span>
-        </div>
-        <div class="price-once">No monthly fee · No renewal · No card kept</div>
 
-        <ul class="incl">
-          <li><span class="tick">✓</span> Three cities of your choice, exclusively yours</li>
-          <li><span class="tick">✓</span> Your branded website on your own subdomain</li>
-          <li><span class="tick">✓</span> Sale &amp; item manager with photo uploads</li>
-          <li><span class="tick">✓</span> Client agreement generator, two variants</li>
-          <li><span class="tick">✓</span> Arrow &amp; sale sign maker, print-ready</li>
-          <li><span class="tick">✓</span> Client list to track every lead</li>
-          <li><span class="tick">✓</span> The four-module operator course</li>
-          <li><span class="tick">✓</span> Email support from a person, not a bot</li>
+        <ul class="rcpt-lines">
+          <li><span>Three cities, exclusively yours</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Your website at yourname.garagesalebiz.com</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Sale &amp; item manager with photo uploads</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Client agreement generator, two variants</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Arrow &amp; sale sign maker, print-ready</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Client list to track every lead</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>The four-module operator course</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
+          <li><span>Email support from a person, not a bot</span><span class="rcpt-dots"></span><span class="rcpt-val">Included</span></li>
         </ul>
+
+        <div class="rcpt-total">
+          <div class="rcpt-row">
+            <span>Total</span>
+            <span class="rcpt-fig">$249.00</span>
+          </div>
+          <div class="rcpt-row rcpt-sub">
+            <span>Due monthly</span>
+            <span>$0.00</span>
+          </div>
+        </div>
+
+        <div class="rcpt-stamp-row">
+          <span class="stamp stamp-lg">No monthly fee</span>
+        </div>
 
         <div class="buy-cta">
           <a href="/intake.html" class="btn btn-block" style="margin-top:22px;">
@@ -362,6 +844,20 @@ body.waitlist-mode .buy-cta { display: none !important; }
           <p class="tiny" style="text-align:center;margin-top:10px;color:#4A4029;">
             You pick your cities and read the agreement <b>before</b> you pay.
           </p>
+        </div>
+
+        <!-- The refund terms belong on the receipt, not three sections away.
+             Both conditions are quoted from Operator Agreement §10.2 so the two
+             documents cannot drift apart. -->
+        <div class="rcpt-refund">
+          <p><b>14-day refund.</b> Change your mind within 14 calendar days and we refund the $249 in
+            full — no form, no explanation required. It ends if, within those 14 days, you have
+            either <b>published a live sale</b> to your public site or <b>generated and saved a
+            client agreement</b>.</p>
+          <p style="margin-top:10px;">Those two are the only conditions, and they were chosen because
+            we can both check them: each is a dated record in your own dashboard that you can see as
+            plainly as we can. Reading the course does not affect your refund.
+            <a href="/operator-agreement.html#s10">Operator Agreement §10</a></p>
         </div>
       </div>
 
@@ -390,6 +886,47 @@ body.waitlist-mode .buy-cta { display: none !important; }
   </div>
 </section>
 
+<!-- ══════════════ FOUNDER NOTE ══════════════
+     This is where testimonials would go on a page that had any. It has none —
+     no operator has bought yet — and inventing them is the one thing this page
+     must never do. A named person, a real company, and a real town is the trust
+     that can be offered honestly today. -->
+<section class="section" id="founder" style="border-top:2px solid var(--ink-line);">
+  <div class="shell shell-narrow" style="margin:0 auto;">
+    <div class="paper-surface founder">
+      <div class="eyebrow eyebrow-dark">Why I built this</div>
+      <div class="founder-body">
+        <p>I built EstateSaleBiz first. Estate sales are a solemn business — somebody has died, or is
+          moving into care, and a family is standing in a full house making decisions they did not
+          plan to make. Garage sales are the same job, smaller and lighter: the same walkthrough, the
+          same pricing, the same signs on the corner, the same Monday morning with an empty driveway.
+          The tools turned out to be very nearly the same tools, so I built them again for the
+          smaller job.</p>
+        <p>There is a real job in that, and the people who would be good at it are usually not the
+          people who want to build a website, write a contract, and work out what to charge.</p>
+        <p>So that is what this is: the parts that stop somebody starting, already built. The three
+          cities are locked to one operator because a territory you have to share is not a
+          territory.</p>
+        <p>I am one person and a small company, not a franchise with a call centre. If you email, it
+          is me who answers.</p>
+      </div>
+      <div class="founder-sign">
+        <svg class="sig" viewBox="0 0 250 82" role="img" aria-label="Signed, Jason">
+          <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M26 12 C 40 10, 54 11, 65 13 C 58 29, 51 46, 47 59 C 44 70, 36 76, 27 73 C 20 70.5, 18 63, 22 58"/>
+            <path d="M92 44 C 84 38, 73 42, 71 52 C 69 61, 77 66, 84 61 C 90 57, 92 48, 91 42 C 90 50, 91 60, 97 63"/>
+            <path d="M122 47 C 116 42, 107 43, 107 49.5 C 107 55, 115 56, 119.5 59 C 124 62, 122.5 68, 116 68.5 C 110.5 69, 106 66.5, 104.5 63"/>
+            <path d="M148 47 C 143 43, 134.5 44.5, 132.5 52.5 C 130.5 60.5, 136 67.5, 143 64.5 C 149.5 61.5, 150 52, 147 46.5 C 150 48.5, 154 51.5, 157 55.5"/>
+            <path d="M170 66 C 171 58, 172 50, 172 45 C 176 51, 181 44, 188 45 C 195 46, 196 55, 194 66"/>
+            <path d="M22 78 C 62 71, 128 69, 206 73" stroke-width="3" opacity=".7"/>
+          </g>
+        </svg>
+        <div class="founder-who">Jason Vega · Kingdom Creatives LLC · Nampa, Idaho</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════════ FAQ ══════════════ -->
 <section class="section" id="faq" style="border-top:2px solid var(--ink-line);">
   <div class="shell shell-narrow" style="margin:0 auto;">
@@ -398,23 +935,68 @@ body.waitlist-mode .buy-cta { display: none !important; }
 
     <div class="faq" id="faq-list">
       <div class="faq-item">
-        <button class="faq-q" type="button">Do I need any experience?<span class="faq-mark">+</span></button>
-        <div class="faq-a">
-          <p>No. What you need is a car, a phone, a weekend, and the willingness to knock on a door
-            and have a conversation. The course starts from "you have never done this" and the first
-            module is about getting your first client, not about theory.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">What does "exclusive territory" actually mean?<span class="faq-mark">+</span></button>
+        <button class="faq-q" type="button">Is my city really exclusive?<span class="faq-mark">+</span></button>
         <div class="faq-a">
           <p>It means we will not sell GarageSaleBiz to another operator in your three cities. The
-            moment your payment clears, those cities are recorded against your account and the
-            availability checker on this page starts telling everyone else they are taken.</p>
+            moment your payment clears, those cities are recorded against your account in the
+            territory registry and the availability checker on this page starts telling everyone
+            else they are taken. That row cannot be written twice, which is what makes the promise
+            checkable rather than merely stated.</p>
           <p>It does not mean you are the only person in town who can run a garage sale — we cannot
             grant that and nobody can. Anyone is free to hold their own sale, and other companies
             may operate near you. What you get is exclusivity within this platform, and the tools
             and training that come with it.</p>
+          <p>In the rare case that two people complete checkout for the same city in the same
+            moments, the earlier purchase takes it and the other buyer chooses between a different
+            city at no extra cost, a full refund, or a full refund plus first refusal on that city.
+            See <a href="/operator-agreement.html#s3">Operator Agreement §3.5</a>.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What if I have never done this before?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>No experience is assumed. What you need is a car, a phone, a weekend, and the
+            willingness to knock on a door and have a conversation. The course starts from "you have
+            never done this" and the first module is about getting your first client, not about
+            theory.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Do I need an LLC?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Nothing about GarageSaleBiz requires one. You buy as yourself, you operate under
+            whatever business name you like, and the client agreement has a line for a business name
+            or for your own.</p>
+          <p>Whether you <em>should</em> form one is a question for an accountant or an attorney in
+            your state, and we are not able to answer it for you. Note that a business licence is a
+            different thing from an LLC, and many cities do require one to run sales at other
+            people's homes — that one you do need to check. Module 1 walks you through finding your
+            city's rules, and <a href="/operator-agreement.html#s6">Operator Agreement §6</a> puts
+            that responsibility with you.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What exactly happens after I pay?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Your cities are locked into the registry, your website goes live at your subdomain, and
+            you land in your dashboard already signed in. You also get an email with your address,
+            your login, and the three things worth doing first. No onboarding call, and no waiting
+            on us to build anything.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">What is the refund actually conditioned on?<span class="faq-mark">+</span></button>
+        <div class="faq-a">
+          <p>Two things, and only two. Within 14 calendar days of buying, email us and we refund the
+            $249 in full — no form and no explanation required — <em>unless</em> in that time you
+            have either <b>published a live sale</b> to your public site or <b>generated and saved a
+            client agreement</b> in your dashboard.</p>
+          <p>Those two were chosen because we can both check them: each is a dated record in your own
+            dashboard that you can see as plainly as we can, so there is nothing to argue about.
+            Reading the course does not affect your refund — we have no way to verify how much of it
+            you read, and we will not condition your money on something we cannot measure and you
+            cannot contest. Full terms in
+            <a href="/operator-agreement.html#s10">Operator Agreement §10</a>.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -423,17 +1005,6 @@ body.waitlist-mode .buy-cta { display: none !important; }
           <p>Really. $249 once. We do not store your card after checkout, there is no renewal, and
             no invoice arrives next month or next year. If anything ever changes about that, it
             would apply to new purchases and not retroactively to yours.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">How much can I make?<span class="faq-mark">+</span></button>
-        <div class="faq-a">
-          <p>We will not answer that, and you should be wary of anyone who does. It depends on your
-            town, how many jobs you book, what the goods are worth, and how hard you work.
-            Some operators never book a job. You could lose money on this.</p>
-          <p>What we can tell you is the mechanics: you charge a percentage of what a sale takes in,
-            you set that percentage, and the dashboard defaults to 50%. What that adds up to is
-            entirely down to you.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -454,9 +1025,7 @@ body.waitlist-mode .buy-cta { display: none !important; }
             instead, or join the list for that one and get the first offer if the operator there ever
             releases it.</p>
           <p>You choose your cities and we confirm they are free <em>before</em> you reach the payment
-            page, so the ordinary way to discover a city is taken costs you nothing. In the rare case
-            that two people are paying for the same city at the same moment, whoever completes first
-            gets it and we refund the other in full, immediately, without asking for anything.</p>
+            page, so the ordinary way to discover a city is taken costs you nothing.</p>
         </div>
       </div>
       <div class="faq-item">
@@ -468,12 +1037,14 @@ body.waitlist-mode .buy-cta { display: none !important; }
         </div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" type="button">What happens right after I pay?<span class="faq-mark">+</span></button>
+        <button class="faq-q" type="button">How much can I make?<span class="faq-mark">+</span></button>
         <div class="faq-a">
-          <p>Your cities are locked, your website goes live at your subdomain, and you land in your
-            dashboard already signed in. You also get an email with your address, your login, and
-            the three things worth doing first. No onboarding call, no waiting on us to build
-            anything.</p>
+          <p>We will not answer that, and you should be wary of anyone who does. It depends on your
+            town, how many jobs you book, what the goods are worth, and how hard you work.
+            Some operators never book a job. You could lose money on this.</p>
+          <p>What we can tell you is the mechanics: you charge a percentage of what a sale takes in,
+            you set that percentage, and the dashboard defaults to 50%. What that adds up to is
+            entirely down to you.</p>
         </div>
       </div>
     </div>
@@ -514,6 +1085,15 @@ body.waitlist-mode .buy-cta { display: none !important; }
   </div>
 </footer>
 
+<!-- ══════════════ MOBILE STICKY CTA ══════════════
+     Phone only. The buy half carries .buy-cta so the existing waitlist-mode rule
+     hides it along with every other buy button, rather than needing a second
+     mechanism that could fall out of step. -->
+<div class="mcta">
+  <a href="#check" class="mcta-check">Check my city</a>
+  <a href="/intake.html" class="btn btn-sm buy-cta">Claim your 3 cities — $249</a>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/gsb.js"></script>
 <script>
@@ -540,6 +1120,31 @@ body.waitlist-mode .buy-cta { display: none !important; }
         document.body.classList.add('waitlist-mode');
       }
     } catch (e) { /* leave the page purchasable */ }
+  })();
+
+  /* ── LIVE TERRITORY COUNT ───────────────────────────────────────────────
+     Read from gsb_public_city_claims, which anon may SELECT (it drops
+     client_id and slug, so this cannot enumerate who owns what).
+
+     THE COUNT IS NEVER INVENTED AND NEVER ROUNDED UP. It renders only above a
+     floor, because a true "2 cities claimed" argues against the exclusivity it
+     is there to evidence — and a made-up number would be worse than saying
+     nothing. On any error the element simply stays hidden: the registry card
+     carries the mechanism perfectly well without a number on it. */
+  var REG_COUNT_FLOOR = 3;
+  (async function () {
+    try {
+      var r = await GSB.supa
+        .from('gsb_public_city_claims')
+        .select('city_norm', { count: 'exact', head: true });
+      if (r.error) return;
+      var n = r.count;
+      if (typeof n !== 'number' || n <= REG_COUNT_FLOOR) return;
+      var box = document.getElementById('reg-count');
+      if (!box) return;
+      box.querySelector('.reg-n').textContent = String(n);
+      box.hidden = false;
+    } catch (e) { /* card stands on its own */ }
   })();
 
   /* ══════════════════════════════════════════════════════════════════════
