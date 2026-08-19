@@ -71,7 +71,9 @@ const LOGO_MAX_CHARS = 2 * 1024 * 1024 * 1.4; // ~2 MB of bytes as base64
 // gsb_cleanup_stale_intake() relies on.
 const CHECKOUT_TTL_SECONDS = 30 * 60;
 
-export default async function handler(request) {
+export default { fetch: handler };
+
+async function handler(request) {
   if (request.method === 'OPTIONS') return preflight();
   if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405);
 

@@ -29,7 +29,9 @@ import {
 
 export const config = { runtime: 'nodejs' };
 
-export default async function handler(request) {
+export default { fetch: handler };
+
+async function handler(request) {
   if (request.method === 'OPTIONS') return preflight();
   if (request.method !== 'GET' && request.method !== 'POST') {
     return json({ ok: false, error: 'method_not_allowed' }, 405);

@@ -44,7 +44,9 @@ const LOGO_MAX_BYTES = 2 * 1024 * 1024;
 // from the Supabase origin.
 const LOGO_MIME_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
 
-export default async function handler(request) {
+export default { fetch: handler };
+
+async function handler(request) {
   if (request.method !== 'POST') return json({ ok: false, error: 'method_not_allowed' }, 405);
 
   // RAW BODY FIRST, before anything parses it. The signature is computed over
