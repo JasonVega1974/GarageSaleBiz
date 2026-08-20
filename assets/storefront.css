@@ -117,7 +117,7 @@
 .sf-past { margin: 10px 0 40px; }
 .sf-past-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 16px; }
 .sf-past-item { border: 2px solid var(--ink-line); background: var(--ink-soft); padding: 15px; }
-.sf-past-title { font-family: var(--display); text-transform: uppercase; font-size: 1rem; margin: 8px 0 5px; letter-spacing: .02em; }
+.sf-past-title { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: 1rem; margin: 8px 0 5px; letter-spacing: .02em; }
 
 .sf-contact { border-top: 3px solid var(--ink-line); padding: 46px 0; }
 .sf-contact-rows { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }

@@ -16,7 +16,7 @@
 
 .panel { background: var(--ink-soft); border-right: 3px solid var(--sign); padding: 22px 20px 60px; overflow-y: auto; }
 @media (min-width: 1021px) { .panel { max-height: 100vh; position: sticky; top: 0; } }
-.panel h1 { font-family: var(--display); text-transform: uppercase; font-size: 1.15rem; letter-spacing: .04em; }
+.panel h1 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: 1.15rem; letter-spacing: .04em; }
 .panel .sub { font-size: 14px; color: var(--on-ink-dim); margin: 6px 0 18px; line-height: 1.6; }
 fieldset { border: none; margin-bottom: 20px; }
 legend {
@@ -52,13 +52,16 @@ legend {
   margin-bottom: 26px;
 }
 .doc h1 {
-  font-family: 'Anton', Impact, sans-serif; text-transform: uppercase;
+  /* font-weight:400 — Anton ships one weight, so an h1's inherited bold makes
+     the browser synthesise a fake one. On screen that is a smear; on a printed
+     agreement it is a smear at 300dpi. */
+  font-family: 'Anton', Impact, sans-serif; font-weight: 400; text-transform: uppercase;
   font-size: 22pt; line-height: 1.05; letter-spacing: .01em; margin-bottom: .06in;
 }
 .doc .doc-sub { font-size: 9.5pt; letter-spacing: .16em; text-transform: uppercase; color: #555; }
 .doc-rule { border-top: 2px solid #111; margin: .18in 0 .22in; }
 .doc h2 {
-  font-family: 'Anton', Impact, sans-serif; text-transform: uppercase;
+  font-family: 'Anton', Impact, sans-serif; font-weight: 400; text-transform: uppercase;
   font-size: 12pt; letter-spacing: .04em; margin: .24in 0 .07in;
 }
 .doc p { margin-bottom: .1in; }

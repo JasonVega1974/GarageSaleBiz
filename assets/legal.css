@@ -42,7 +42,9 @@ body.legal .nav {
   padding: 20px 22px; margin: 24px 0 30px; box-shadow: var(--hard-sm);
 }
 .legal-summary h2 {
-  font-family: var(--display); text-transform: uppercase; font-size: 1.05rem;
+  /* font-weight:400 — Anton has one weight; an h2 inherits the UA bold and the
+     browser then synthesises a fake bold over a face that has none. */
+  font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: 1.05rem;
   letter-spacing: .04em; margin-bottom: 12px; color: var(--ink);
 }
 .legal-summary ul { list-style: none; }
@@ -67,7 +69,7 @@ body.legal .nav {
 
 .legal-wrap section { margin-bottom: 30px; scroll-margin-top: 84px; }
 .legal-wrap h2 {
-  font-family: var(--display); text-transform: uppercase;
+  font-family: var(--display); font-weight: 400; text-transform: uppercase;
   font-size: clamp(1.15rem, 2.6vw, 1.5rem); letter-spacing: .02em;
   color: var(--ink); padding-bottom: 8px; border-bottom: 2px solid var(--ink);
   margin-bottom: 14px;
